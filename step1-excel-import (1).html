@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Office Tour — ייבוא נכסים</title>
+<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+* { box-sizing:border-box; margin:0; padding:0; }
+:root {
+  --bg:      #f0ece6;
+  --white:   #fffaf4;
+  --border:  #e0d8ce;
+  --text:    #1a1209;
+  --text2:   #5c4a35;
+  --text3:   #9e8878;
+  --accent:  #5c47e0;
+  --green:   #10b981;
+  --red:     #ef4444;
+  --r: 14px;
+}
+body {
+  font-family: 'Assistant', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  direction: rtl;
+  min-height: 100vh;
+  padding: 32px 24px 60px;
+}
+
+/* ── PAGE HEADER ── */
+.page-header {
+  max-width: 900px; margin: 0 auto 32px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.page-logo {
+  display: flex; align-items: center; gap: 10px;
+}
+.page-logo-mark {
+  width: 38px; height: 38px; border-radius: 10px;
+  background: var(--text); display: flex; align-items: center; justify-content: center;
+}
+.page-logo-text { font-size: 18px; font-weight: 900; color: var(--text); }
+.page-logo-text em { font-style: normal; color: var(--accent); }
+.page-badge {
+  font-size: 11px; font-weight: 700; color: var(--text3);
+  background: var(--white); border: 1px solid var(--border);
+  padding: 5px 12px; border-radius: 20px;
+}
+
+/* ── CARD ── */
+.card {
+  background: var(--white); border-radius: 20px;
+  border: 1.5px solid var(--border);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+  max-width: 900px; margin: 0 auto 20px;
+  overflow: hidden;
+}
+.card-header {
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 12px;
+}
+.card-icon {
+  width: 40px; height: 40px; border-radius: 11px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0;
+}
+.card-title { font-size: 16px; font-weight: 800; color: var(--text); }
+.card-sub   { font-size: 12px; color: var(--text3); margin-top: 2px; }
+.card-body  { padding: 20px 24px; }
+
+/* ── UPLOAD ZONE ── */
+.upload-zone {
+  border: 2px dashed var(--border);
+  border-radius: var(--r);
+  padding: 40px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all .2s;
+  background: var(--bg);
+}
+.upload-zone:hover, .upload-zone.dragover {
+  border-color: var(--accent);
+  background: rgba(92,71,224,0.04);
+}
+.upload-icon  { font-size: 36px; margin-bottom: 12px; }
+.upload-title { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+.upload-sub   { font-size: 13px; color: var(--text3); margin-bottom: 16px; }
+.upload-btn {
+  display: inline-block; padding: 10px 24px;
+  border-radius: 20px; border: none;
+  background: var(--accent); color: #fff;
+  font-family: 'Assistant', sans-serif;
+  font-size: 14px; font-weight: 700;
+  cursor: pointer; transition: all .2s;
+}
+.upload-btn:hover { background: #6d58f0; transform: translateY(-1px); }
+#file-input { display: none; }
+
+/* ── IMAGE UPLOAD ── */
+.image-upload-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(160px,1fr));
+  gap: 10px; margin-top: 14px;
+}
+.image-slot {
+  aspect-ratio: 4/3;
+  border: 1.5px dashed var(--border);
+  border-radius: 10px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  cursor: pointer; transition: all .2s;
+  background: var(--bg); overflow: hidden;
+  position: relative; font-size: 12px; color: var(--text3);
+  text-align: center; padding: 8px;
+}
+.image-slot:hover { border-color: var(--accent); }
+.image-slot img {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+}
+.image-slot .slot-name {
+  font-size: 11px; font-weight: 700; color: var(--text2);
+  margin-top: 6px; z-index: 1;
+}
+.image-slot.has-img .slot-overlay {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,0.4);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity .2s;
+  font-size: 20px;
+}
+.image-slot.has-img:hover .slot-overlay { opacity: 1; }
+
+/* ── TABLE PREVIEW ── */
+.table-wrap { overflow-x: auto; margin-top: 4px; }
+.data-table {
+  width: 100%; border-collapse: collapse;
+  font-size: 12px;
+}
+.data-table th {
+  padding: 8px 12px; background: var(--bg);
+  color: var(--text3); font-weight: 700;
+  text-align: right; border-bottom: 1.5px solid var(--border);
+  white-space: nowrap;
+}
+.data-table td {
+  padding: 8px 12px; border-bottom: 1px solid var(--border);
+  color: var(--text2); vertical-align: middle;
+}
+.data-table tr:hover td { background: rgba(92,71,224,0.03); }
+.data-table td img {
+  width: 48px; height: 36px; object-fit: cover;
+  border-radius: 6px; border: 1px solid var(--border);
+}
+.status-pill {
+  display: inline-block; padding: 2px 10px; border-radius: 20px;
+  font-size: 11px; font-weight: 700;
+}
+.status-now  { background: #dcfce7; color: #166534; }
+.status-soon { background: #fef3c7; color: #92400e; }
+.status-flex { background: #eff6ff; color: #1d4ed8; }
+
+/* ── GENERATE BUTTON ── */
+.generate-btn {
+  display: flex; align-items: center; gap: 10px;
+  width: 100%; padding: 16px; border-radius: var(--r); border: none;
+  background: var(--accent); color: #fff;
+  font-family: 'Assistant', sans-serif;
+  font-size: 16px; font-weight: 800;
+  cursor: pointer; transition: all .2s; margin-top: 16px;
+  box-shadow: 0 4px 20px rgba(92,71,224,0.3);
+  justify-content: center;
+}
+.generate-btn:hover { background: #6d58f0; transform: translateY(-1px); }
+.generate-btn:disabled { opacity: .4; cursor: not-allowed; transform: none; }
+
+/* ── TEMPLATE DOWNLOAD ── */
+.template-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 16px; background: var(--bg);
+  border-radius: var(--r); border: 1px solid var(--border);
+  margin-bottom: 14px;
+}
+.template-icon { font-size: 22px; }
+.template-text { flex: 1; }
+.template-title { font-size: 13px; font-weight: 700; color: var(--text); }
+.template-sub   { font-size: 11px; color: var(--text3); margin-top: 1px; }
+.template-btn {
+  padding: 7px 16px; border-radius: 20px;
+  border: 1.5px solid var(--border); background: var(--white);
+  color: var(--text2); font-family: 'Assistant', sans-serif;
+  font-size: 12px; font-weight: 700; cursor: pointer; transition: all .2s;
+  white-space: nowrap;
+}
+.template-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ── STATUS ── */
+.status-bar {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 14px; border-radius: 10px;
+  font-size: 13px; font-weight: 600; margin-bottom: 14px;
+}
+.status-bar.success { background: #dcfce7; color: #166534; }
+.status-bar.error   { background: #fee2e2; color: #991b1b; }
+.status-bar.info    { background: #eff6ff; color: #1d4ed8; }
+
+/* ── COLUMN MAP ── */
+.col-map {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 8px; margin: 14px 0;
+}
+@media(max-width:600px) { .col-map { grid-template-columns: 1fr; } }
+.col-map-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 12px; background: var(--bg);
+  border-radius: 8px; border: 1px solid var(--border);
+  font-size: 12px;
+}
+.col-map-label { color: var(--text3); font-weight: 600; width: 90px; flex-shrink: 0; }
+.col-map-select {
+  flex: 1; border: none; background: transparent;
+  font-family: 'Assistant', sans-serif; font-size: 12px;
+  color: var(--text); outline: none; cursor: pointer;
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="page-header">
+  <div class="page-logo">
+    <div class="page-logo-mark">
+      <svg width="20" height="20" viewBox="0 0 814 1000" fill="white">
+        <path d="M788.1 340.9c-5.8 4.5-108.2 62.2-108.2 190.5 0 148.4 130.3 200.9 134.2 202.2-.6 3.2-20.7 71.9-68.7 141.9-42.8 61.6-87.5 123.1-155.5 123.1s-85.5-39.5-164-39.5c-76 0-103.7 40.8-165.9 40.8s-105-37.3-149.3-99.8c-50.8-72.4-96.4-187-96.4-295.6 0-270.2 175.2-412.7 346.8-412.7 80.8 0 148.1 53.1 198.6 53.1 48.1 0 124.1-56.2 215.5-56.2zm-105.3-164.9c-10.3-59.2-62-138.1-112.4-182.5-44-39.2-98.8-68.6-151.7-68.6-1.2 0-2.5 0-3.7.1 1.8 64.9 42.6 144.1 94.5 190.1 47.2 42.4 101.1 68.4 173.3 60.9z"/>
+      </svg>
+    </div>
+    <div class="page-logo-text">Office<em>Tour</em></div>
+  </div>
+  <div class="page-badge">🔧 ממשק ניהול</div>
+</div>
+
+<!-- Step 1: Download template -->
+<div class="card">
+  <div class="card-header">
+    <div class="card-icon" style="background:#eff6ff">📋</div>
+    <div>
+      <div class="card-title">שלב 1 — הורד טמפלייט Excel</div>
+      <div class="card-sub">מלא את הנכסים בקובץ ואחר כך העלה</div>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="template-row">
+      <div class="template-icon">📊</div>
+      <div class="template-text">
+        <div class="template-title">office-tour-template.xlsx</div>
+        <div class="template-sub">כולל כל העמודות הנדרשות עם הסברים</div>
+      </div>
+      <button class="template-btn" onclick="downloadTemplate()">⬇ הורד</button>
+    </div>
+    <div style="font-size:12px;color:var(--text3);line-height:1.7">
+      <strong style="color:var(--text2)">עמודות נדרשות:</strong>
+      שם · כתובת · קומה · שטח_מ"ר · מחיר_למ"ר · ניהול_למ"ר · זמינות · סוג_עסקה · קו_רוחב · קו_אורך · תחבורה_קלה · תחבורה_כבדה · כביש · דיירים · מסעדות
+    </div>
+  </div>
+</div>
+
+<!-- Step 2: Upload Excel -->
+<div class="card">
+  <div class="card-header">
+    <div class="card-icon" style="background:#f0fdf4">📤</div>
+    <div>
+      <div class="card-title">שלב 2 — העלה קובץ Excel</div>
+      <div class="card-sub">xlsx, xls, csv — כל הפורמטים נתמכים</div>
+    </div>
+  </div>
+  <div class="card-body">
+    <div id="status-area"></div>
+
+    <div class="upload-zone" id="upload-zone"
+         ondragover="handleDragOver(event)"
+         ondragleave="handleDragLeave(event)"
+         ondrop="handleDrop(event)"
+         onclick="document.getElementById('file-input').click()">
+      <div class="upload-icon">📊</div>
+      <div class="upload-title">גרור קובץ Excel לכאן</div>
+      <div class="upload-sub">או לחץ לבחירת קובץ</div>
+      <button class="upload-btn" onclick="event.stopPropagation();document.getElementById('file-input').click()">בחר קובץ</button>
+    </div>
+    <input type="file" id="file-input" accept=".xlsx,.xls,.csv" onchange="handleFileSelect(this.files[0])">
+
+    <!-- Table preview -->
+    <div id="table-area" style="display:none;margin-top:16px">
+      <div style="font-size:11px;font-weight:700;color:var(--text3);letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px" id="row-count"></div>
+      <div class="table-wrap">
+        <table class="data-table" id="data-table">
+          <thead id="table-head"></thead>
+          <tbody id="table-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Step 3: Upload images -->
+<div class="card" id="images-card" style="display:none">
+  <div class="card-header">
+    <div class="card-icon" style="background:#fef3c7">🖼️</div>
+    <div>
+      <div class="card-title">שלב 3 — העלה תמונות</div>
+      <div class="card-sub">תמונה לכל נכס — לחץ על הריבוע</div>
+    </div>
+  </div>
+  <div class="card-body">
+    <div style="font-size:12px;color:var(--text3);margin-bottom:12px">
+      לחץ על כל ריבוע ובחר תמונה מהמחשב
+    </div>
+    <div class="image-upload-grid" id="image-grid"></div>
+  </div>
+</div>
+
+<!-- Step 4: Save to system -->
+<div class="card" id="generate-card" style="display:none">
+  <div class="card-header">
+    <div class="card-icon" style="background:#ecfdf5">✅</div>
+    <div>
+      <div class="card-title">שלב 4 — שמירה למערכת</div>
+      <div class="card-sub">שומר את כל הנכסים ל-localStorage כדי שכל המערכת תיטען מהם</div>
+    </div>
+  </div>
+  <div class="card-body">
+    <div id="generate-status"></div>
+    <button class="generate-btn" id="generate-btn" onclick="saveToSystem()">
+      💾 שמור נכסים למערכת
+    </button>
+    <div style="margin-top:10px;font-size:12px;color:var(--text3);line-height:1.6">
+      לאחר שמירה, פתח/רענן את <code>office-tour-TEMPLATE.html</code> ואת <code>admin.html</code> והם יטענו את הנתונים החדשים אוטומטית.
+    </div>
+  </div>
+</div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────────────
+let parsedData = [];
+const imageData = {}; // id → base64
+
+const REQUIRED_COLS = ['שם','כתובת','קומה','שטח_מ"ר','מחיר_למ"ר'];
+const COL_MAP = {
+  'שם':           'name',
+  'name':         'name',
+  'כתובת':        'address',
+  'address':      'address',
+  'קומה':         'floor',
+  'floor':        'floor',
+  'שטח':          'size',
+  'שטח_מ"ר':      'size',
+  'size':         'size',
+  'מחיר':         'price',
+  'מחיר_למ"ר':    'price',
+  'price':        'price',
+  'ניהול':        'mgmt',
+  'ניהול_למ"ר':   'mgmt',
+  'mgmt':         'mgmt',
+  'מחיר_חנייה':   'parking_price',
+  'parking_price':'parking_price',
+  'זמינות':       'availability',
+  'availability': 'availability',
+  'סוג_עסקה':     'deal',
+  'עסקה':         'deal',
+  'deal':         'deal',
+  'קו_רוחב':      'lat',
+  'lat':          'lat',
+  'קו_אורך':      'lng',
+  'lng':          'lng',
+  'תחבורה_קלה':   'transport_light',
+  'תחבורה_כבדה':  'transport_heavy',
+  'כביש':         'highway',
+  'דיירים':       'tenants',
+  'tenants':      'tenants',
+  'מסעדות':       'restaurants',
+  'restaurants':  'restaurants',
+};
+
+// ── DRAG & DROP ───────────────────────────────────────────────────────────────
+function handleDragOver(e) {
+  e.preventDefault();
+  document.getElementById('upload-zone').classList.add('dragover');
+}
+function handleDragLeave(e) {
+  document.getElementById('upload-zone').classList.remove('dragover');
+}
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('upload-zone').classList.remove('dragover');
+  const file = e.dataTransfer.files[0];
+  if (file) handleFileSelect(file);
+}
+
+// ── FILE PARSE ────────────────────────────────────────────────────────────────
+function handleFileSelect(file) {
+  if (!file) return;
+  showStatus('info', '⏳ קורא קובץ...');
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const data = new Uint8Array(e.target.result);
+      const workbook = XLSX.read(data, { type: 'array' });
+      const sheet = workbook.Sheets[workbook.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(sheet, { defval: '' });
+
+      if (rows.length === 0) {
+        showStatus('error', '❌ הקובץ ריק — בדוק שיש נתונים בגיליון הראשון');
+        return;
+      }
+
+      parsedData = rows.map((row, idx) => {
+        const p = { id: idx + 1 };
+        Object.keys(row).forEach(key => {
+          const mapped = COL_MAP[key.trim()] || key.trim();
+          p[mapped] = row[key];
+        });
+
+        // Normalize (do NOT default missing fields)
+        p.name = p.name != null && String(p.name).trim() !== '' ? String(p.name).trim() : '';
+        p.address = p.address != null && String(p.address).trim() !== '' ? String(p.address).trim() : '';
+
+        p.floor = p.floor != null && String(p.floor).trim() !== '' ? String(p.floor).trim() : null;
+
+        (function () {
+          var s = p.size;
+          if (s == null || String(s).trim() === '') { p.size = null; return; }
+          var n = parseFloat(String(s).replace(',', '.'));
+          p.size = !isNaN(n) ? n : null;
+        })();
+
+        (function () {
+          var pr = p.price;
+          if (pr == null || String(pr).trim() === '') { p.price = null; return; }
+          var n = parseFloat(String(pr).replace(',', '.'));
+          p.price = !isNaN(n) ? n : null;
+        })();
+
+        (function () {
+          var mg = p.mgmt;
+          if (mg == null || String(mg).trim() === '') { p.mgmt = null; return; }
+          var n = parseFloat(String(mg).replace(',', '.'));
+          p.mgmt = !isNaN(n) ? n : null;
+        })();
+
+        p.availability =
+          p.availability != null && String(p.availability).trim() !== '' ? String(p.availability).trim() : null;
+        p.deal = p.deal != null && String(p.deal).trim() !== '' ? String(p.deal).trim() : '';
+
+        (function () {
+          var la = p.lat;
+          if (la == null || String(la).trim() === '') { p.lat = null; return; }
+          var n = parseFloat(String(la).replace(',', '.'));
+          p.lat = !isNaN(n) ? n : null;
+        })();
+
+        (function () {
+          var lo = p.lng;
+          if (lo == null || String(lo).trim() === '') { p.lng = null; return; }
+          var n = parseFloat(String(lo).replace(',', '.'));
+          p.lng = !isNaN(n) ? n : null;
+        })();
+
+        if (p.parking_price !== undefined && p.parking_price !== '' && p.parking_price != null) {
+          var pk = parseFloat(p.parking_price);
+          p.parking_price = !isNaN(pk) ? pk : null;
+        } else p.parking_price = null;
+
+        // Arrays
+        p.tenants     = p.tenants     ? String(p.tenants).split(',').map(s=>s.trim()).filter(Boolean)     : [];
+        p.restaurants = p.restaurants ? String(p.restaurants).split(',').map(s=>s.trim()).filter(Boolean) : [];
+
+        p.transport = {
+          light:   p.transport_light || p.light || '',
+          heavy:   p.transport_heavy || p.heavy || '',
+          highway: p.highway         || '',
+        };
+
+        return p;
+      });
+
+      showStatus('success', '✅ נמצאו ' + parsedData.length + ' נכסים — הנתונים נטענו בהצלחה');
+      renderTable();
+      renderImageGrid();
+      document.getElementById('images-card').style.display   = 'block';
+      document.getElementById('generate-card').style.display = 'block';
+
+    } catch(err) {
+      showStatus('error', '❌ שגיאה בקריאת הקובץ: ' + err.message);
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+// ── TABLE RENDER ──────────────────────────────────────────────────────────────
+function renderTable() {
+  const head = document.getElementById('table-head');
+  const body = document.getElementById('table-body');
+  document.getElementById('row-count').textContent = parsedData.length + ' נכסים נטענו';
+
+  head.innerHTML = '<tr>' +
+    ['תמונה','שם','כתובת','קומה','שטח','מחיר','זמינות','עסקה'].map(h =>
+      '<th>' + h + '</th>'
+    ).join('') + '</tr>';
+
+  body.innerHTML = parsedData.map(p => {
+    const av = p.availability;
+    const cls = av === 'מיידית' ? 'status-now' : av === 'גמיש' ? 'status-flex' : 'status-soon';
+    const imgSrc = imageData[p.id] || '';
+    return '<tr>' +
+      '<td>' + (imgSrc
+        ? '<img src="' + imgSrc + '">'
+        : '<div style="width:48px;height:36px;background:var(--bg);border-radius:6px;border:1px dashed var(--border);display:flex;align-items:center;justify-content:center;font-size:16px">📷</div>'
+      ) + '</td>' +
+      '<td><strong>' + (p.name || '—') + '</strong></td>' +
+      '<td style="color:var(--text3)">' + (p.address || '—') + '</td>' +
+      '<td>' + (p.floor != null ? p.floor : '—') + '</td>' +
+      '<td>' + (p.size != null ? (p.size + ' מ"ר') : '—') + '</td>' +
+      '<td style="color:var(--accent);font-weight:700">' + (p.price != null ? ('₪' + p.price) : '—') + '</td>' +
+      '<td>' + (av ? ('<span class="status-pill ' + cls + '">' + av + '</span>') : '—') + '</td>' +
+      '<td>' + (p.deal || '—') + '</td>' +
+      '</tr>';
+  }).join('');
+
+  document.getElementById('table-area').style.display = 'block';
+}
+
+// ── IMAGE GRID ────────────────────────────────────────────────────────────────
+function renderImageGrid() {
+  const grid = document.getElementById('image-grid');
+  grid.innerHTML = parsedData.map(p => `
+    <div class="image-slot ${imageData[p.id]?'has-img':''}" id="slot-${p.id}" onclick="triggerImageUpload(${p.id})">
+      ${imageData[p.id] ? '<img src="' + imageData[p.id] + '">' : ''}
+      <div class="slot-overlay">✏️</div>
+      <div style="font-size:18px;${imageData[p.id]?'display:none':''}">📷</div>
+      <div class="slot-name">${p.name.substring(0,14)}</div>
+      <input type="file" id="img-input-${p.id}" accept="image/*" style="display:none"
+             onchange="handleImageUpload(${p.id},this)">
+    </div>
+  `).join('');
+}
+
+function triggerImageUpload(id) {
+  document.getElementById('img-input-' + id).click();
+}
+
+function handleImageUpload(id, input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    imageData[id] = e.target.result;
+    renderImageGrid();
+    renderTable();
+    updateGenerateStatus();
+  };
+  reader.readAsDataURL(file);
+}
+
+function updateGenerateStatus() {
+  const total     = parsedData.length;
+  const withImg   = Object.keys(imageData).length;
+  const withoutImg = total - withImg;
+  const s = document.getElementById('generate-status');
+  if (withoutImg > 0) {
+    s.innerHTML = '<div class="status-bar info">ℹ️ ' + withImg + ' מתוך ' + total + ' נכסים עם תמונות — נשמר גם ללא תמונות</div>';
+  } else {
+    s.innerHTML = '<div class="status-bar success">✅ כל ' + total + ' הנכסים עם תמונות — מוכן לשמירה</div>';
+  }
+}
+
+// ── SAVE TO SYSTEM (localStorage) ─────────────────────────────────────────────
+function saveToSystem() {
+  if (parsedData.length === 0) return;
+  const btn = document.getElementById('generate-btn');
+  btn.disabled = true;
+  btn.textContent = '⏳ שומר...';
+  try {
+    const out = parsedData.map(p => {
+      const img = imageData[p.id] || '';
+      return Object.assign({}, p, { img: img });
+    });
+    localStorage.setItem('global-properties', JSON.stringify(out));
+    showStatus('success', '✅ נשמרו ' + out.length + ' נכסים ל-global-properties (ב-localStorage).');
+    btn.textContent = '✅ נשמר';
+  } catch (e) {
+    showStatus('error', '❌ שמירה נכשלה: ' + (e && e.message ? e.message : String(e)));
+    btn.disabled = false;
+    btn.textContent = '💾 שמור נכסים למערכת';
+    return;
+  }
+  setTimeout(function () {
+    btn.disabled = false;
+    btn.textContent = '💾 שמור נכסים למערכת';
+  }, 1400);
+}
+
+function download(content, filename) {
+  const blob = new Blob([content], { type: 'text/html;charset=utf-8' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ── TEMPLATE DOWNLOAD ─────────────────────────────────────────────────────────
+function downloadTemplate() {
+  const wb = XLSX.utils.book_new();
+  const headers = [
+    'שם','כתובת','קומה','שטח_מ"ר','מחיר_למ"ר','ניהול_למ"ר','מחיר_חנייה',
+    'זמינות','סוג_עסקה','קו_רוחב','קו_אורך',
+    'תחבורה_קלה','תחבורה_כבדה','כביש','דיירים','מסעדות'
+  ];
+  const example = [
+    'מגדל הסוללים','שדרות שאול המלך 11, תל אביב','12-13',
+    '650','175','18','450','מיידית','שכירות + אופציה',
+    '32.0698','34.7894',
+    'רכבת קלה — השלום 5 דק\'','רכבת — תל אביב מרכז 8 דק\'','נסיעה ישירה לאיילון',
+    'גוגל, אמזון, מיקרוסופט',
+    'אומנטי, נח ביסטרו, קפה קפה'
+  ];
+  const ws = XLSX.utils.aoa_to_sheet([headers, example]);
+  ws['!cols'] = headers.map(() => ({ wch: 20 }));
+  XLSX.utils.book_append_sheet(wb, ws, 'נכסים');
+  XLSX.writeFile(wb, 'office-tour-template.xlsx');
+}
+
+// ── HELPERS ───────────────────────────────────────────────────────────────────
+function showStatus(type, msg) {
+  document.getElementById('status-area').innerHTML =
+    '<div class="status-bar ' + type + '">' + msg + '</div>';
+}
+</script>
+</body>
+</html>
