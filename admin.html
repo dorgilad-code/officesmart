@@ -702,9 +702,10 @@ textarea { min-height: 72px; resize: vertical; }
   }
 
   function readJSONBin(binId, def) {
-    return fetch(JSONBIN_URL.replace(/\/+$/, '') + '/' + encodeURIComponent(binId) + '/latest', {
-      cache: 'no-store',
-      headers: jsonbinHeaders()
+    return fetch('/.netlify/functions/jsonbin', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ binId: binId, method: 'GET' })
     }).then(function (r) {
       if (!r.ok) throw new Error('JSONBin read failed: HTTP ' + r.status);
       return r.json();
@@ -714,13 +715,10 @@ textarea { min-height: 72px; resize: vertical; }
   }
 
   function writeJSONBin(binId, val) {
-    return fetch(JSONBIN_URL.replace(/\/+$/, '') + '/' + encodeURIComponent(binId), {
-      method: 'PUT',
-      headers: jsonbinHeaders({
-        'content-type': 'application/json',
-        'X-Bin-Versioning': 'false'
-      }),
-      body: JSON.stringify(val)
+    return fetch('/.netlify/functions/jsonbin', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ binId: binId, method: 'PUT', body: val })
     }).then(function (r) {
       if (!r.ok) throw new Error('JSONBin write failed: HTTP ' + r.status);
       return true;
