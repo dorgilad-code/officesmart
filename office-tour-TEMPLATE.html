@@ -4327,7 +4327,8 @@ table.fav-compare-simple .fav-compare-prop .cost-tbl-name {
 
 
 <script>
-
+function omWriteBlobJSON() { return Promise.resolve(); }
+function omReadBlobJSON() { return Promise.resolve([]); }
 function showPanel(panel) {
   var p = panel;
   if (p !== 'landing' && p !== 'new' && p !== 'existing') return;
@@ -8371,13 +8372,7 @@ function omAdminPingClientActivity() {
     omLinkedClient.lastSeen = now;
     omLinkedClient.tourOpened = true;
     omLinkedClient.favCount = favorites.length;
-    omWriteBlobJSON(omClientBlobKey(omLinkedClient.id || omLinkedClientId), {
-      client: omLinkedClient,
-      tour: omLinkedTour || { clientId: omLinkedClientId },
-      properties: properties,
-      updatedAt: now
-    }).catch(function (err) { console.error(err); });
-  }
+    omWriteJSONBin(JSONBIN_BINS.clients, { clients: omAllClients }).catch(function(err) { console.error(err); });
 
   var email = omLinkedClient && omLinkedClient.email
     ? String(omLinkedClient.email).trim()
@@ -10439,6 +10434,8 @@ function fpOverlayClick(e) {
 }
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeFp(); });
 
+function omWriteBlobJSON() { return Promise.resolve(); }
+function omReadBlobJSON() { return Promise.resolve(null); }
 // INIT
 clearGeoCacheOnStartup();
 applyNominatimCacheToProperties();
