@@ -8368,7 +8368,7 @@ function omAdminPingClientActivity() {
     omLinkedClient.lastSeen = now;
     omLinkedClient.tourOpened = true;
     omLinkedClient.favCount = favorites.length;
-    omWriteJSONBin(JSONBIN_BINS.clients, { clients: omAllClients }).catch(function(err) { console.error(err); });
+    omWriteJSONBin(JSONBIN_BINS.clients, { clients: omRemoteClients }).catch(function(err) { console.error(err); });
   }
 }
 
