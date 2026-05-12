@@ -4452,6 +4452,7 @@ var omLinkedClientId = (function () {
 function omJsonbinHeaders(extra) {
   return Object.assign({
     'X-Master-Key': JSONBIN_KEY,
+    'X-Access-Key': '$2a$10$yveYqSOLL7beahc0U5tB5.2TBJuWPLbOIEJq6kb8dqJ4y4DuZ1x82',
     accept: 'application/json'
   }, extra || {});
 }
@@ -4515,7 +4516,6 @@ function omApplyRemoteData(records) {
   omRemoteProperties = propRecord.properties;
   omRemoteImages = propRecord.images;
   omRemoteTours = omNormalizeToursRecord(records[2]);
-  if (omRemoteProperties.length) properties = omRemoteProperties;
   omMergeImages(omRemoteImages);
 
   if (omLinkedClientId) {
@@ -4524,7 +4524,13 @@ function omApplyRemoteData(records) {
     }) || null;
     omLinkedTour = Object.assign({ clientId: omLinkedClientId }, omRemoteTours.meta[omLinkedClientId] || {});
     var assigned = omRemoteTours.byClient[omLinkedClientId] || omRemoteTours.byClient[String(omLinkedClientId)];
-    if (Array.isArray(assigned) && assigned.length) properties = assigned;
+    if (Array.isArray(assigned) && assigned.length) {
+      properties = assigned;
+    } else if (omRemoteProperties.length) {
+      properties = omRemoteProperties;
+    }
+  } else {
+    if (omRemoteProperties.length) properties = omRemoteProperties;
   }
 }
 
@@ -5104,10 +5110,11 @@ function persistPropertyCoordsToStorage(pid, lat, lng) {
     }
   });
   if (!changed) return;
-  omRemoteTours.byClient[omLinkedClientId] = properties;
-  omWriteJSONBin(JSONBIN_BINS.tours, {
-    byClient: omRemoteTours.byClient || {},
-    meta: omRemoteTours.meta || {}
+  omWriteBlobJSON(omClientBlobKey(omLinkedClientId), {
+    client: omLinkedClient,
+    tour: omLinkedTour || { clientId: omLinkedClientId },
+    properties: properties,
+    updatedAt: new Date().toISOString()
   }).catch(function (err) {
     console.error(err);
   });
@@ -8225,8 +8232,8 @@ function completeOnboardingSend() {
 
   var email = (onboard.email || '').trim();
   if (email) {
-    omReadJSONBin(JSONBIN_BINS.clients, { clients: [] }).then(function (record) {
-      var list = omNormalizeClientsRecord(record);
+    omReadBlobJSON('clients.json', []).then(function (list) {
+      if (!Array.isArray(list)) list = [];
       var rec = {
         id: 'c_' + Date.now(),
         name: onboard.name || '',
@@ -8247,8 +8254,14 @@ function completeOnboardingSend() {
       } else {
         list.push(rec);
       }
-      omRemoteClients = list;
-      return omWriteJSONBin(JSONBIN_BINS.clients, { clients: list });
+      return omWriteBlobJSON('clients.json', list).then(function () {
+        return omWriteBlobJSON(omClientBlobKey(rec.id), {
+          client: rec,
+          tour: { clientId: rec.id },
+          properties: [],
+          updatedAt: new Date().toISOString()
+        });
+      });
     }).catch(function (err2) {
       console.error(err2);
     });
@@ -8346,6 +8359,12 @@ function omAdminPingClientActivity() {
     omLinkedClient.lastSeen = now;
     omLinkedClient.tourOpened = true;
     omLinkedClient.favCount = favorites.length;
+    omWriteBlobJSON(omClientBlobKey(omLinkedClient.id || omLinkedClientId), {
+      client: omLinkedClient,
+      tour: omLinkedTour || { clientId: omLinkedClientId },
+      properties: properties,
+      updatedAt: now
+    }).catch(function (err) { console.error(err); });
   }
 
   var email = omLinkedClient && omLinkedClient.email
@@ -8353,8 +8372,8 @@ function omAdminPingClientActivity() {
     : (localStorage.getItem('client-email') || '').trim();
   if (!email) return;
 
-  omReadJSONBin(JSONBIN_BINS.clients, { clients: [] }).then(function (record) {
-    var list = omNormalizeClientsRecord(record);
+  omReadBlobJSON('clients.json', []).then(function (list) {
+    if (!Array.isArray(list)) return;
     var changed = false;
     list.forEach(function (c) {
       var sameId = omLinkedClientId && c && String(c.id) === String(omLinkedClientId);
@@ -8366,10 +8385,7 @@ function omAdminPingClientActivity() {
         changed = true;
       }
     });
-    if (changed) {
-      omRemoteClients = list;
-      return omWriteJSONBin(JSONBIN_BINS.clients, { clients: list });
-    }
+    if (changed) return omWriteBlobJSON('clients.json', list);
   }).catch(function (err) {
     console.error(err);
   });
