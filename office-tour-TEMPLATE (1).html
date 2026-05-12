@@ -4327,8 +4327,6 @@ table.fav-compare-simple .fav-compare-prop .cost-tbl-name {
 
 
 <script>
-function omWriteBlobJSON() { return Promise.resolve(); }
-function omReadBlobJSON() { return Promise.resolve([]); }
 function showPanel(panel) {
   var p = panel;
   if (p !== 'landing' && p !== 'new' && p !== 'existing') return;
@@ -5109,12 +5107,17 @@ function persistPropertyCoordsToStorage(pid, lat, lng) {
     }
   });
   if (!changed) return;
-  omWriteBlobJSON(omClientBlobKey(omLinkedClientId), {
-    client: omLinkedClient,
-    tour: omLinkedTour || { clientId: omLinkedClientId },
-    properties: properties,
-    updatedAt: new Date().toISOString()
-  }).catch(function (err) {
+  omWriteJSONBin(JSONBIN_BINS.tours, (function() {
+    var t = omRemoteTours || { byClient: {}, meta: {} };
+    if (!t.byClient) t.byClient = {};
+    t.byClient[omLinkedClientId] = {
+      client: omLinkedClient,
+      tour: omLinkedTour || { clientId: omLinkedClientId },
+      properties: properties,
+      updatedAt: new Date().toISOString()
+    };
+    return t;
+  })()).catch(function (err) {
     console.error(err);
   });
 }
@@ -8231,8 +8234,8 @@ function completeOnboardingSend() {
 
   var email = (onboard.email || '').trim();
   if (email) {
-    omReadBlobJSON('clients.json', []).then(function (list) {
-      if (!Array.isArray(list)) list = [];
+    omReadJSONBin(JSONBIN_BINS.clients, { clients: [] }).then(function (data) {
+      var list = Array.isArray(data.clients) ? data.clients : [];
       var rec = {
         id: 'c_' + Date.now(),
         name: onboard.name || '',
@@ -8253,14 +8256,7 @@ function completeOnboardingSend() {
       } else {
         list.push(rec);
       }
-      return omWriteBlobJSON('clients.json', list).then(function () {
-        return omWriteBlobJSON(omClientBlobKey(rec.id), {
-          client: rec,
-          tour: { clientId: rec.id },
-          properties: [],
-          updatedAt: new Date().toISOString()
-        });
-      });
+      return omWriteJSONBin(JSONBIN_BINS.clients, { clients: list });
     }).catch(function (err2) {
       console.error(err2);
     });
@@ -8373,29 +8369,6 @@ function omAdminPingClientActivity() {
     omLinkedClient.tourOpened = true;
     omLinkedClient.favCount = favorites.length;
     omWriteJSONBin(JSONBIN_BINS.clients, { clients: omAllClients }).catch(function(err) { console.error(err); });
-
-  var email = omLinkedClient && omLinkedClient.email
-    ? String(omLinkedClient.email).trim()
-    : (localStorage.getItem('client-email') || '').trim();
-  if (!email) return;
-
-  omReadBlobJSON('clients.json', []).then(function (list) {
-    if (!Array.isArray(list)) return;
-    var changed = false;
-    list.forEach(function (c) {
-      var sameId = omLinkedClientId && c && String(c.id) === String(omLinkedClientId);
-      var sameEmail = c && (c.email || '').toLowerCase() === email.toLowerCase();
-      if (sameId || sameEmail) {
-        c.lastSeen = now;
-        c.tourOpened = true;
-        c.favCount = favorites.length;
-        changed = true;
-      }
-    });
-    if (changed) return omWriteBlobJSON('clients.json', list);
-  }).catch(function (err) {
-    console.error(err);
-  });
 }
 
 function enterApp() {
@@ -10434,8 +10407,6 @@ function fpOverlayClick(e) {
 }
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeFp(); });
 
-function omWriteBlobJSON() { return Promise.resolve(); }
-function omReadBlobJSON() { return Promise.resolve(null); }
 // INIT
 clearGeoCacheOnStartup();
 applyNominatimCacheToProperties();
