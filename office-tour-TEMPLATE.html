@@ -4458,10 +4458,9 @@ function omJsonbinHeaders(extra) {
 }
 
 function omReadJSONBin(binId, def) {
-  return fetch('/.netlify/functions/jsonbin', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ binId: binId, method: 'GET' })
+  return fetch(JSONBIN_URL.replace(/\/+$/, '') + '/' + encodeURIComponent(binId) + '/latest', {
+    cache: 'no-store',
+    headers: omJsonbinHeaders()
   }).then(function (r) {
     if (!r.ok) throw new Error('JSONBin read failed: HTTP ' + r.status);
     return r.json();
@@ -4471,10 +4470,13 @@ function omReadJSONBin(binId, def) {
 }
 
 function omWriteJSONBin(binId, val) {
-  return fetch('/.netlify/functions/jsonbin', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ binId: binId, method: 'PUT', body: val })
+  return fetch(JSONBIN_URL.replace(/\/+$/, '') + '/' + encodeURIComponent(binId), {
+    method: 'PUT',
+    headers: omJsonbinHeaders({
+      'content-type': 'application/json',
+      'X-Bin-Versioning': 'false'
+    }),
+    body: JSON.stringify(val)
   }).then(function (r) {
     if (!r.ok) throw new Error('JSONBin write failed: HTTP ' + r.status);
     return true;
