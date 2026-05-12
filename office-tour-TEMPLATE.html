@@ -8334,12 +8334,10 @@ function checkExisting() {
 function loginExisting() {
   const pass = document.getElementById('existing-password').value;
   const btn = document.getElementById('existing-submit');
-  btn.disabled = true;
-  btn.textContent = '...';
-  Promise.resolve(omClientBundlePromise).then(function() {
+
+  function doLogin() {
     btn.disabled = false;
     btn.textContent = 'כניסה ←';
-    // Try password from loaded client first, then fallback
     var clientPass = omLinkedClient && omLinkedClient.password ? String(omLinkedClient.password).trim() : '';
     if (!clientPass) clientPass = localStorage.getItem('client-pass') || CLIENT_PASSWORD || '';
     if (clientPass && pass.trim() === clientPass) {
@@ -8349,13 +8347,22 @@ function loginExisting() {
     } else {
       document.getElementById('existing-error').style.display = 'block';
       document.getElementById('existing-password').style.borderColor = '#ef4444';
-      setTimeout(() => {
+      setTimeout(function() {
         document.getElementById('existing-password').style.borderColor = '';
       }, 1500);
     }
+  }
+
+  btn.disabled = true;
+  btn.textContent = '...';
+
+  var timeout = setTimeout(function() { doLogin(); }, 3000);
+  Promise.resolve(omClientBundlePromise).then(function() {
+    clearTimeout(timeout);
+    doLogin();
   }).catch(function() {
-    btn.disabled = false;
-    btn.textContent = 'כניסה ←';
+    clearTimeout(timeout);
+    doLogin();
   });
 }
 
