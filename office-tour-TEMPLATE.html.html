@@ -8369,6 +8369,7 @@ function omAdminPingClientActivity() {
     omLinkedClient.tourOpened = true;
     omLinkedClient.favCount = favorites.length;
     omWriteJSONBin(JSONBIN_BINS.clients, { clients: omAllClients }).catch(function(err) { console.error(err); });
+  }
 }
 
 function enterApp() {
