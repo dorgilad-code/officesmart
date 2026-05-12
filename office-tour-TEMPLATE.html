@@ -8333,14 +8333,18 @@ function checkExisting() {
 
 function loginExisting() {
   const pass = document.getElementById('existing-password').value;
-  // Wait for remote data to load before checking password
-  omClientBundlePromise.then(function() {
-    const linkMode = sessionStorage.getItem('om-link-pass-required') === '1';
-    const savedRaw = omLinkedClient && omLinkedClient.password ? String(omLinkedClient.password) : localStorage.getItem('client-pass');
-    const saved = linkMode ? (savedRaw || '') : (savedRaw || CLIENT_PASSWORD);
-    if (saved && pass === saved) {
+  const btn = document.getElementById('existing-submit');
+  btn.disabled = true;
+  btn.textContent = '...';
+  Promise.resolve(omClientBundlePromise).then(function() {
+    btn.disabled = false;
+    btn.textContent = 'כניסה ←';
+    // Try password from loaded client first, then fallback
+    var clientPass = omLinkedClient && omLinkedClient.password ? String(omLinkedClient.password).trim() : '';
+    if (!clientPass) clientPass = localStorage.getItem('client-pass') || CLIENT_PASSWORD || '';
+    if (clientPass && pass.trim() === clientPass) {
       enterApp();
-    } else if (linkMode && !saved) {
+    } else if (!clientPass) {
       enterApp();
     } else {
       document.getElementById('existing-error').style.display = 'block';
@@ -8349,6 +8353,9 @@ function loginExisting() {
         document.getElementById('existing-password').style.borderColor = '';
       }, 1500);
     }
+  }).catch(function() {
+    btn.disabled = false;
+    btn.textContent = 'כניסה ←';
   });
 }
 
