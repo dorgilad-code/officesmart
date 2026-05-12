@@ -696,6 +696,7 @@ textarea { min-height: 72px; resize: vertical; }
   function jsonbinHeaders(extra) {
     return Object.assign({
       'X-Master-Key': JSONBIN_KEY,
+      'X-Access-Key': '$2a$10$yveYqSOLL7beahc0U5tB5.2TBJuWPLbOIEJq6kb8dqJ4y4DuZ1x82',
       accept: 'application/json'
     }, extra || {});
   }
@@ -885,7 +886,8 @@ textarea { min-height: 72px; resize: vertical; }
 
   function tourLinkForClientId(cid) {
     // Same origin link; client page will load assigned properties by cid.
-    return location.origin + '/office-tour-TEMPLATE.html?client=' + encodeURIComponent(cid);
+    var base = location.origin + location.pathname.replace(/\/[^\/]*$/, '');
+    return base + '/office-tour-TEMPLATE.html?client=' + encodeURIComponent(cid);
   }
 
   function normalizePhone(p) {
