@@ -8333,23 +8333,23 @@ function checkExisting() {
 
 function loginExisting() {
   const pass = document.getElementById('existing-password').value;
-  // If opened via an admin client link and that client has an explicit password,
-  // require an exact match (no default fallback).
-  const linkMode = sessionStorage.getItem('om-link-pass-required') === '1';
-  const savedRaw = omLinkedClient && omLinkedClient.password ? String(omLinkedClient.password) : localStorage.getItem('client-pass');
-  const saved = linkMode ? (savedRaw || '') : (savedRaw || CLIENT_PASSWORD);
-  if (saved && pass === saved) {
-    enterApp();
-  } else if (linkMode && !saved) {
-    // Safety: if the link mode is on but no password is set, allow entry.
-    enterApp();
-  } else {
-    document.getElementById('existing-error').style.display = 'block';
-    document.getElementById('existing-password').style.borderColor = '#ef4444';
-    setTimeout(() => {
-      document.getElementById('existing-password').style.borderColor = '';
-    }, 1500);
-  }
+  // Wait for remote data to load before checking password
+  omClientBundlePromise.then(function() {
+    const linkMode = sessionStorage.getItem('om-link-pass-required') === '1';
+    const savedRaw = omLinkedClient && omLinkedClient.password ? String(omLinkedClient.password) : localStorage.getItem('client-pass');
+    const saved = linkMode ? (savedRaw || '') : (savedRaw || CLIENT_PASSWORD);
+    if (saved && pass === saved) {
+      enterApp();
+    } else if (linkMode && !saved) {
+      enterApp();
+    } else {
+      document.getElementById('existing-error').style.display = 'block';
+      document.getElementById('existing-password').style.borderColor = '#ef4444';
+      setTimeout(() => {
+        document.getElementById('existing-password').style.borderColor = '';
+      }, 1500);
+    }
+  });
 }
 
 function omAdminPingClientActivity() {
