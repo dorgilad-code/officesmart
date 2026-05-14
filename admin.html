@@ -702,10 +702,12 @@ textarea { min-height: 72px; resize: vertical; }
   }
 
   function readJSONBin(binId, def) {
-    return fetch('/.netlify/functions/jsonbin', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ binId: binId, method: 'GET' })
+    return fetch('https://api.jsonbin.io/v3/b/' + binId + '/latest', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Master-Key': '$2a$10$HW.QVbOQ4z990.l/tM2d/OVSj3TFfSD4c9KuKw/WTz/n17oPpXHxm'
+      }
     }).then(function (r) {
       if (!r.ok) throw new Error('JSONBin read failed: HTTP ' + r.status);
       return r.json();
@@ -715,10 +717,13 @@ textarea { min-height: 72px; resize: vertical; }
   }
 
   function writeJSONBin(binId, val) {
-    return fetch('/.netlify/functions/jsonbin', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ binId: binId, method: 'PUT', body: val })
+    return fetch('https://api.jsonbin.io/v3/b/' + binId, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Master-Key': '$2a$10$HW.QVbOQ4z990.l/tM2d/OVSj3TFfSD4c9KuKw/WTz/n17oPpXHxm'
+      },
+      body: JSON.stringify(val)
     }).then(function (r) {
       if (!r.ok) throw new Error('JSONBin write failed: HTTP ' + r.status);
       return true;
