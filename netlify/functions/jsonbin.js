@@ -8,16 +8,17 @@ exports.handler = async function(event) {
     return { statusCode: 400, body: JSON.stringify({ error: 'Missing binId' }) };
   }
 
-  const url = `https://api.jsonbin.io/v3/b/${binId}${method === 'GET' ? '/latest' : ''}`;
+  const isGet = (method || 'GET') === 'GET';
+  const url = `https://api.jsonbin.io/v3/b/${binId}${isGet ? '/latest' : ''}`;
 
   const response = await fetch(url, {
-    method: method || 'GET',
+    method: isGet ? 'GET' : 'PUT',
     headers: {
       'Content-Type': 'application/json',
       'X-Master-Key': MASTER_KEY,
       'X-Access-Key': ACCESS_KEY,
     },
-    body: method === 'PUT' ? JSON.stringify(body) : undefined,
+    body: !isGet ? JSON.stringify(body) : undefined,
   });
 
   const data = await response.json();
