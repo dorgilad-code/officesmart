@@ -1,5 +1,4 @@
 const MASTER_KEY = '$2a$10$HW.QVbOQ4z990.l/tM2d/OVSj3TFfSD4c9KuKw/WTz/n17oPpXHxm';
-const ACCESS_KEY = '$2a$10$yveYqSOLL7beahc0U5tB5.2TBJuWPLbOIEJq6kb8dqJ4y4DuZ1x82';
 
 exports.handler = async function(event) {
   const { binId, method, body } = JSON.parse(event.body || '{}');
@@ -16,7 +15,6 @@ exports.handler = async function(event) {
     headers: {
       'Content-Type': 'application/json',
       'X-Master-Key': MASTER_KEY,
-      'X-Access-Key': ACCESS_KEY,
     },
     body: !isGet ? JSON.stringify(body) : undefined,
   });
