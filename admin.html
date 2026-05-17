@@ -2972,8 +2972,6 @@ textarea { min-height: 72px; resize: vertical; }
   });
   var _tourClientId = null;
   var _tourProps = [];
-  var _tpfDropImages = [];
-  var _tpfDropBlueprint = null;
 
   function openTourModal(cid) {
     _tourClientId = cid;
@@ -3005,46 +3003,14 @@ textarea { min-height: 72px; resize: vertical; }
   window.removeTourProp = removeTourProp;
 
   function openAddTourPropForm() {
-    _tpfDropImages = [];
-    _tpfDropBlueprint = null;
+    window._tpfDropImages = [];
+    window._tpfDropBlueprint = null;
     document.getElementById('tm-prop-form').style.display = 'block';
     ['tpf-name','tpf-address','tpf-size','tpf-price','tpf-mgmt','tpf-floor','tpf-avail','tpf-images','tpf-notes'].forEach(function(id){ document.getElementById(id).value=''; });
     var ti = document.getElementById('tpf-thumbs-images'); if (ti) ti.innerHTML = '';
     var tb = document.getElementById('tpf-thumbs-blueprint'); if (tb) tb.innerHTML = '';
   }
   window.openAddTourPropForm = openAddTourPropForm;
-
-  window.handleTpfDrop = function(e, type) {
-    e.preventDefault();
-    var dropEl = e.currentTarget;
-    if (dropEl) dropEl.style.borderColor = '#e2e8f0';
-    var files = Array.from(e.dataTransfer.files || []);
-    if (!files.length) return;
-    files.forEach(function(file) {
-      var reader = new FileReader();
-      reader.onload = function(ev) {
-        var dataUrl = ev.target.result;
-        if (type === 'images') {
-          _tpfDropImages.push(dataUrl);
-          var thumb = document.createElement('img');
-          thumb.src = dataUrl;
-          thumb.style.cssText = 'width:56px;height:42px;object-fit:cover;border-radius:6px;border:1px solid #e2e8f0;';
-          var host = document.getElementById('tpf-thumbs-images');
-          if (host) host.appendChild(thumb);
-        } else {
-          _tpfDropBlueprint = dataUrl;
-          var thumbEl = document.getElementById('tpf-thumbs-blueprint');
-          if (!thumbEl) return;
-          thumbEl.innerHTML = '';
-          var img = document.createElement('img');
-          img.src = dataUrl;
-          img.style.cssText = 'width:80px;height:60px;object-fit:cover;border-radius:6px;border:1px solid #e2e8f0;';
-          thumbEl.appendChild(img);
-        }
-      };
-      reader.readAsDataURL(file);
-    });
-  };
 
   function cancelAddProp() { document.getElementById('tm-prop-form').style.display='none'; }
   window.cancelAddProp = cancelAddProp;
@@ -3054,7 +3020,8 @@ textarea { min-height: 72px; resize: vertical; }
     if (!name) { alert('חובה שם נכס'); return; }
     var imgs = document.getElementById('tpf-images').value.trim();
     var urlImages = imgs ? imgs.split('\n').map(function(s){return s.trim();}).filter(Boolean) : [];
-    var allImages = _tpfDropImages.concat(urlImages);
+    var dropImages = window._tpfDropImages || [];
+    var allImages = dropImages.concat(urlImages);
     _tourProps.push({
       id:'tp_'+Date.now(),
       name:name,
@@ -3066,11 +3033,11 @@ textarea { min-height: 72px; resize: vertical; }
       availability:document.getElementById('tpf-avail').value.trim()||null,
       images:allImages,
       img:allImages[0]||null,
-      blueprint:_tpfDropBlueprint||null,
+      blueprint:window._tpfDropBlueprint||null,
       clientNotes:document.getElementById('tpf-notes').value.trim()||null
     });
-    _tpfDropImages = [];
-    _tpfDropBlueprint = null;
+    window._tpfDropImages = [];
+    window._tpfDropBlueprint = null;
     document.getElementById('tm-prop-form').style.display='none';
     _renderTourProps();
   }
@@ -3094,6 +3061,33 @@ textarea { min-height: 72px; resize: vertical; }
     alert('הקישור הועתק!');
   }
   window.copyTourLink = copyTourLink;
+
+  window.handleTpfDrop = function(e, type) {
+    e.preventDefault();
+    var files = Array.from(e.dataTransfer.files);
+    files.forEach(function(file) {
+      var reader = new FileReader();
+      reader.onload = function(ev) {
+        if (type === 'images') {
+          if (!window._tpfDropImages) window._tpfDropImages = [];
+          window._tpfDropImages.push(ev.target.result);
+          var img = document.createElement('img');
+          img.src = ev.target.result;
+          img.style.cssText = 'width:56px;height:42px;object-fit:cover;border-radius:6px;border:1px solid #e2e8f0;';
+          document.getElementById('tpf-thumbs-images').appendChild(img);
+        } else {
+          window._tpfDropBlueprint = ev.target.result;
+          var el = document.getElementById('tpf-thumbs-blueprint');
+          el.innerHTML = '';
+          var img2 = document.createElement('img');
+          img2.src = ev.target.result;
+          img2.style.cssText = 'width:80px;height:60px;object-fit:cover;border-radius:6px;border:1px solid #e2e8f0;';
+          el.appendChild(img2);
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+  };
 
 })();
 </script>
@@ -3136,21 +3130,17 @@ textarea { min-height: 72px; resize: vertical; }
           <div><label style="font-size:12px;font-weight:700;color:#64748b;display:block;margin-bottom:4px;">קומה</label><input id="tpf-floor" style="width:100%;padding:9px 12px;border:1px solid #e2e8f0;border-radius:8px;font-family:inherit;font-size:13px;"></div>
           <div><label style="font-size:12px;font-weight:700;color:#64748b;display:block;margin-bottom:4px;">זמינות</label><input id="tpf-avail" style="width:100%;padding:9px 12px;border:1px solid #e2e8f0;border-radius:8px;font-family:inherit;font-size:13px;" placeholder="מיידית"></div>
           <div style="grid-column:1/-1;">
-            <label style="font-size:12px;font-weight:700;color:#64748b;display:block;margin-bottom:6px;">תמונות (גרור קבצים או הדבק קישורים)</label>
-            <div id="tpf-drop-images" style="border:2px dashed #e2e8f0;border-radius:8px;padding:16px;text-align:center;cursor:pointer;color:#94a3b8;font-size:13px;margin-bottom:8px;transition:border-color .2s;" ondragover="event.preventDefault();this.style.borderColor='#10B981'" ondragleave="this.style.borderColor='#e2e8f0'" ondrop="handleTpfDrop(event,'images')">
-              📷 גרור תמונות לכאן
-            </div>
+            <label style="font-size:12px;font-weight:700;color:#64748b;display:block;margin-bottom:4px;">תמונות (גרור או קישור)</label>
+<div id="tpf-drop-images" ondragover="event.preventDefault()" ondrop="window.handleTpfDrop(event,'images')" style="border:2px dashed #e2e8f0;border-radius:8px;padding:12px;text-align:center;color:#94a3b8;font-size:13px;margin-bottom:6px;cursor:pointer;">📷 גרור תמונות לכאן</div>
             <div id="tpf-thumbs-images" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px;"></div>
-            <textarea id="tpf-images" style="width:100%;padding:9px 12px;border:1px solid #e2e8f0;border-radius:8px;font-family:inherit;font-size:12px;min-height:44px;resize:vertical;color:#64748b;" placeholder="או הדבק קישורי תמונות (שורה לכל אחת)..."></textarea>
+<textarea id="tpf-images" style="width:100%;padding:9px 12px;border:1px solid #e2e8f0;border-radius:8px;font-family:inherit;font-size:13px;min-height:56px;resize:vertical;" placeholder="https://..."></textarea>
           </div>
+                    <div style="grid-column:1/-1;"><label style="font-size:12px;font-weight:700;color:#64748b;display:block;margin-bottom:4px;">הערות</label><input id="tpf-notes" style="width:100%;padding:9px 12px;border:1px solid #e2e8f0;border-radius:8px;font-family:inherit;font-size:13px;"></div>
           <div style="grid-column:1/-1;">
-            <label style="font-size:12px;font-weight:700;color:#64748b;display:block;margin-bottom:6px;">תשריט (גרור קובץ)</label>
-            <div id="tpf-drop-blueprint" style="border:2px dashed #e2e8f0;border-radius:8px;padding:16px;text-align:center;cursor:pointer;color:#94a3b8;font-size:13px;margin-bottom:8px;transition:border-color .2s;" ondragover="event.preventDefault();this.style.borderColor='#10B981'" ondragleave="this.style.borderColor='#e2e8f0'" ondrop="handleTpfDrop(event,'blueprint')">
-              📐 גרור תשריט לכאן (תמונה / PDF)
-            </div>
-            <div id="tpf-thumbs-blueprint" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+<label style="font-size:12px;font-weight:700;color:#64748b;display:block;margin-bottom:4px;">תשריט</label>
+<div id="tpf-drop-blueprint" ondragover="event.preventDefault()" ondrop="window.handleTpfDrop(event,'blueprint')" style="border:2px dashed #e2e8f0;border-radius:8px;padding:12px;text-align:center;color:#94a3b8;font-size:13px;cursor:pointer;">📐 גרור תשריט לכאן</div>
+<div id="tpf-thumbs-blueprint" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;"></div>
           </div>
-          <div style="grid-column:1/-1;"><label style="font-size:12px;font-weight:700;color:#64748b;display:block;margin-bottom:4px;">הערות</label><input id="tpf-notes" style="width:100%;padding:9px 12px;border:1px solid #e2e8f0;border-radius:8px;font-family:inherit;font-size:13px;"></div>
         </div>
         <div style="display:flex;gap:8px;margin-top:12px;justify-content:flex-end;">
           <button type="button" class="btn btn-outline btn-sm" onclick="cancelAddProp()">ביטול</button>
