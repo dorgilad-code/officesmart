@@ -1,846 +1,317 @@
 <!DOCTYPE html>
-<html lang="he" dir="rtl">
+<html dir="rtl" lang="he">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>OfficeSmart — הנכסים שלך</title>
-<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<title>OfficeMatch · הנכסים שלך</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #f5f4f0;
-    --surface: #ffffff;
-    --surface2: #f0efe9;
-    --border: #e5e3db;
-    --accent: #1a1a2e;
-    --accent2: #4f46e5;
-    --green: #16a34a;
-    --text: #1a1a2e;
-    --text-muted: #6b6b80;
-    --text-dim: #a0a0b0;
-    --gold: #d4a017;
-    --radius: 14px;
-    --font: 'Heebo', sans-serif;
-    --shadow: 0 2px 16px rgba(0,0,0,.08);
-    --shadow-hover: 0 8px 40px rgba(0,0,0,.14);
-  }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  body {
-    font-family: var(--font);
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    direction: rtl;
-  }
-
-  /* ─── Header ─── */
-  header {
-    background: var(--accent);
-    padding: 0 32px;
-    height: 68px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .logo {
-    font-size: 22px;
-    font-weight: 900;
-    color: #fff;
-    letter-spacing: -0.5px;
-  }
-
-  .logo span { font-weight: 300; opacity: .5; }
-
-  .client-greeting {
-    color: rgba(255,255,255,.7);
-    font-size: 14px;
-  }
-
-  .client-greeting strong { color: #fff; font-weight: 700; }
-
-  /* ─── Hero bar ─── */
-  .hero-bar {
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    padding: 16px 32px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    flex-wrap: wrap;
-    position: sticky;
-    top: 0;
-    z-index: 50;
-    box-shadow: var(--shadow);
-  }
-
-  .search-wrap {
-    position: relative;
-    flex: 1;
-    min-width: 200px;
-  }
-
-  .search-wrap input {
-    width: 100%;
-    padding: 10px 14px 10px 40px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    font-family: var(--font);
-    font-size: 14px;
-    background: var(--bg);
-    outline: none;
-    transition: border-color .2s;
-  }
-
-  .search-wrap input:focus { border-color: var(--accent2); }
-  .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-dim); }
-
-  .filter-group { display: flex; gap: 8px; align-items: center; }
-
-  .filter-chip {
-    padding: 8px 16px;
-    border-radius: 20px;
-    border: 1px solid var(--border);
-    background: var(--surface);
-    font-family: var(--font);
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all .2s;
-    color: var(--text-muted);
-  }
-
-  .filter-chip.active {
-    background: var(--accent);
-    color: #fff;
-    border-color: var(--accent);
-  }
-
-  .filter-chip:hover:not(.active) { border-color: var(--accent2); color: var(--accent2); }
-
-  .sort-select {
-    padding: 9px 14px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    font-family: var(--font);
-    font-size: 13px;
-    background: var(--bg);
-    outline: none;
-    color: var(--text);
-    cursor: pointer;
-  }
-
-  .compare-btn {
-    padding: 9px 18px;
-    border-radius: 8px;
-    border: none;
-    background: var(--accent2);
-    color: #fff;
-    font-family: var(--font);
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all .2s;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-
-  .compare-btn:hover { background: #3730a3; }
-  .compare-btn:disabled { opacity: .4; cursor: not-allowed; }
-
-  /* ─── Grid ─── */
-  .grid-wrap { max-width: 1280px; margin: 0 auto; padding: 28px 32px; }
-
-  .results-meta {
-    font-size: 13px;
-    color: var(--text-muted);
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-    gap: 24px;
-  }
-
-  /* ─── Property Card ─── */
-  .prop-card {
-    background: var(--surface);
-    border-radius: var(--radius);
-    overflow: hidden;
-    box-shadow: var(--shadow);
-    transition: box-shadow .3s, transform .3s;
-    position: relative;
-    cursor: pointer;
-  }
-
-  .prop-card:hover {
-    box-shadow: var(--shadow-hover);
-    transform: translateY(-3px);
-  }
-
-  .prop-card.compare-selected {
-    outline: 3px solid var(--accent2);
-    outline-offset: -3px;
-  }
-
-  /* Image Gallery */
-  .card-gallery {
-    position: relative;
-    height: 200px;
-    overflow: hidden;
-    background: var(--surface2);
-  }
-
-  .gallery-inner {
-    display: flex;
-    height: 100%;
-    transition: transform .35s ease;
-  }
-
-  .gallery-slide {
-    min-width: 100%;
-    height: 100%;
-    object-fit: cover;
-    background: var(--border);
-  }
-
-  .gallery-slide.placeholder {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 60px;
-    color: var(--text-dim);
-  }
-
-  .gallery-nav {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background: rgba(0,0,0,.45);
-    border: none;
-    color: #fff;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    font-size: 16px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background .2s;
-    z-index: 2;
-  }
-
-  .gallery-nav:hover { background: rgba(0,0,0,.7); }
-  .gallery-nav.prev { right: 8px; }
-  .gallery-nav.next { left: 8px; }
-
-  .gallery-dots {
-    position: absolute;
-    bottom: 8px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    gap: 5px;
-  }
-
-  .gallery-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: rgba(255,255,255,.5);
-    transition: background .2s;
-  }
-
-  .gallery-dot.active { background: #fff; }
-
-  /* Badges on image */
-  .img-badges {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    z-index: 2;
-  }
-
-  .badge {
-    display: inline-flex;
-    align-items: center;
-    padding: 4px 10px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 700;
-    backdrop-filter: blur(8px);
-  }
-
-  .badge-green { background: rgba(22,163,74,.85); color: #fff; }
-  .badge-yellow { background: rgba(212,160,23,.85); color: #fff; }
-  .badge-dark { background: rgba(0,0,0,.65); color: #fff; }
-
-  /* Fav button */
-  .fav-btn {
-    position: absolute;
-    top: 12px;
-    left: 12px;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    border: none;
-    background: rgba(255,255,255,.9);
-    font-size: 18px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 2;
-    transition: transform .2s;
-    backdrop-filter: blur(6px);
-  }
-
-  .fav-btn:hover { transform: scale(1.15); }
-  .fav-btn.active { background: #fff8; }
-
-  /* Card Body */
-  .card-body { padding: 18px; }
-
-  .card-name {
-    font-size: 17px;
-    font-weight: 700;
-    margin-bottom: 4px;
-    line-height: 1.3;
-  }
-
-  .card-address {
-    font-size: 13px;
-    color: var(--text-muted);
-    margin-bottom: 14px;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-  }
-
-  .card-stats {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 10px;
-    background: var(--bg);
-    border-radius: 10px;
-    padding: 12px;
-  }
-
-  .stat { text-align: center; }
-  .stat-val { font-size: 16px; font-weight: 700; color: var(--accent); }
-  .stat-label { font-size: 10px; color: var(--text-dim); margin-top: 2px; font-weight: 600; letter-spacing: .4px; text-transform: uppercase; }
-
-  .card-footer {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-top: 14px;
-    padding-top: 14px;
-    border-top: 1px solid var(--border);
-  }
-
-  .monthly-est {
-    font-size: 12px;
-    color: var(--text-muted);
-  }
-
-  .monthly-val {
-    font-size: 15px;
-    font-weight: 700;
-    color: var(--accent2);
-  }
-
-  .compare-toggle {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 12px;
-    color: var(--text-muted);
-    cursor: pointer;
-    user-select: none;
-  }
-
-  .compare-toggle input { cursor: pointer; }
-
-  /* ─── Notes ─── */
-  .card-notes {
-    margin-top: 10px;
-    font-size: 12px;
-    color: var(--text-muted);
-    line-height: 1.5;
-    background: var(--surface2);
-    border-radius: 6px;
-    padding: 8px 10px;
-  }
-
-  /* ─── Compare Modal ─── */
-  .modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,.5);
-    z-index: 200;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    backdrop-filter: blur(4px);
-  }
-
-  .modal-overlay.open { display: flex; }
-
-  .modal {
-    background: var(--surface);
-    border-radius: var(--radius);
-    max-width: 900px;
-    width: 100%;
-    max-height: 85vh;
-    overflow-y: auto;
-  }
-
-  .modal-header {
-    padding: 20px 24px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: sticky;
-    top: 0;
-    background: var(--surface);
-    z-index: 1;
-  }
-
-  .modal-title { font-size: 16px; font-weight: 700; }
-
-  .close-btn {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    border: none;
-    background: var(--bg);
-    cursor: pointer;
-    font-size: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background .2s;
-  }
-
-  .close-btn:hover { background: var(--border); }
-
-  .compare-table { width: 100%; border-collapse: collapse; }
-  .compare-table th, .compare-table td {
-    padding: 12px 16px;
-    text-align: center;
-    border-bottom: 1px solid var(--border);
-    font-size: 14px;
-  }
-
-  .compare-table th {
-    background: var(--bg);
-    font-weight: 700;
-    font-size: 13px;
-  }
-
-  .compare-table td:first-child {
-    text-align: right;
-    color: var(--text-muted);
-    font-size: 12px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: .4px;
-    background: var(--bg);
-  }
-
-  .compare-table .best { color: var(--green); font-weight: 700; }
-  .compare-table .img-cell img {
-    width: 80px;
-    height: 56px;
-    object-fit: cover;
-    border-radius: 6px;
-  }
-
-  /* ─── Empty / Error ─── */
-  .full-center {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 60vh;
-    flex-direction: column;
-    gap: 16px;
-    text-align: center;
-    padding: 32px;
-  }
-
-  .err-icon { font-size: 64px; }
-  .err-title { font-size: 22px; font-weight: 700; }
-  .err-sub { color: var(--text-muted); font-size: 15px; max-width: 380px; line-height: 1.6; }
-
-  /* ─── Favorites tab ─── */
-  .fav-bar {
-    background: var(--surface2);
-    padding: 10px 32px;
-    font-size: 13px;
-    color: var(--text-muted);
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .fav-bar strong { color: var(--text); }
-
-  ::-webkit-scrollbar { width: 5px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
-
-  @media (max-width: 640px) {
-    header { padding: 0 16px; }
-    .hero-bar { padding: 12px 16px; }
-    .grid-wrap { padding: 16px; }
-    .grid { grid-template-columns: 1fr; }
-    .filter-group { flex-wrap: wrap; }
-  }
+:root {
+  --accent: #10B981; --accent-d: #059669;
+  --bg: #f8fafc; --card: #ffffff; --border: #e2e8f0;
+  --text: #0f172a; --muted: #64748b;
+  --shadow: 0 1px 4px rgba(15,23,42,0.08); --r: 14px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Heebo', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; direction: rtl; -webkit-font-smoothing: antialiased; }
+
+.login-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(160deg,#f0fdf4 0%,#ecfdf5 40%,#f8fafc 100%); padding: 24px; }
+.login-card { width: 100%; max-width: 380px; background: #fff; border-radius: 20px; padding: 36px 32px; box-shadow: 0 16px 48px rgba(15,23,42,.12); border: 1px solid var(--border); }
+.login-logo { display: flex; justify-content: center; margin-bottom: 20px; }
+.login-card h1 { font-size: 20px; font-weight: 800; margin-bottom: 6px; }
+.login-card p { font-size: 14px; color: var(--muted); margin-bottom: 20px; line-height: 1.5; }
+.login-input { width: 100%; padding: 13px 16px; border: 1px solid var(--border); border-radius: 10px; font-size: 15px; font-family: inherit; margin-bottom: 12px; transition: border-color .2s; }
+.login-input:focus { outline: none; border-color: var(--accent); }
+.login-btn { width: 100%; padding: 14px; border: none; border-radius: 50px; background: var(--accent); color: #fff; font-weight: 800; font-size: 16px; cursor: pointer; font-family: inherit; transition: background .2s; }
+.login-btn:hover { background: var(--accent-d); }
+.login-err { color: #dc2626; font-size: 13px; margin-top: 8px; display: none; text-align: center; }
+
+.app { display: none; }
+.app.visible { display: block; }
+
+header { background: #fff; border-bottom: 1px solid var(--border); padding: 0 28px; height: 62px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow); }
+.header-right { display: flex; align-items: center; gap: 14px; }
+.client-name { font-size: 14px; color: var(--muted); }
+.client-name strong { color: var(--text); font-weight: 700; }
+
+.toolbar { background: #fff; border-bottom: 1px solid var(--border); padding: 12px 28px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.search-input { padding: 9px 14px; border: 1px solid var(--border); border-radius: 50px; font-family: inherit; font-size: 13px; width: 200px; transition: border-color .2s; }
+.search-input:focus { outline: none; border-color: var(--accent); }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip { padding: 7px 14px; border-radius: 50px; border: 1px solid var(--border); background: #fff; font-family: inherit; font-size: 12px; font-weight: 700; color: var(--muted); cursor: pointer; transition: all .15s; }
+.chip.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+.chip:hover:not(.active) { border-color: var(--accent); color: var(--accent-d); }
+.spacer { flex: 1; }
+.btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 50px; border: none; font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer; transition: all .2s; }
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover { background: var(--accent-d); }
+.btn-outline { background: #fff; color: var(--text); border: 1px solid var(--border); }
+.btn-outline:hover { border-color: var(--accent); color: var(--accent-d); }
+.btn-dark { background: #1e293b; color: #fff; }
+.btn-dark:hover { background: #0f172a; }
+
+.notes-banner { background: #f0fdf4; border-bottom: 1px solid #bbf7d0; padding: 12px 28px; font-size: 14px; color: #065f46; line-height: 1.5; display: none; }
+.notes-banner.on { display: block; }
+
+.grid-wrap { max-width: 1280px; margin: 0 auto; padding: 24px 28px 60px; }
+.results-meta { font-size: 13px; color: var(--muted); margin-bottom: 18px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
+
+.prop-card { background: var(--card); border-radius: var(--r); border: 1px solid var(--border); box-shadow: var(--shadow); overflow: hidden; transition: box-shadow .25s, transform .25s; position: relative; }
+.prop-card:hover { box-shadow: 0 8px 32px rgba(15,23,42,.12); transform: translateY(-2px); }
+.prop-card.fav-card { border-color: var(--accent); }
+
+.gallery { position: relative; height: 190px; background: #e2e8f0; overflow: hidden; }
+.gallery-slides { display: flex; height: 100%; transition: transform .35s ease; }
+.gal-slide { min-width: 100%; height: 100%; object-fit: cover; }
+.gal-ph { min-width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 52px; color: #94a3b8; }
+.gal-btn { position: absolute; top: 50%; transform: translateY(-50%); width: 30px; height: 30px; border-radius: 50%; border: none; background: rgba(0,0,0,.45); color: #fff; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.gal-prev { right: 8px; }
+.gal-next { left: 8px; }
+.gal-dots { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); display: flex; gap: 5px; }
+.gal-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,.5); }
+.gal-dot.on { background: #fff; }
+.card-badges { position: absolute; top: 10px; right: 10px; display: flex; flex-direction: column; gap: 5px; }
+.badge { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 50px; font-size: 11px; font-weight: 800; backdrop-filter: blur(6px); }
+.badge-g { background: rgba(16,185,129,.85); color: #fff; }
+.badge-gr { background: rgba(100,116,139,.75); color: #fff; }
+.fav-btn { position: absolute; top: 10px; left: 10px; width: 34px; height: 34px; border-radius: 50%; border: none; background: rgba(255,255,255,.9); font-size: 17px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: transform .2s; backdrop-filter: blur(4px); }
+.fav-btn:hover { transform: scale(1.2); }
+
+.card-body { padding: 16px 18px 18px; }
+.card-name { font-size: 16px; font-weight: 800; margin-bottom: 4px; }
+.card-addr { font-size: 12px; color: var(--muted); margin-bottom: 12px; }
+.stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; background: var(--bg); border-radius: 10px; padding: 11px; margin-bottom: 10px; }
+.stat { text-align: center; }
+.stat-v { font-size: 15px; font-weight: 800; color: var(--accent-d); }
+.stat-l { font-size: 10px; color: var(--muted); margin-top: 2px; font-weight: 700; letter-spacing: .3px; text-transform: uppercase; }
+.monthly { font-size: 12px; color: var(--muted); margin-bottom: 10px; }
+.monthly strong { color: var(--accent-d); font-weight: 800; }
+.card-notes { font-size: 12px; color: #475569; background: #f8fafc; border-radius: 8px; padding: 8px 10px; line-height: 1.5; border: 1px solid var(--border); margin-bottom: 10px; }
+.cmp-row { display: flex; align-items: center; justify-content: flex-end; padding-top: 10px; border-top: 1px solid var(--border); }
+.cmp-label { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 5px; cursor: pointer; }
+
+.empty { text-align: center; padding: 64px 20px; grid-column: 1/-1; }
+.empty-icon { font-size: 56px; margin-bottom: 16px; }
+.empty-title { font-size: 18px; font-weight: 800; margin-bottom: 8px; }
+.empty-sub { font-size: 14px; color: var(--muted); }
+
+.modal-ov { display: none; position: fixed; inset: 0; z-index: 200; background: rgba(15,23,42,.45); align-items: center; justify-content: center; padding: 16px; }
+.modal-ov.on { display: flex; }
+.modal { background: #fff; border-radius: 16px; max-width: 960px; width: 100%; max-height: 88vh; display: flex; flex-direction: column; box-shadow: 0 24px 60px rgba(0,0,0,.2); }
+.modal-head { padding: 18px 22px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.modal-title { font-size: 16px; font-weight: 800; }
+.modal-close { width: 32px; height: 32px; border-radius: 50%; border: none; background: var(--bg); cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; }
+.modal-body { overflow-y: auto; padding-bottom: 16px; }
+.cmp-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.cmp-table th, .cmp-table td { padding: 11px 14px; border-bottom: 1px solid var(--border); text-align: center; }
+.cmp-table th { background: var(--bg); font-weight: 800; font-size: 12px; }
+.cmp-table td:first-child { text-align: right; color: var(--muted); font-size: 11px; font-weight: 700; text-transform: uppercase; background: var(--bg); }
+.cmp-table .best { color: var(--accent-d); font-weight: 800; }
+
+@media print {
+  header, .toolbar, .notes-banner, .fav-btn, .gal-btn, .gal-dots, .cmp-row { display: none !important; }
+  .prop-card { break-inside: avoid; box-shadow: none !important; border: 1px solid #ccc !important; transform: none !important; }
+  .grid { grid-template-columns: 1fr 1fr !important; }
+  body { background: #fff !important; }
+}
+@media (max-width: 640px) {
+  header, .toolbar { padding: 12px 16px; }
+  .grid-wrap { padding: 16px; }
+  .grid { grid-template-columns: 1fr; }
+}
 </style>
 </head>
 <body>
 
-<header>
-  <div class="logo">Office<span>Smart</span></div>
-  <div class="client-greeting" id="clientGreeting"></div>
-</header>
-
-<!-- Filter bar -->
-<div class="hero-bar">
-  <div class="search-wrap">
-    <span class="search-icon">🔍</span>
-    <input type="text" id="searchInput" placeholder="חפש לפי שם או כתובת..." oninput="renderCards()">
-  </div>
-  <div class="filter-group">
-    <button class="filter-chip active" data-filter="all" onclick="setFilter('all',this)">הכל</button>
-    <button class="filter-chip" data-filter="fav" onclick="setFilter('fav',this)">❤️ מועדפים</button>
-    <button class="filter-chip" data-filter="מיידי" onclick="setFilter('מיידי',this)">זמין מיידית</button>
-  </div>
-  <select class="sort-select" id="sortSelect" onchange="renderCards()">
-    <option value="default">מיון: ברירת מחדל</option>
-    <option value="price_asc">מחיר — נמוך לגבוה</option>
-    <option value="price_desc">מחיר — גבוה לנמוך</option>
-    <option value="area_asc">שטח — קטן לגדול</option>
-    <option value="area_desc">שטח — גדול לקטן</option>
-  </select>
-  <button class="compare-btn" id="compareBtn" disabled onclick="openCompare()">
-    ⚖️ השווה (<span id="compareCount">0</span>)
-  </button>
-</div>
-
-<!-- Results -->
-<div class="grid-wrap">
-  <div class="results-meta">
-    <span id="resultsMeta"></span>
-    <span id="favMeta" style="color:var(--gold)"></span>
-  </div>
-  <div class="grid" id="propGrid"></div>
-</div>
-
-<!-- Compare Modal -->
-<div class="modal-overlay" id="compareModal">
-  <div class="modal">
-    <div class="modal-header">
-      <div class="modal-title">⚖️ השוואת נכסים</div>
-      <button class="close-btn" onclick="closeCompare()">×</button>
+<div id="login-wrap" class="login-wrap">
+  <div class="login-card">
+    <div class="login-logo">
+      <svg viewBox="0 0 155 36" xmlns="http://www.w3.org/2000/svg" height="32">
+        <rect x="1" y="1" width="26" height="26" rx="7" fill="#10B981"/>
+        <polyline points="6,14 11,19 20,9" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <text x="34" y="23" font-family="Heebo,sans-serif" font-weight="900" font-size="20" fill="#1a1a2e">Office</text>
+        <text x="94" y="23" font-family="Heebo,sans-serif" font-weight="900" font-size="20" fill="#10B981">Match</text>
+      </svg>
     </div>
-    <div id="compareBody" style="padding:0 0 20px"></div>
+    <h1>הנכסים שלך</h1>
+    <p>הזן את הסיסמה שקיבלת מהסוכן שלך</p>
+    <input class="login-input" type="password" id="login-pass" placeholder="סיסמה" autocomplete="current-password">
+    <button class="login-btn" id="login-btn">כניסה →</button>
+    <div class="login-err" id="login-err"></div>
+  </div>
+</div>
+
+<div class="app" id="app">
+  <header>
+    <svg viewBox="0 0 155 36" xmlns="http://www.w3.org/2000/svg" height="28">
+      <rect x="1" y="1" width="26" height="26" rx="7" fill="#10B981"/>
+      <polyline points="6,14 11,19 20,9" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="34" y="23" font-family="Heebo,sans-serif" font-weight="900" font-size="20" fill="#1a1a2e">Office</text>
+      <text x="94" y="23" font-family="Heebo,sans-serif" font-weight="900" font-size="20" fill="#10B981">Match</text>
+    </svg>
+    <div class="header-right">
+      <div class="client-name" id="cname"></div>
+      <button class="btn btn-dark" onclick="window.print()">⬇ ייצוא PDF</button>
+    </div>
+  </header>
+  <div class="notes-banner" id="notes-banner"></div>
+  <div class="toolbar">
+    <input class="search-input" type="text" id="search" placeholder="חיפוש..." oninput="render()">
+    <div class="chips">
+      <button class="chip active" onclick="setFilter('all',this)">הכל</button>
+      <button class="chip" onclick="setFilter('fav',this)">❤️ מועדפים</button>
+      <button class="chip" onclick="setFilter('avail',this)">זמין מיידית</button>
+    </div>
+    <div class="spacer"></div>
+    <button class="btn btn-outline" id="cmp-btn" disabled onclick="openCmp()">⚖️ השווה (<span id="cmp-cnt">0</span>)</button>
+  </div>
+  <div class="grid-wrap">
+    <div class="results-meta" id="meta"></div>
+    <div class="grid" id="grid"></div>
+  </div>
+</div>
+
+<div class="modal-ov" id="cmp-modal">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title">⚖️ השוואת נכסים</div>
+      <button class="modal-close" onclick="closeCmp()">×</button>
+    </div>
+    <div class="modal-body" id="cmp-body"></div>
   </div>
 </div>
 
 <script>
-// ─── Load data from URL ───
-let allProps = [];
-let clientName = '';
-let favorites = new Set(JSON.parse(localStorage.getItem('os_favs') || '[]'));
-let compareSet = new Set();
-let currentFilter = 'all';
+(function(){
+'use strict';
+var D = null, props = [], favs = new Set(), cmpSet = new Set(), filter = 'all', gals = {};
 
-function loadData() {
-  const params = new URLSearchParams(window.location.search);
-  const d = params.get('d');
-  if (!d) {
-    showError('לא נמצאו נכסים', 'הקישור שקיבלת אינו תקין. אנא פנה לסוכן שלך לקבלת קישור חדש.');
-    return false;
-  }
-  try {
-    const decoded = JSON.parse(decodeURIComponent(escape(atob(d))));
-    allProps = decoded.props || [];
-    clientName = decoded.client || 'לקוח';
-    return true;
-  } catch(e) {
-    showError('שגיאה בטעינת הנכסים', 'הקישור פגום. אנא פנה לסוכן שלך לקבלת קישור חדש.');
-    return false;
-  }
+function loadURL() {
+  var p = new URLSearchParams(location.search).get('d');
+  if (!p) return false;
+  try { D = JSON.parse(decodeURIComponent(escape(atob(p)))); props = D.props || []; return true; }
+  catch(e) { return false; }
 }
 
-function showError(title, sub) {
-  document.querySelector('.hero-bar').style.display = 'none';
-  document.querySelector('.grid-wrap').innerHTML = `
-    <div class="full-center">
-      <div class="err-icon">🔗</div>
-      <div class="err-title">${title}</div>
-      <div class="err-sub">${sub}</div>
-    </div>
-  `;
+function tryLogin() {
+  var v = document.getElementById('login-pass').value;
+  if (D.password && v !== D.password) { showErr('סיסמה שגויה'); return; }
+  document.getElementById('login-wrap').style.display = 'none';
+  document.getElementById('app').classList.add('visible');
+  initApp();
+}
+function showErr(m) { var e=document.getElementById('login-err'); e.textContent=m; e.style.display='block'; }
+
+function initApp() {
+  var saved = localStorage.getItem('omf_'+(D.clientId||''));
+  if (saved) favs = new Set(JSON.parse(saved));
+  if (D.clientName) document.getElementById('cname').innerHTML='שלום, <strong>'+esc(D.clientName)+'</strong>';
+  if (D.notes) { var n=document.getElementById('notes-banner'); n.textContent='📝 '+D.notes; n.classList.add('on'); }
+  document.title = 'OfficeMatch · '+(D.clientName||'הנכסים שלך');
+  render();
 }
 
-// ─── Render ───
 function getFiltered() {
-  const q = document.getElementById('searchInput').value.toLowerCase();
-  const sort = document.getElementById('sortSelect').value;
-
-  let props = allProps.filter(p => {
-    const matchSearch = !q || p.name.toLowerCase().includes(q) || p.address.toLowerCase().includes(q);
-    const matchFilter =
-      currentFilter === 'all' ? true :
-      currentFilter === 'fav' ? favorites.has(p.id) :
-      p.availability === currentFilter;
-    return matchSearch && matchFilter;
+  var q = document.getElementById('search').value.toLowerCase();
+  return props.filter(function(p){
+    var mq = !q||(p.name||'').toLowerCase().includes(q)||(p.address||'').toLowerCase().includes(q);
+    var mf = filter==='fav'?favs.has(p.id):filter==='avail'?/מיידי/.test(p.availability||''):true;
+    return mq&&mf;
   });
-
-  if (sort === 'price_asc') props.sort((a,b) => (+a.price||999) - (+b.price||999));
-  else if (sort === 'price_desc') props.sort((a,b) => (+b.price||0) - (+a.price||0));
-  else if (sort === 'area_asc') props.sort((a,b) => (+a.area||999999) - (+b.area||999999));
-  else if (sort === 'area_desc') props.sort((a,b) => (+b.area||0) - (+a.area||0));
-
-  return props;
 }
 
-function renderCards() {
-  const props = getFiltered();
-  const grid = document.getElementById('propGrid');
-  const favCount = allProps.filter(p => favorites.has(p.id)).length;
-
-  document.getElementById('resultsMeta').textContent = `${props.length} נכסים מוצגים מתוך ${allProps.length}`;
-  document.getElementById('favMeta').textContent = favCount ? `❤️ ${favCount} מועדפים` : '';
-
-  if (!props.length) {
-    grid.innerHTML = `<div class="full-center" style="grid-column:1/-1;min-height:40vh"><div class="err-icon">🔍</div><div class="err-title">לא נמצאו תוצאות</div><div class="err-sub">נסה לשנות את הסינון</div></div>`;
-    return;
-  }
-
-  grid.innerHTML = props.map(p => buildCard(p)).join('');
-
-  // Init galleries
-  props.forEach(p => initGallery(p.id, p.images || []));
-
-  updateCompareUI();
+function render() {
+  var fp = getFiltered();
+  var fc = props.filter(function(p){return favs.has(p.id);}).length;
+  document.getElementById('meta').textContent = fp.length+' נכסים'+(fc?' · ❤️ '+fc+' מועדפים':'');
+  var g = document.getElementById('grid');
+  if (!fp.length) { g.innerHTML='<div class="empty"><div class="empty-icon">🏢</div><div class="empty-title">לא נמצאו נכסים</div><div class="empty-sub">נסה לשנות את הסינון</div></div>'; return; }
+  g.innerHTML = fp.map(card).join('');
+  fp.forEach(function(p){ initGal(p); });
+  updCmp();
 }
 
-function buildCard(p) {
-  const imgs = p.images || [];
-  const isFav = favorites.has(p.id);
-  const inCompare = compareSet.has(p.id);
-  const monthly = p.area && p.price ? Math.round(+p.area * +p.price).toLocaleString('he-IL') : null;
-  const total = monthly && p.management
-    ? Math.round(+p.area * (+p.price + +p.management)).toLocaleString('he-IL')
-    : null;
-
-  const availBadge = p.availability === 'מיידי'
-    ? `<div class="badge badge-green">${p.availability}</div>`
-    : `<div class="badge badge-yellow">${p.availability}</div>`;
-
-  const imgCount = imgs.length > 1 ? `<div class="badge badge-dark">📷 ${imgs.length}</div>` : '';
-
-  const dotsHtml = imgs.length > 1
-    ? `<div class="gallery-dots">${imgs.map((_,i) => `<div class="gallery-dot${i===0?' active':''}"></div>`).join('')}</div>`
-    : '';
-
-  const navHtml = imgs.length > 1
-    ? `<button class="gallery-nav prev" onclick="gallerNav('${p.id}',1,event)">‹</button>
-       <button class="gallery-nav next" onclick="gallerNav('${p.id}',-1,event)">›</button>`
-    : '';
-
-  const slidesHtml = imgs.length
-    ? imgs.map(url => `<img class="gallery-slide" src="${url}" onerror="this.style.display='none'">`).join('')
-    : `<div class="gallery-slide placeholder">🏢</div>`;
-
-  return `
-    <div class="prop-card ${inCompare ? 'compare-selected' : ''}" id="card-${p.id}">
-      <div class="card-gallery">
-        <div class="gallery-inner" id="gal-${p.id}">${slidesHtml}</div>
-        ${navHtml}
-        ${dotsHtml}
-        <div class="img-badges">${availBadge}${imgCount}</div>
-        <button class="fav-btn ${isFav ? 'active' : ''}" onclick="toggleFav('${p.id}',event)" title="מועדף">
-          ${isFav ? '❤️' : '🤍'}
-        </button>
-      </div>
-      <div class="card-body">
-        <div class="card-name">${p.name}</div>
-        <div class="card-address">📍 ${p.address}${p.floor ? ` · קומה ${p.floor}` : ''}</div>
-        <div class="card-stats">
-          <div class="stat">
-            <div class="stat-val">${p.area ? p.area.toLocaleString() : '—'}</div>
-            <div class="stat-label">מ"ר</div>
-          </div>
-          <div class="stat">
-            <div class="stat-val">${p.price ? '₪' + p.price : '—'}</div>
-            <div class="stat-label">למ"ר</div>
-          </div>
-          <div class="stat">
-            <div class="stat-val">${p.management ? '₪' + p.management : '—'}</div>
-            <div class="stat-label">ניהול</div>
-          </div>
-        </div>
-        ${monthly ? `
-        <div class="card-footer">
-          <div>
-            <div class="monthly-est">שכ"ד חודשי משוער</div>
-            <div class="monthly-val">₪${monthly}</div>
-            ${total ? `<div class="monthly-est">כולל ניהול: ₪${total}</div>` : ''}
-          </div>
-          <label class="compare-toggle">
-            <input type="checkbox" ${inCompare ? 'checked' : ''} onchange="toggleCompare('${p.id}',event)">
-            להשוואה
-          </label>
-        </div>
-        ` : ''}
-        ${p.notes ? `<div class="card-notes">💬 ${p.notes}</div>` : ''}
-      </div>
-    </div>
-  `;
+function card(p) {
+  var imgs = p.images||(p.img?[p.img]:[]);
+  var isFav = favs.has(p.id), inCmp = cmpSet.has(p.id);
+  var avail = p.availability||'';
+  var abadge = /מיידי/.test(avail)?'<span class="badge badge-g">'+esc(avail)+'</span>':(avail?'<span class="badge badge-gr">'+esc(avail)+'</span>':'');
+  var slides = imgs.length ? imgs.map(function(u){return '<img class="gal-slide" src="'+escA(u)+'" onerror="this.style.display=\'none\'">'; }).join('') : '<div class="gal-ph">🏢</div>';
+  var nav = imgs.length>1 ? '<button class="gal-btn gal-prev" onclick="galN(\''+p.id+'\',1,event)">‹</button><button class="gal-btn gal-next" onclick="galN(\''+p.id+'\',-1,event)">›</button><div class="gal-dots">'+imgs.map(function(_,i){return '<div class="gal-dot'+(i===0?' on':'')+'"></div>';}).join('')+'</div>' : '';
+  var sz=p.size!=null&&p.size!==''?p.size:(p.area||'—'), pr=p.price!=null&&p.price!==''?'₪'+p.price:'—', mg=p.mgmt!=null&&p.mgmt!==''?'₪'+p.mgmt:(p.management!=null?'₪'+p.management:'—');
+  var mon=''; var s=parseFloat(sz),pr2=parseFloat(p.price); if(!isNaN(s)&&!isNaN(pr2)) mon='<div class="monthly">שכ"ד חודשי: <strong>₪'+Math.round(s*pr2).toLocaleString('he-IL')+'</strong></div>';
+  var notes=p.clientNotes||p.notes||'';
+  return '<div class="prop-card'+(isFav?' fav-card':'')+'" id="pc-'+p.id+'">'+
+    '<div class="gallery"><div class="gallery-slides" id="gs-'+p.id+'">'+slides+'</div>'+nav+'<div class="card-badges">'+abadge+'</div><button class="fav-btn" onclick="togFav(\''+p.id+'\',event)">'+(isFav?'❤️':'🤍')+'</button></div>'+
+    '<div class="card-body"><div class="card-name">'+esc(p.name||'—')+'</div><div class="card-addr">📍 '+esc(p.address||'—')+(p.floor?' · קומה '+esc(p.floor):'')+'</div>'+
+    '<div class="stats"><div class="stat"><div class="stat-v">'+esc(String(sz))+'</div><div class="stat-l">מ"ר</div></div><div class="stat"><div class="stat-v">'+pr+'</div><div class="stat-l">למ"ר</div></div><div class="stat"><div class="stat-v">'+mg+'</div><div class="stat-l">ניהול</div></div></div>'+
+    mon+(notes?'<div class="card-notes">💬 '+esc(notes)+'</div>':'')+
+    '<div class="cmp-row"><label class="cmp-label"><input type="checkbox"'+(inCmp?' checked':'')+' onchange="togCmp(\''+p.id+'\',event)"> להשוואה</label></div>'+
+    '</div></div>';
 }
 
-// ─── Gallery ───
-const galState = {};
-
-function initGallery(id, imgs) {
-  galState[id] = { idx: 0, count: imgs.length };
+function initGal(p) { var imgs=p.images||(p.img?[p.img]:[]); gals[p.id]={i:0,n:imgs.length}; }
+function galN(id,d,e) {
+  e.stopPropagation(); var s=gals[id]; if(!s||s.n<2) return;
+  s.i=(s.i-d+s.n)%s.n;
+  var el=document.getElementById('gs-'+id); if(el) el.style.transform='translateX('+(s.i*100)+'%)';
+  var card=document.getElementById('pc-'+id); if(card) card.querySelectorAll('.gal-dot').forEach(function(d,i){d.classList.toggle('on',i===s.i);});
 }
 
-function gallerNav(id, dir, e) {
+function togFav(id,e) {
   e.stopPropagation();
-  const s = galState[id];
-  if (!s || s.count < 2) return;
-  s.idx = (s.idx - dir + s.count) % s.count;
-  const inner = document.getElementById(`gal-${id}`);
-  if (inner) {
-    inner.style.transform = `translateX(${s.idx * 100}%)`;
-    // update dots
-    const card = document.getElementById(`card-${id}`);
-    if (card) {
-      card.querySelectorAll('.gallery-dot').forEach((d,i) => d.classList.toggle('active', i === s.idx));
-    }
-  }
+  favs.has(id)?favs.delete(id):favs.add(id);
+  localStorage.setItem('omf_'+(D.clientId||''), JSON.stringify([...favs]));
+  render();
 }
 
-// ─── Favorites ───
-function toggleFav(id, e) {
+function setFilter(v,el) {
+  filter=v;
+  document.querySelectorAll('.chip').forEach(function(c){c.classList.remove('active');});
+  el.classList.add('active'); render();
+}
+
+function togCmp(id,e) {
   e.stopPropagation();
-  if (favorites.has(id)) favorites.delete(id);
-  else favorites.add(id);
-  localStorage.setItem('os_favs', JSON.stringify([...favorites]));
-  renderCards();
+  if(cmpSet.has(id)) cmpSet.delete(id);
+  else if(cmpSet.size<4) cmpSet.add(id);
+  else { e.target.checked=false; alert('עד 4 נכסים'); return; }
+  updCmp();
+}
+function updCmp() { var b=document.getElementById('cmp-btn'); document.getElementById('cmp-cnt').textContent=cmpSet.size; b.disabled=cmpSet.size<2; }
+
+function openCmp() {
+  var ps=props.filter(function(p){return cmpSet.has(p.id);});
+  var minP=Math.min.apply(null,ps.map(function(p){return parseFloat(p.price)||Infinity;}));
+  var maxS=Math.max.apply(null,ps.map(function(p){return parseFloat(p.size||p.area)||0;}));
+  var fields=[{k:'address',l:'כתובת'},{k:'size',l:'שטח (מ"ר)'},{k:'price',l:'מחיר למ"ר'},{k:'mgmt',l:'דמי ניהול'},{k:'floor',l:'קומה'},{k:'availability',l:'זמינות'}];
+  var head='<tr><th>שדה</th>'+ps.map(function(p){var img=(p.images||[])[0]||p.img||'';return '<th>'+esc(p.name||'')+(img?'<br><img src="'+escA(img)+'" style="width:80px;height:52px;object-fit:cover;border-radius:6px;margin-top:6px">':'')+'</th>';}).join('')+'</tr>';
+  var rows=fields.map(function(f){return '<tr><td>'+f.l+'</td>'+ps.map(function(p){var v=p[f.k];if(v==null)v='—';v=String(v);var cls='';if(f.k==='price'&&parseFloat(p.price)===minP)cls=' class="best"';if(f.k==='size'&&parseFloat(p.size||p.area)===maxS)cls=' class="best"';if(f.k==='availability'&&/מיידי/.test(v))cls=' class="best"';return '<td'+cls+'>'+esc(v)+'</td>';}).join('')+'</tr>';}).join('');
+  var mrow='<tr><td>שכ"ד חודשי</td>'+ps.map(function(p){var s=parseFloat(p.size||p.area),pr=parseFloat(p.price);return '<td>'+(!isNaN(s)&&!isNaN(pr)?'₪'+Math.round(s*pr).toLocaleString('he-IL'):'—')+'</td>';}).join('')+'</tr>';
+  document.getElementById('cmp-body').innerHTML='<table class="cmp-table"><thead>'+head+'</thead><tbody>'+rows+mrow+'</tbody></table><p style="padding:12px 14px;font-size:12px;color:var(--muted)">✅ ירוק = הטוב ביותר בקטגוריה</p>';
+  document.getElementById('cmp-modal').classList.add('on');
+}
+function closeCmp(){document.getElementById('cmp-modal').classList.remove('on');}
+
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function escA(s){return esc(s).replace(/'/g,'&#39;');}
+
+// Boot
+var ok = loadURL();
+if (!ok) {
+  document.getElementById('login-wrap').innerHTML='<div class="login-card" style="text-align:center"><div style="font-size:48px;margin:0 0 16px">🔗</div><h1>קישור לא תקין</h1><p style="margin-top:8px">פנה לסוכן שלך לקבלת קישור חדש.</p></div>';
+} else if (!D.password) {
+  document.getElementById('login-wrap').style.display='none';
+  document.getElementById('app').classList.add('visible');
+  initApp();
 }
 
-// ─── Filter ───
-function setFilter(val, el) {
-  currentFilter = val;
-  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
-  el.classList.add('active');
-  renderCards();
-}
-
-// ─── Compare ───
-function toggleCompare(id, e) {
-  e.stopPropagation();
-  if (compareSet.has(id)) compareSet.delete(id);
-  else if (compareSet.size < 4) compareSet.add(id);
-  else { e.target.checked = false; alert('ניתן להשוות עד 4 נכסים'); return; }
-  updateCompareUI();
-  const card = document.getElementById(`card-${id}`);
-  if (card) card.classList.toggle('compare-selected', compareSet.has(id));
-}
-
-function updateCompareUI() {
-  const btn = document.getElementById('compareBtn');
-  document.getElementById('compareCount').textContent = compareSet.size;
-  btn.disabled = compareSet.size < 2;
-}
-
-function openCompare() {
-  const props = allProps.filter(p => compareSet.has(p.id));
-  const fields = [
-    { key: 'address', label: 'כתובת' },
-    { key: 'area', label: 'שטח (מ"ר)' },
-    { key: 'price', label: 'מחיר למ"ר (₪)' },
-    { key: 'management', label: 'דמי ניהול' },
-    { key: 'floor', label: 'קומה' },
-    { key: 'availability', label: 'זמינות' },
-  ];
-
-  // Find best price (lowest)
-  const minPrice = Math.min(...props.map(p => +p.price || Infinity));
-  const maxArea = Math.max(...props.map(p => +p.area || 0));
-
-  const header = `<tr><th>שדה</th>${props.map(p => `<th>
-    <div>${p.name}</div>
-    ${(p.images||[])[0] ? `<img src="${p.images[0]}" style="width:90px;height:60px;object-fit:cover;border-radius:6px;margin-top:8px">` : ''}
-  </th>`).join('')}</tr>`;
-
-  const rows = fields.map(f => {
-    const cells = props.map(p => {
-      let val = p[f.key] || '—';
-      let cls = '';
-      if (f.key === 'price' && +p[f.key] === minPrice) cls = 'best';
-      if (f.key === 'area' && +p[f.key] === maxArea) cls = 'best';
-      if (f.key === 'availability' && p[f.key] === 'מיידי') cls = 'best';
-      return `<td class="${cls}">${val}${f.key === 'price' || f.key === 'management' ? (p[f.key] ? ' ₪' : '') : ''}</td>`;
-    }).join('');
-    return `<tr><td>${f.label}</td>${cells}</tr>`;
-  }).join('');
-
-  // Monthly cost row
-  const monthlyRow = `<tr><td>שכ"ד חודשי</td>${props.map(p => {
-    const m = p.area && p.price ? Math.round(+p.area * +p.price) : null;
-    return `<td>${m ? '₪' + m.toLocaleString('he-IL') : '—'}</td>`;
-  }).join('')}</tr>`;
-
-  document.getElementById('compareBody').innerHTML = `
-    <table class="compare-table">
-      <thead>${header}</thead>
-      <tbody>${rows}${monthlyRow}</tbody>
-    </table>
-    <div style="padding:16px 16px 0;font-size:12px;color:var(--text-muted)">
-      ✅ ירוק = הטוב ביותר בקטגוריה זו
-    </div>
-  `;
-
-  document.getElementById('compareModal').classList.add('open');
-}
-
-function closeCompare() {
-  document.getElementById('compareModal').classList.remove('open');
-}
-
-// ─── Init ───
-if (loadData()) {
-  document.getElementById('clientGreeting').innerHTML =
-    `שלום, <strong>${clientName}</strong> · ${allProps.length} נכסים נבחרו עבורך`;
-  document.title = `OfficeSmart — נכסים עבור ${clientName}`;
-  renderCards();
-}
-
-// Close modal on overlay click
-document.getElementById('compareModal').addEventListener('click', function(e) {
-  if (e.target === this) closeCompare();
-});
+document.getElementById('login-btn').addEventListener('click', tryLogin);
+document.getElementById('login-pass').addEventListener('keydown', function(e){if(e.key==='Enter')tryLogin();});
+document.getElementById('cmp-modal').addEventListener('click', function(e){if(e.target===this)closeCmp();});
+})();
 </script>
 </body>
 </html>
