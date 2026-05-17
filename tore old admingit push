@@ -1,0 +1,26 @@
+[33m24de345[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m replace admin
+[33m4a45460[m add new client form
+[33m7029c9a[m Update netlify.toml
+[33m150f325[m Update jsonbin.js
+[33mde45dfe[m fix admin direct jsonbin
+[33m12e35e8[m use master key only
+[33m8137ee6[m fix jsonbin PUT
+[33m4eb2ffa[m restore file
+[33md114bd8[m Rename office-tour-TEMPLATE.html.html to office-tour-TEMPLATE.html
+[33m371f4ff[m fix omAllClients
+[33mb18fdbc[m fix filename again
+[33m0950b07[m fix syntax error
+[33mde08fc8[m fix filename
+[33m2e76b7c[m fix all blob references
+[33m6dbc199[m fix blob stubs
+[33m7d147b5[m rename files
+[33ma253fb0[m Create netlify.toml
+[33mef49233[m fix: Netlify Function proxy for JSONBin
+[33m38319d1[m fix: login timeout fallback
+[33m996453a[m revert: direct JSONBin calls
+[33m0aa15ee[m fix: JSONBin proxy via Netlify Function
+[33m51409b5[m fix: login button shows loading state
+[33m1d6185a[m fix: wait for remote data before checking password
+[33m8d0e8d9[m fix: client sees only assigned properties
+[33mba00b0d[m fix: correct tour link path for GitHub Pages
+[33m98dbdef[m fix: replace Netlify Blobs with JSONBin
