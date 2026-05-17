@@ -2576,7 +2576,7 @@ textarea { min-height: 72px; resize: vertical; }
         console.log('[pdf import pool] failed', e);
         alert('שגיאה בפענוח PDF');
       }
-    })();
+    window.openTourModal=openTourModal;window.closeTourModal=closeTourModal;window.openAddTourPropForm=openAddTourPropForm;window.cancelAddProp=cancelAddProp;window.confirmAddProp=confirmAddProp;window.generateTourLink=generateTourLink;window.copyTourLink=copyTourLink;window.removeTourProp=removeTourProp;})();
   }
 
   async function extractPdfTableRows(doc) {
