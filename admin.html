@@ -2985,11 +2985,13 @@ textarea { min-height: 72px; resize: vertical; }
     _renderTourProps();
     document.getElementById('modal-tour').style.display = 'flex';
   }
+  window.openTourModal = openTourModal;
 
   function closeTourModal() {
     document.getElementById('modal-tour').style.display = 'none';
     _tourClientId = null; _tourProps = [];
   }
+  window.closeTourModal = closeTourModal;
 
   function _renderTourProps() {
     var host = document.getElementById('tm-props-list');
@@ -2998,13 +3000,16 @@ textarea { min-height: 72px; resize: vertical; }
   }
 
   function removeTourProp(i) { _tourProps.splice(i,1); _renderTourProps(); }
+  window.removeTourProp = removeTourProp;
 
   function openAddTourPropForm() {
     document.getElementById('tm-prop-form').style.display = 'block';
     ['tpf-name','tpf-address','tpf-size','tpf-price','tpf-mgmt','tpf-floor','tpf-avail','tpf-images','tpf-notes'].forEach(function(id){ document.getElementById(id).value=''; });
   }
+  window.openAddTourPropForm = openAddTourPropForm;
 
   function cancelAddProp() { document.getElementById('tm-prop-form').style.display='none'; }
+  window.cancelAddProp = cancelAddProp;
 
   function confirmAddProp() {
     var name = document.getElementById('tpf-name').value.trim();
@@ -3015,6 +3020,7 @@ textarea { min-height: 72px; resize: vertical; }
     document.getElementById('tm-prop-form').style.display='none';
     _renderTourProps();
   }
+  window.confirmAddProp = confirmAddProp;
 
   function generateTourLink() {
     if (!_tourProps.length) { alert('הוסף לפחות נכס אחד'); return; }
@@ -3027,11 +3033,13 @@ textarea { min-height: 72px; resize: vertical; }
     var a=document.getElementById('tm-link-open'); if(a) a.href=url;
     document.getElementById('tm-link-wrap').style.display='block';
   }
+  window.generateTourLink = generateTourLink;
 
   function copyTourLink() {
     try { navigator.clipboard.writeText(document.getElementById('tm-link-out').value); } catch(e){}
     alert('הקישור הועתק!');
   }
+  window.copyTourLink = copyTourLink;
 
 })();
 </script>
