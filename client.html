@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OfficeSmart — הנכסים שלך</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f4f0;
+    --surface: #ffffff;
+    --surface2: #f0efe9;
+    --border: #e5e3db;
+    --accent: #1a1a2e;
+    --accent2: #4f46e5;
+    --green: #16a34a;
+    --text: #1a1a2e;
+    --text-muted: #6b6b80;
+    --text-dim: #a0a0b0;
+    --gold: #d4a017;
+    --radius: 14px;
+    --font: 'Heebo', sans-serif;
+    --shadow: 0 2px 16px rgba(0,0,0,.08);
+    --shadow-hover: 0 8px 40px rgba(0,0,0,.14);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    direction: rtl;
+  }
+
+  /* ─── Header ─── */
+  header {
+    background: var(--accent);
+    padding: 0 32px;
+    height: 68px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .logo {
+    font-size: 22px;
+    font-weight: 900;
+    color: #fff;
+    letter-spacing: -0.5px;
+  }
+
+  .logo span { font-weight: 300; opacity: .5; }
+
+  .client-greeting {
+    color: rgba(255,255,255,.7);
+    font-size: 14px;
+  }
+
+  .client-greeting strong { color: #fff; font-weight: 700; }
+
+  /* ─── Hero bar ─── */
+  .hero-bar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 32px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    box-shadow: var(--shadow);
+  }
+
+  .search-wrap {
+    position: relative;
+    flex: 1;
+    min-width: 200px;
+  }
+
+  .search-wrap input {
+    width: 100%;
+    padding: 10px 14px 10px 40px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-family: var(--font);
+    font-size: 14px;
+    background: var(--bg);
+    outline: none;
+    transition: border-color .2s;
+  }
+
+  .search-wrap input:focus { border-color: var(--accent2); }
+  .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-dim); }
+
+  .filter-group { display: flex; gap: 8px; align-items: center; }
+
+  .filter-chip {
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    font-family: var(--font);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all .2s;
+    color: var(--text-muted);
+  }
+
+  .filter-chip.active {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+
+  .filter-chip:hover:not(.active) { border-color: var(--accent2); color: var(--accent2); }
+
+  .sort-select {
+    padding: 9px 14px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-family: var(--font);
+    font-size: 13px;
+    background: var(--bg);
+    outline: none;
+    color: var(--text);
+    cursor: pointer;
+  }
+
+  .compare-btn {
+    padding: 9px 18px;
+    border-radius: 8px;
+    border: none;
+    background: var(--accent2);
+    color: #fff;
+    font-family: var(--font);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .compare-btn:hover { background: #3730a3; }
+  .compare-btn:disabled { opacity: .4; cursor: not-allowed; }
+
+  /* ─── Grid ─── */
+  .grid-wrap { max-width: 1280px; margin: 0 auto; padding: 28px 32px; }
+
+  .results-meta {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 24px;
+  }
+
+  /* ─── Property Card ─── */
+  .prop-card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    transition: box-shadow .3s, transform .3s;
+    position: relative;
+    cursor: pointer;
+  }
+
+  .prop-card:hover {
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-3px);
+  }
+
+  .prop-card.compare-selected {
+    outline: 3px solid var(--accent2);
+    outline-offset: -3px;
+  }
+
+  /* Image Gallery */
+  .card-gallery {
+    position: relative;
+    height: 200px;
+    overflow: hidden;
+    background: var(--surface2);
+  }
+
+  .gallery-inner {
+    display: flex;
+    height: 100%;
+    transition: transform .35s ease;
+  }
+
+  .gallery-slide {
+    min-width: 100%;
+    height: 100%;
+    object-fit: cover;
+    background: var(--border);
+  }
+
+  .gallery-slide.placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 60px;
+    color: var(--text-dim);
+  }
+
+  .gallery-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0,0,0,.45);
+    border: none;
+    color: #fff;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background .2s;
+    z-index: 2;
+  }
+
+  .gallery-nav:hover { background: rgba(0,0,0,.7); }
+  .gallery-nav.prev { right: 8px; }
+  .gallery-nav.next { left: 8px; }
+
+  .gallery-dots {
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 5px;
+  }
+
+  .gallery-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.5);
+    transition: background .2s;
+  }
+
+  .gallery-dot.active { background: #fff; }
+
+  /* Badges on image */
+  .img-badges {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    z-index: 2;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    backdrop-filter: blur(8px);
+  }
+
+  .badge-green { background: rgba(22,163,74,.85); color: #fff; }
+  .badge-yellow { background: rgba(212,160,23,.85); color: #fff; }
+  .badge-dark { background: rgba(0,0,0,.65); color: #fff; }
+
+  /* Fav button */
+  .fav-btn {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255,255,255,.9);
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    transition: transform .2s;
+    backdrop-filter: blur(6px);
+  }
+
+  .fav-btn:hover { transform: scale(1.15); }
+  .fav-btn.active { background: #fff8; }
+
+  /* Card Body */
+  .card-body { padding: 18px; }
+
+  .card-name {
+    font-size: 17px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    line-height: 1.3;
+  }
+
+  .card-address {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .card-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    background: var(--bg);
+    border-radius: 10px;
+    padding: 12px;
+  }
+
+  .stat { text-align: center; }
+  .stat-val { font-size: 16px; font-weight: 700; color: var(--accent); }
+  .stat-label { font-size: 10px; color: var(--text-dim); margin-top: 2px; font-weight: 600; letter-spacing: .4px; text-transform: uppercase; }
+
+  .card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+  }
+
+  .monthly-est {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .monthly-val {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--accent2);
+  }
+
+  .compare-toggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--text-muted);
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .compare-toggle input { cursor: pointer; }
+
+  /* ─── Notes ─── */
+  .card-notes {
+    margin-top: 10px;
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.5;
+    background: var(--surface2);
+    border-radius: 6px;
+    padding: 8px 10px;
+  }
+
+  /* ─── Compare Modal ─── */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.5);
+    z-index: 200;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    backdrop-filter: blur(4px);
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--surface);
+    border-radius: var(--radius);
+    max-width: 900px;
+    width: 100%;
+    max-height: 85vh;
+    overflow-y: auto;
+  }
+
+  .modal-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    background: var(--surface);
+    z-index: 1;
+  }
+
+  .modal-title { font-size: 16px; font-weight: 700; }
+
+  .close-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: var(--bg);
+    cursor: pointer;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background .2s;
+  }
+
+  .close-btn:hover { background: var(--border); }
+
+  .compare-table { width: 100%; border-collapse: collapse; }
+  .compare-table th, .compare-table td {
+    padding: 12px 16px;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+  }
+
+  .compare-table th {
+    background: var(--bg);
+    font-weight: 700;
+    font-size: 13px;
+  }
+
+  .compare-table td:first-child {
+    text-align: right;
+    color: var(--text-muted);
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+    background: var(--bg);
+  }
+
+  .compare-table .best { color: var(--green); font-weight: 700; }
+  .compare-table .img-cell img {
+    width: 80px;
+    height: 56px;
+    object-fit: cover;
+    border-radius: 6px;
+  }
+
+  /* ─── Empty / Error ─── */
+  .full-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    flex-direction: column;
+    gap: 16px;
+    text-align: center;
+    padding: 32px;
+  }
+
+  .err-icon { font-size: 64px; }
+  .err-title { font-size: 22px; font-weight: 700; }
+  .err-sub { color: var(--text-muted); font-size: 15px; max-width: 380px; line-height: 1.6; }
+
+  /* ─── Favorites tab ─── */
+  .fav-bar {
+    background: var(--surface2);
+    padding: 10px 32px;
+    font-size: 13px;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .fav-bar strong { color: var(--text); }
+
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+
+  @media (max-width: 640px) {
+    header { padding: 0 16px; }
+    .hero-bar { padding: 12px 16px; }
+    .grid-wrap { padding: 16px; }
+    .grid { grid-template-columns: 1fr; }
+    .filter-group { flex-wrap: wrap; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Office<span>Smart</span></div>
+  <div class="client-greeting" id="clientGreeting"></div>
+</header>
+
+<!-- Filter bar -->
+<div class="hero-bar">
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="searchInput" placeholder="חפש לפי שם או כתובת..." oninput="renderCards()">
+  </div>
+  <div class="filter-group">
+    <button class="filter-chip active" data-filter="all" onclick="setFilter('all',this)">הכל</button>
+    <button class="filter-chip" data-filter="fav" onclick="setFilter('fav',this)">❤️ מועדפים</button>
+    <button class="filter-chip" data-filter="מיידי" onclick="setFilter('מיידי',this)">זמין מיידית</button>
+  </div>
+  <select class="sort-select" id="sortSelect" onchange="renderCards()">
+    <option value="default">מיון: ברירת מחדל</option>
+    <option value="price_asc">מחיר — נמוך לגבוה</option>
+    <option value="price_desc">מחיר — גבוה לנמוך</option>
+    <option value="area_asc">שטח — קטן לגדול</option>
+    <option value="area_desc">שטח — גדול לקטן</option>
+  </select>
+  <button class="compare-btn" id="compareBtn" disabled onclick="openCompare()">
+    ⚖️ השווה (<span id="compareCount">0</span>)
+  </button>
+</div>
+
+<!-- Results -->
+<div class="grid-wrap">
+  <div class="results-meta">
+    <span id="resultsMeta"></span>
+    <span id="favMeta" style="color:var(--gold)"></span>
+  </div>
+  <div class="grid" id="propGrid"></div>
+</div>
+
+<!-- Compare Modal -->
+<div class="modal-overlay" id="compareModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">⚖️ השוואת נכסים</div>
+      <button class="close-btn" onclick="closeCompare()">×</button>
+    </div>
+    <div id="compareBody" style="padding:0 0 20px"></div>
+  </div>
+</div>
+
+<script>
+// ─── Load data from URL ───
+let allProps = [];
+let clientName = '';
+let favorites = new Set(JSON.parse(localStorage.getItem('os_favs') || '[]'));
+let compareSet = new Set();
+let currentFilter = 'all';
+
+function loadData() {
+  const params = new URLSearchParams(window.location.search);
+  const d = params.get('d');
+  if (!d) {
+    showError('לא נמצאו נכסים', 'הקישור שקיבלת אינו תקין. אנא פנה לסוכן שלך לקבלת קישור חדש.');
+    return false;
+  }
+  try {
+    const decoded = JSON.parse(decodeURIComponent(escape(atob(d))));
+    allProps = decoded.props || [];
+    clientName = decoded.client || 'לקוח';
+    return true;
+  } catch(e) {
+    showError('שגיאה בטעינת הנכסים', 'הקישור פגום. אנא פנה לסוכן שלך לקבלת קישור חדש.');
+    return false;
+  }
+}
+
+function showError(title, sub) {
+  document.querySelector('.hero-bar').style.display = 'none';
+  document.querySelector('.grid-wrap').innerHTML = `
+    <div class="full-center">
+      <div class="err-icon">🔗</div>
+      <div class="err-title">${title}</div>
+      <div class="err-sub">${sub}</div>
+    </div>
+  `;
+}
+
+// ─── Render ───
+function getFiltered() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  const sort = document.getElementById('sortSelect').value;
+
+  let props = allProps.filter(p => {
+    const matchSearch = !q || p.name.toLowerCase().includes(q) || p.address.toLowerCase().includes(q);
+    const matchFilter =
+      currentFilter === 'all' ? true :
+      currentFilter === 'fav' ? favorites.has(p.id) :
+      p.availability === currentFilter;
+    return matchSearch && matchFilter;
+  });
+
+  if (sort === 'price_asc') props.sort((a,b) => (+a.price||999) - (+b.price||999));
+  else if (sort === 'price_desc') props.sort((a,b) => (+b.price||0) - (+a.price||0));
+  else if (sort === 'area_asc') props.sort((a,b) => (+a.area||999999) - (+b.area||999999));
+  else if (sort === 'area_desc') props.sort((a,b) => (+b.area||0) - (+a.area||0));
+
+  return props;
+}
+
+function renderCards() {
+  const props = getFiltered();
+  const grid = document.getElementById('propGrid');
+  const favCount = allProps.filter(p => favorites.has(p.id)).length;
+
+  document.getElementById('resultsMeta').textContent = `${props.length} נכסים מוצגים מתוך ${allProps.length}`;
+  document.getElementById('favMeta').textContent = favCount ? `❤️ ${favCount} מועדפים` : '';
+
+  if (!props.length) {
+    grid.innerHTML = `<div class="full-center" style="grid-column:1/-1;min-height:40vh"><div class="err-icon">🔍</div><div class="err-title">לא נמצאו תוצאות</div><div class="err-sub">נסה לשנות את הסינון</div></div>`;
+    return;
+  }
+
+  grid.innerHTML = props.map(p => buildCard(p)).join('');
+
+  // Init galleries
+  props.forEach(p => initGallery(p.id, p.images || []));
+
+  updateCompareUI();
+}
+
+function buildCard(p) {
+  const imgs = p.images || [];
+  const isFav = favorites.has(p.id);
+  const inCompare = compareSet.has(p.id);
+  const monthly = p.area && p.price ? Math.round(+p.area * +p.price).toLocaleString('he-IL') : null;
+  const total = monthly && p.management
+    ? Math.round(+p.area * (+p.price + +p.management)).toLocaleString('he-IL')
+    : null;
+
+  const availBadge = p.availability === 'מיידי'
+    ? `<div class="badge badge-green">${p.availability}</div>`
+    : `<div class="badge badge-yellow">${p.availability}</div>`;
+
+  const imgCount = imgs.length > 1 ? `<div class="badge badge-dark">📷 ${imgs.length}</div>` : '';
+
+  const dotsHtml = imgs.length > 1
+    ? `<div class="gallery-dots">${imgs.map((_,i) => `<div class="gallery-dot${i===0?' active':''}"></div>`).join('')}</div>`
+    : '';
+
+  const navHtml = imgs.length > 1
+    ? `<button class="gallery-nav prev" onclick="gallerNav('${p.id}',1,event)">‹</button>
+       <button class="gallery-nav next" onclick="gallerNav('${p.id}',-1,event)">›</button>`
+    : '';
+
+  const slidesHtml = imgs.length
+    ? imgs.map(url => `<img class="gallery-slide" src="${url}" onerror="this.style.display='none'">`).join('')
+    : `<div class="gallery-slide placeholder">🏢</div>`;
+
+  return `
+    <div class="prop-card ${inCompare ? 'compare-selected' : ''}" id="card-${p.id}">
+      <div class="card-gallery">
+        <div class="gallery-inner" id="gal-${p.id}">${slidesHtml}</div>
+        ${navHtml}
+        ${dotsHtml}
+        <div class="img-badges">${availBadge}${imgCount}</div>
+        <button class="fav-btn ${isFav ? 'active' : ''}" onclick="toggleFav('${p.id}',event)" title="מועדף">
+          ${isFav ? '❤️' : '🤍'}
+        </button>
+      </div>
+      <div class="card-body">
+        <div class="card-name">${p.name}</div>
+        <div class="card-address">📍 ${p.address}${p.floor ? ` · קומה ${p.floor}` : ''}</div>
+        <div class="card-stats">
+          <div class="stat">
+            <div class="stat-val">${p.area ? p.area.toLocaleString() : '—'}</div>
+            <div class="stat-label">מ"ר</div>
+          </div>
+          <div class="stat">
+            <div class="stat-val">${p.price ? '₪' + p.price : '—'}</div>
+            <div class="stat-label">למ"ר</div>
+          </div>
+          <div class="stat">
+            <div class="stat-val">${p.management ? '₪' + p.management : '—'}</div>
+            <div class="stat-label">ניהול</div>
+          </div>
+        </div>
+        ${monthly ? `
+        <div class="card-footer">
+          <div>
+            <div class="monthly-est">שכ"ד חודשי משוער</div>
+            <div class="monthly-val">₪${monthly}</div>
+            ${total ? `<div class="monthly-est">כולל ניהול: ₪${total}</div>` : ''}
+          </div>
+          <label class="compare-toggle">
+            <input type="checkbox" ${inCompare ? 'checked' : ''} onchange="toggleCompare('${p.id}',event)">
+            להשוואה
+          </label>
+        </div>
+        ` : ''}
+        ${p.notes ? `<div class="card-notes">💬 ${p.notes}</div>` : ''}
+      </div>
+    </div>
+  `;
+}
+
+// ─── Gallery ───
+const galState = {};
+
+function initGallery(id, imgs) {
+  galState[id] = { idx: 0, count: imgs.length };
+}
+
+function gallerNav(id, dir, e) {
+  e.stopPropagation();
+  const s = galState[id];
+  if (!s || s.count < 2) return;
+  s.idx = (s.idx - dir + s.count) % s.count;
+  const inner = document.getElementById(`gal-${id}`);
+  if (inner) {
+    inner.style.transform = `translateX(${s.idx * 100}%)`;
+    // update dots
+    const card = document.getElementById(`card-${id}`);
+    if (card) {
+      card.querySelectorAll('.gallery-dot').forEach((d,i) => d.classList.toggle('active', i === s.idx));
+    }
+  }
+}
+
+// ─── Favorites ───
+function toggleFav(id, e) {
+  e.stopPropagation();
+  if (favorites.has(id)) favorites.delete(id);
+  else favorites.add(id);
+  localStorage.setItem('os_favs', JSON.stringify([...favorites]));
+  renderCards();
+}
+
+// ─── Filter ───
+function setFilter(val, el) {
+  currentFilter = val;
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  renderCards();
+}
+
+// ─── Compare ───
+function toggleCompare(id, e) {
+  e.stopPropagation();
+  if (compareSet.has(id)) compareSet.delete(id);
+  else if (compareSet.size < 4) compareSet.add(id);
+  else { e.target.checked = false; alert('ניתן להשוות עד 4 נכסים'); return; }
+  updateCompareUI();
+  const card = document.getElementById(`card-${id}`);
+  if (card) card.classList.toggle('compare-selected', compareSet.has(id));
+}
+
+function updateCompareUI() {
+  const btn = document.getElementById('compareBtn');
+  document.getElementById('compareCount').textContent = compareSet.size;
+  btn.disabled = compareSet.size < 2;
+}
+
+function openCompare() {
+  const props = allProps.filter(p => compareSet.has(p.id));
+  const fields = [
+    { key: 'address', label: 'כתובת' },
+    { key: 'area', label: 'שטח (מ"ר)' },
+    { key: 'price', label: 'מחיר למ"ר (₪)' },
+    { key: 'management', label: 'דמי ניהול' },
+    { key: 'floor', label: 'קומה' },
+    { key: 'availability', label: 'זמינות' },
+  ];
+
+  // Find best price (lowest)
+  const minPrice = Math.min(...props.map(p => +p.price || Infinity));
+  const maxArea = Math.max(...props.map(p => +p.area || 0));
+
+  const header = `<tr><th>שדה</th>${props.map(p => `<th>
+    <div>${p.name}</div>
+    ${(p.images||[])[0] ? `<img src="${p.images[0]}" style="width:90px;height:60px;object-fit:cover;border-radius:6px;margin-top:8px">` : ''}
+  </th>`).join('')}</tr>`;
+
+  const rows = fields.map(f => {
+    const cells = props.map(p => {
+      let val = p[f.key] || '—';
+      let cls = '';
+      if (f.key === 'price' && +p[f.key] === minPrice) cls = 'best';
+      if (f.key === 'area' && +p[f.key] === maxArea) cls = 'best';
+      if (f.key === 'availability' && p[f.key] === 'מיידי') cls = 'best';
+      return `<td class="${cls}">${val}${f.key === 'price' || f.key === 'management' ? (p[f.key] ? ' ₪' : '') : ''}</td>`;
+    }).join('');
+    return `<tr><td>${f.label}</td>${cells}</tr>`;
+  }).join('');
+
+  // Monthly cost row
+  const monthlyRow = `<tr><td>שכ"ד חודשי</td>${props.map(p => {
+    const m = p.area && p.price ? Math.round(+p.area * +p.price) : null;
+    return `<td>${m ? '₪' + m.toLocaleString('he-IL') : '—'}</td>`;
+  }).join('')}</tr>`;
+
+  document.getElementById('compareBody').innerHTML = `
+    <table class="compare-table">
+      <thead>${header}</thead>
+      <tbody>${rows}${monthlyRow}</tbody>
+    </table>
+    <div style="padding:16px 16px 0;font-size:12px;color:var(--text-muted)">
+      ✅ ירוק = הטוב ביותר בקטגוריה זו
+    </div>
+  `;
+
+  document.getElementById('compareModal').classList.add('open');
+}
+
+function closeCompare() {
+  document.getElementById('compareModal').classList.remove('open');
+}
+
+// ─── Init ───
+if (loadData()) {
+  document.getElementById('clientGreeting').innerHTML =
+    `שלום, <strong>${clientName}</strong> · ${allProps.length} נכסים נבחרו עבורך`;
+  document.title = `OfficeSmart — נכסים עבור ${clientName}`;
+  renderCards();
+}
+
+// Close modal on overlay click
+document.getElementById('compareModal').addEventListener('click', function(e) {
+  if (e.target === this) closeCompare();
+});
+</script>
+</body>
+</html>

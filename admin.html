@@ -1,2975 +1,724 @@
 <!DOCTYPE html>
-<html dir="rtl" lang="he">
+<html lang="he" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>OfficeMatch · ניהול</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;600;700;800&display=swap" rel="stylesheet">
-<script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<title>OfficeSmart — ניהול</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
 <style>
-:root {
-  --accent: #10B981;
-  --accent-d: #059669;
-  --bg: #f8fafc;
-  --card: #ffffff;
-  --border: #e2e8f0;
-  --text: #0f172a;
-  --muted: #64748b;
-  --sidebar: #ffffff;
-  --shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
-  --r: 12px;
-}
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  font-family: 'Heebo', sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-  -webkit-font-smoothing: antialiased;
-}
-a { color: var(--accent); text-decoration: none; font-weight: 600; }
-a:hover { text-decoration: underline; }
+  :root {
+    --bg: #0f0f13;
+    --surface: #17171e;
+    --surface2: #1e1e28;
+    --border: #2a2a38;
+    --accent: #6c63ff;
+    --accent2: #a78bfa;
+    --green: #22c55e;
+    --red: #ef4444;
+    --text: #e8e8f0;
+    --text-muted: #7878a0;
+    --text-dim: #4a4a65;
+    --radius: 12px;
+    --font: 'Heebo', sans-serif;
+  }
 
-.login-wrap {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-  background: linear-gradient(160deg, #f0fdf4 0%, #ecfdf5 40%, #f8fafc 100%);
-}
-.login-card {
-  width: 100%;
-  max-width: 400px;
-  background: var(--card);
-  border-radius: 16px;
-  padding: 32px;
-  box-shadow: 0 12px 40px rgba(15, 23, 42, 0.1);
-  border: 1px solid var(--border);
-}
-.login-card h1 { font-size: 22px; font-weight: 800; margin-bottom: 8px; }
-.login-card p { font-size: 14px; color: var(--muted); margin-bottom: 20px; }
-.login-card input {
-  width: 100%;
-  padding: 12px 14px;
-  border-radius: 10px;
-  border: 1px solid var(--border);
-  font-size: 15px;
-  margin-bottom: 12px;
-  font-family: inherit;
-}
-.login-card button {
-  width: 100%;
-  padding: 14px;
-  border: none;
-  border-radius: 50px;
-  background: var(--accent);
-  color: #fff;
-  font-weight: 800;
-  font-size: 16px;
-  cursor: pointer;
-  font-family: inherit;
-  transition: background 0.2s ease;
-}
-.login-card button:hover { background: var(--accent-d); }
-.login-err { color: #dc2626; font-size: 13px; margin-top: 8px; display: none; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
 
-.app-shell { display: none; min-height: 100vh; }
-.app-shell.visible { display: flex; }
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    direction: rtl;
+  }
 
-.sidebar {
-  width: 240px;
-  flex-shrink: 0;
-  background: var(--sidebar);
-  border-left: 1px solid var(--border);
-  padding: 20px 0;
-  display: flex;
-  flex-direction: column;
-  box-shadow: var(--shadow);
-}
-.sidebar-brand {
-  padding: 0 20px 20px;
-  font-size: 18px;
-  font-weight: 800;
-  color: var(--text);
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 12px;
-}
-.sidebar-brand span { color: var(--accent); }
-.nav-btn {
-  display: block;
-  width: 100%;
-  text-align: right;
-  padding: 12px 20px;
-  border: none;
-  background: transparent;
-  font-family: inherit;
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--muted);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  border-right: 3px solid transparent;
-}
-.nav-btn:hover { background: #f1f5f9; color: var(--text); }
-.nav-btn.active {
-  background: rgba(16, 185, 129, 0.08);
-  color: var(--accent-d);
-  border-right-color: var(--accent);
-}
-.sidebar-footer {
-  margin-top: auto;
-  padding: 16px 20px;
-  border-top: 1px solid var(--border);
-  font-size: 12px;
-  color: var(--muted);
-}
-
-.main {
-  flex: 1;
-  min-width: 0;
-  padding: 24px 28px 40px;
-  overflow-x: auto;
-}
-.main h2 {
-  font-size: 22px;
-  font-weight: 800;
-  margin-bottom: 6px;
-  letter-spacing: -0.3px;
-}
-.sub { font-size: 14px; color: var(--muted); margin-bottom: 22px; }
-
-.panel { display: none; }
-.panel.active { display: block; }
-
-.card {
-  background: var(--card);
-  border-radius: var(--r);
-  border: 1px solid var(--border);
-  padding: 18px 20px;
-  margin-bottom: 16px;
-  box-shadow: var(--shadow);
-}
-
-.table-wrap { overflow-x: auto; border-radius: var(--r); border: 1px solid var(--border); }
-table { width: 100%; border-collapse: collapse; font-size: 13px; background: #fff; }
-th, td { padding: 10px 12px; text-align: right; border-bottom: 1px solid var(--border); vertical-align: middle; }
-th { background: #f8fafc; font-weight: 800; color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; }
-tr:last-child td { border-bottom: none; }
-tr:hover td { background: #fafafa; }
-table tbody tr[data-client-row] { cursor: pointer; }
-table tbody tr[data-client-row]:hover td { background: #ecfdf5; }
-
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 8px 16px;
-  border-radius: 50px;
-  border: none;
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-.btn-primary { background: var(--accent); color: #fff; }
-.btn-primary:hover { background: var(--accent-d); }
-.btn-outline { background: #fff; color: var(--text); border: 1px solid var(--border); }
-.btn-outline:hover { border-color: var(--accent); color: var(--accent); }
-.btn-sm { padding: 6px 12px; font-size: 12px; }
-.btn-danger { background: #fee2e2; color: #b91c1c; }
-.btn-danger:hover { background: #fecaca; }
-
-.badge { display: inline-flex; padding: 3px 10px; border-radius: 50px; font-size: 11px; font-weight: 800; }
-.badge-green { background: #d1fae5; color: #047857; }
-.badge-gray { background: #f1f5f9; color: #64748b; }
-.badge-avail { background: #d1fae5; color: #065f46; }
-.badge-unavail { background: #f1f5f9; color: #475569; }
-.badge-closing { background: #ffedd5; color: #c2410c; }
-
-.form-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 12px;
-}
-label { font-size: 12px; font-weight: 700; color: var(--muted); display: block; margin-bottom: 4px; }
-input, textarea, select {
-  width: 100%;
-  padding: 10px 12px;
-  border-radius: 10px;
-  border: 1px solid var(--border);
-  font-family: inherit;
-  font-size: 14px;
-}
-textarea { min-height: 72px; resize: vertical; }
-.form-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
-
-.dropzone {
-  border: 2px dashed var(--border);
-  border-radius: var(--r);
-  padding: 28px;
-  text-align: center;
-  color: var(--muted);
-  font-size: 14px;
-  cursor: pointer;
-  transition: border-color 0.2s ease, background 0.2s ease;
-  margin-bottom: 12px;
-}
-.dropzone:hover, .dropzone.drag { border-color: var(--accent); background: rgba(16,185,129,0.04); }
-
-.prop-check-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 10px;
-  max-height: 320px;
-  overflow-y: auto;
-  padding: 4px;
-}
-.prop-check {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  padding: 10px 12px;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  background: #fff;
-  cursor: pointer;
-}
-.prop-check input { width: auto; margin-top: 3px; }
-.prop-check span { font-size: 13px; line-height: 1.4; }
-
-.thumb-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
-.thumb {
-  width: 56px;
-  height: 56px;
-  border-radius: 8px;
-  object-fit: cover;
-  border: 1px solid var(--border);
-}
-
-.modal-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  z-index: 1001;
-  background: rgba(15, 23, 42, 0.4);
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
-}
-.modal-overlay.visible { display: flex; }
-.modal-panel {
-  background: #fff;
-  border-radius: 16px;
-  max-width: 520px;
-  width: 100%;
-  max-height: min(92vh, 720px);
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.18);
-  border: 1px solid var(--border);
-}
-.modal-panel-head {
-  padding: 18px 20px 12px;
-  border-bottom: 1px solid var(--border);
-  font-size: 17px;
-  font-weight: 800;
-}
-.modal-panel-body {
-  padding: 16px 20px;
-  overflow-y: auto;
-  flex: 1;
-}
-.modal-panel-foot {
-  padding: 14px 20px 18px;
-  border-top: 1px solid var(--border);
-  display: flex;
-  gap: 10px;
-  justify-content: flex-end;
-  flex-wrap: wrap;
-}
-.client-prop-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 12px;
-  margin-top: 8px;
-  max-height: min(70vh, 720px);
-  overflow-y: auto;
-  padding: 4px 2px 8px;
-}
-.client-prop-card-select {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 12px 14px;
-  background: #fff;
-  cursor: pointer;
-  transition: border-color 0.15s ease, background 0.15s ease;
-}
-.client-prop-card-select:hover {
-  border-color: #94a3b8;
-}
-.client-prop-card-select:has(input:checked) {
-  border-color: var(--accent);
-  background: rgba(16, 185, 129, 0.06);
-}
-.client-prop-card-select input[type="checkbox"] {
-  width: 18px;
-  height: 18px;
-  margin-top: 4px;
-  flex-shrink: 0;
-  cursor: pointer;
-}
-.client-prop-card-inner {
-  flex: 1;
-  min-width: 0;
-}
-.client-prop-dl {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: 6px 12px;
-  font-size: 12px;
-  margin: 0;
-}
-.client-prop-dl dt {
-  margin: 0;
-  color: var(--muted);
-  font-weight: 700;
-  white-space: nowrap;
-}
-.client-prop-dl dd {
-  margin: 0;
-  color: var(--text);
-  line-height: 1.4;
-  word-break: break-word;
-}
-.badge-review {
-  display: inline-flex;
-  align-items: center;
-  padding: 2px 8px;
-  border-radius: 50px;
-  font-size: 11px;
-  font-weight: 800;
-}
-.badge-review.ok { background: #d1fae5; color: #047857; }
-.badge-review.pending { background: #fef3c7; color: #b45309; }
-.cpe-thumb-wrap {
-  position: relative;
-  display: inline-block;
-}
-.pool-import-cards-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  margin-top: 12px;
-}
-.pool-import-card {
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 16px 18px;
-  background: #fafafa;
-}
-.pool-import-card h4 {
-  margin: 0 0 12px;
-  font-size: 15px;
-  font-weight: 800;
-  color: var(--text);
-}
-
-.cpe-thumb-wrap button {
-  position: absolute;
-  top: -6px;
-  left: -6px;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  border: none;
-  background: #fee2e2;
-  color: #b91c1c;
-  font-size: 14px;
-  line-height: 1;
-  cursor: pointer;
-  font-weight: 800;
-}
-
-@media (max-width: 900px) {
-  .app-shell.visible { flex-direction: column; }
-  .sidebar {
-    width: 100%;
-    border-left: none;
+  /* ─── Header ─── */
+  header {
+    background: var(--surface);
     border-bottom: 1px solid var(--border);
-    flex-direction: row;
-    flex-wrap: wrap;
-    padding: 12px;
+    padding: 0 32px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .logo {
+    font-size: 22px;
+    font-weight: 900;
+    letter-spacing: -0.5px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .logo span { font-weight: 300; color: var(--text-muted); -webkit-text-fill-color: var(--text-muted); }
+
+  /* ─── Layout ─── */
+  .main {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 32px;
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: 28px;
+  }
+
+  /* ─── Tabs ─── */
+  .tabs {
+    display: flex;
+    gap: 4px;
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 6px;
+    margin-bottom: 24px;
+  }
+
+  .tab {
+    flex: 1;
+    padding: 10px 16px;
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    color: var(--text-muted);
+    font-family: var(--font);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all .2s;
+  }
+
+  .tab.active {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  /* ─── Cards ─── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+  }
+
+  .card-title {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: .8px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+  }
+
+  /* ─── Form ─── */
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
     gap: 6px;
   }
-  .sidebar-brand { width: 100%; border: none; margin: 0; padding: 8px 12px; }
-  .nav-btn {
-    width: auto;
-    flex: 1;
-    min-width: 120px;
-    border-right: none;
-    border-radius: 50px;
-    padding: 10px 12px;
-    text-align: center;
+
+  .form-group.full { grid-column: 1 / -1; }
+
+  label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    letter-spacing: .4px;
   }
-  .nav-btn.active { border-right: none; box-shadow: 0 0 0 2px var(--accent); }
-  .sidebar-footer { width: 100%; border: none; padding-top: 8px; }
-}
+
+  input, select, textarea {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 14px;
+    transition: border-color .2s;
+    outline: none;
+    width: 100%;
+  }
+
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--accent);
+  }
+
+  textarea { resize: vertical; min-height: 72px; }
+
+  select option { background: var(--surface2); }
+
+  /* ─── Buttons ─── */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 22px;
+    border-radius: 8px;
+    font-family: var(--font);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all .2s;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  .btn-primary:hover { background: #5a52e0; transform: translateY(-1px); }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+  }
+
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+  .btn-danger {
+    background: transparent;
+    color: var(--red);
+    border: 1px solid transparent;
+    padding: 6px 10px;
+    font-size: 13px;
+  }
+
+  .btn-danger:hover { background: rgba(239,68,68,.1); }
+
+  .btn-green {
+    background: var(--green);
+    color: #fff;
+  }
+
+  .btn-green:hover { background: #16a34a; }
+
+  /* ─── Properties list ─── */
+  .prop-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 8px;
+    max-height: 420px;
+    overflow-y: auto;
+  }
+
+  .prop-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: var(--surface2);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    transition: border-color .2s;
+    cursor: pointer;
+  }
+
+  .prop-item:hover { border-color: var(--accent); }
+
+  .prop-item.selected { border-color: var(--accent); background: rgba(108,99,255,.08); }
+
+  .prop-thumb {
+    width: 48px;
+    height: 36px;
+    border-radius: 6px;
+    background: var(--border);
+    overflow: hidden;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-dim);
+    font-size: 18px;
+  }
+
+  .prop-thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+  .prop-info { flex: 1; min-width: 0; }
+  .prop-name { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .prop-meta { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+  .prop-actions { display: flex; gap: 4px; }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 8px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .badge-green { background: rgba(34,197,94,.15); color: var(--green); }
+  .badge-yellow { background: rgba(234,179,8,.15); color: #eab308; }
+
+  /* ─── Client panel ─── */
+  .client-section { display: flex; flex-direction: column; gap: 20px; }
+
+  .client-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+  }
+
+  .client-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+
+  .client-name { font-size: 15px; font-weight: 700; }
+  .client-count { font-size: 12px; color: var(--text-muted); }
+
+  .selection-counter {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+  }
+
+  .counter-num {
+    font-size: 28px;
+    font-weight: 900;
+    color: var(--accent2);
+    line-height: 1;
+  }
+
+  /* ─── URL output ─── */
+  .url-box {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 12px;
+    color: var(--text-muted);
+    word-break: break-all;
+    font-family: monospace;
+    max-height: 80px;
+    overflow-y: auto;
+    line-height: 1.6;
+  }
+
+  /* ─── Selected props in client ─── */
+  .selected-list { display: flex; flex-direction: column; gap: 6px; max-height: 220px; overflow-y: auto; }
+
+  .selected-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: var(--surface2);
+    border-radius: 6px;
+    font-size: 13px;
+  }
+
+  .remove-sel {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    transition: color .2s;
+  }
+
+  .remove-sel:hover { color: var(--red); }
+
+  /* ─── Image URLs ─── */
+  .img-input-row { display: flex; gap: 8px; margin-bottom: 8px; }
+  .img-input-row input { flex: 1; }
+
+  /* ─── Empty state ─── */
+  .empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-dim);
+  }
+
+  .empty-icon { font-size: 40px; margin-bottom: 12px; }
+
+  /* ─── Toast ─── */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 12px 24px;
+    border-radius: 40px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: transform .3s cubic-bezier(.34,1.56,.64,1);
+    z-index: 999;
+    white-space: nowrap;
+  }
+
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* ─── Scrollbar ─── */
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+
+  /* ─── Images preview ─── */
+  .img-preview-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+  .img-preview { width: 60px; height: 45px; border-radius: 6px; object-fit: cover; border: 1px solid var(--border); }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
 </style>
 </head>
 <body>
 
-<div id="login-wrap" class="login-wrap">
-  <div class="login-card">
-    <div style="display:flex;justify-content:center">
-      <svg viewBox="0 0 155 36" xmlns="http://www.w3.org/2000/svg" height="32" role="img" aria-label="OfficeMatch">
-        <rect x="1" y="1" width="26" height="26" rx="7" fill="#10B981"/>
-        <polyline points="6,14 11,19 20,9" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-        <text x="34" y="23" font-family="Heebo,sans-serif" font-weight="900" font-size="20" fill="#1a1a2e">Office</text>
-        <text x="94" y="23" font-family="Heebo,sans-serif" font-weight="900" font-size="20" fill="#10B981">Match</text>
-      </svg>
+<header>
+  <div class="logo">Office<span>Smart</span> <span style="font-size:12px;margin-right:8px">פאנל ניהול</span></div>
+  <div style="font-size:13px;color:var(--text-muted)">v2.0 — URL Encoded</div>
+</header>
+
+<div class="main">
+  <!-- ─── LEFT COLUMN ─── -->
+  <div>
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('properties')">🏢 נכסים (<span id="propCount">0</span>)</button>
+      <button class="tab" onclick="switchTab('add')">➕ הוסף נכס</button>
     </div>
-    <h1 style="margin-top:10px">Admin</h1>
-    <p>הזן סיסמה לגישה לפאנל הניהול</p>
-    <input type="password" id="login-pass" placeholder="סיסמה" autocomplete="current-password">
-    <button type="button" id="login-btn">כניסה</button>
-    <div id="login-err" class="login-err">סיסמה שגויה</div>
+
+    <!-- Properties List -->
+    <div id="tab-properties" class="tab-content active">
+      <div class="card">
+        <div class="section-header">
+          <div class="card-title">כל הנכסים</div>
+          <input type="text" id="searchInput" placeholder="חיפוש נכס..." style="width:200px;padding:7px 12px;font-size:13px">
+        </div>
+        <div id="propList" class="prop-list">
+          <div class="empty"><div class="empty-icon">🏢</div>אין נכסים עדיין</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Property -->
+    <div id="tab-add" class="tab-content">
+      <div class="card">
+        <div class="card-title" id="formTitle">הוספת נכס חדש</div>
+        <div class="form-grid">
+          <div class="form-group full">
+            <label>שם הנכס *</label>
+            <input type="text" id="f-name" placeholder="לדוג׳ מגדל שרונה 18">
+          </div>
+          <div class="form-group full">
+            <label>כתובת *</label>
+            <input type="text" id="f-address" placeholder="רחוב, עיר">
+          </div>
+          <div class="form-group">
+            <label>שטח (מ"ר)</label>
+            <input type="number" id="f-area" placeholder="300">
+          </div>
+          <div class="form-group">
+            <label>מחיר למ"ר (₪)</label>
+            <input type="number" id="f-price" placeholder="85">
+          </div>
+          <div class="form-group">
+            <label>דמי ניהול (₪/מ"ר)</label>
+            <input type="number" id="f-mgmt" placeholder="12">
+          </div>
+          <div class="form-group">
+            <label>קומה</label>
+            <input type="text" id="f-floor" placeholder="8">
+          </div>
+          <div class="form-group">
+            <label>זמינות</label>
+            <select id="f-avail">
+              <option value="מיידי">מיידי</option>
+              <option value="3 חודשים">3 חודשים</option>
+              <option value="6 חודשים">6 חודשים</option>
+              <option value="בניה">בניה</option>
+            </select>
+          </div>
+          <div class="form-group full">
+            <label>קישורי תמונות (שורה לכל תמונה)</label>
+            <textarea id="f-images" placeholder="https://example.com/img1.jpg&#10;https://example.com/img2.jpg"></textarea>
+          </div>
+          <div class="form-group full">
+            <label>הערות</label>
+            <textarea id="f-notes" placeholder="פרטים נוספים, חניות, מעלית..."></textarea>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:20px">
+          <button class="btn btn-primary" onclick="saveProperty()">💾 שמור נכס</button>
+          <button class="btn btn-ghost" onclick="clearForm()">נקה</button>
+        </div>
+      </div>
+    </div>
   </div>
-</div>
 
-<div id="app" class="app-shell">
-  <aside class="sidebar">
-    <div class="sidebar-brand" aria-label="OfficeMatch">
-      <svg viewBox="0 0 155 36" xmlns="http://www.w3.org/2000/svg" height="28" role="img" aria-label="OfficeMatch">
-        <rect x="1" y="1" width="26" height="26" rx="7" fill="#10B981"/>
-        <polyline points="6,14 11,19 20,9" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-        <text x="34" y="23" font-family="Heebo,sans-serif" font-weight="900" font-size="20" fill="#1a1a2e">Office</text>
-        <text x="94" y="23" font-family="Heebo,sans-serif" font-weight="900" font-size="20" fill="#10B981">Match</text>
-      </svg>
-      <span style="margin-right:6px">· ניהול</span>
+  <!-- ─── RIGHT COLUMN ─── -->
+  <div class="client-section">
+    <!-- Client Setup -->
+    <div class="card">
+      <div class="card-title">👤 לקוח נוכחי</div>
+      <div class="form-group" style="margin-bottom:14px">
+        <label>שם הלקוח</label>
+        <input type="text" id="clientName" placeholder="לדוג׳ דן כהן — אבנר פיננסים">
+      </div>
+      <div class="selection-counter">
+        <div class="counter-num" id="selCount">0</div>
+        <div>נכסים נבחרו<br><small>לחץ על נכס ברשימה לשיוך</small></div>
+      </div>
     </div>
-    <button type="button" class="nav-btn active" data-panel="clients">לקוחות</button>
-    <button type="button" class="nav-btn" data-panel="pool">מאגר נכסים</button>
-    <button type="button" class="nav-btn" data-panel="tour">יצירת סיור</button>
-    <div class="sidebar-footer">
-      נתונים ב-JSONBin.io. <a href="office-tour-TEMPLATE.html" target="_blank" rel="noopener">לאפליקציית לקוח</a>
+
+    <!-- Selected Properties -->
+    <div class="card">
+      <div class="card-title">נכסים משויכים ללקוח</div>
+      <div id="selectedList" class="selected-list">
+        <div class="empty" style="padding:20px 0"><div style="font-size:28px;margin-bottom:8px">📋</div>בחר נכסים מהרשימה</div>
+      </div>
+      <div style="margin-top:16px;display:flex;gap:10px">
+        <button class="btn btn-green" style="flex:1" onclick="generateLink()">🔗 צור קישור ללקוח</button>
+        <button class="btn btn-ghost" onclick="clearSelection()">נקה</button>
+      </div>
     </div>
-  </aside>
-  <main class="main">
-    <section id="panel-clients" class="panel active">
-      <h2>לקוחות</h2>
-      <p class="sub">ניהול רשימת לקוחות · סיסמת כניסה לסיור</p>
-      <div class="card">
-        <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px;align-items:center;">
-          <button type="button" class="btn btn-primary btn-sm" id="btn-add-client">+ לקוח חדש</button>
-          <button type="button" class="btn btn-outline btn-sm" id="btn-sync-browser-client">מידע על שמירה</button>
-        </div>
-        <div id="dashboard-table"></div>
-      </div>
-    </section>
 
-    <section id="panel-client-detail" class="panel">
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:8px;">
-        <div>
-          <h2 style="margin-bottom:6px">פרטי לקוח וסיור</h2>
-          <p class="sub" id="client-detail-sub">—</p>
-        </div>
-        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-          <button type="button" class="btn btn-outline" id="client-detail-back">← חזרה לרשימה</button>
-          <button type="button" class="btn btn-outline" id="client-detail-edit">ערוך לקוח</button>
-          <button type="button" class="btn btn-primary" id="client-detail-goto-tour">יצירת / עדכון סיור</button>
-        </div>
+    <!-- Generated URL -->
+    <div class="card" id="urlCard" style="display:none">
+      <div class="card-title">🔗 קישור ללקוח</div>
+      <div class="url-box" id="urlOutput"></div>
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button class="btn btn-primary" style="flex:1" onclick="copyLink()">📋 העתק קישור</button>
+        <button class="btn btn-ghost" onclick="openLink()">פתח ←</button>
       </div>
-
-      <div class="card">
-        <h3 style="font-size:15px;font-weight:800;margin-bottom:10px;">פרטי קשר</h3>
-        <div id="client-detail-info" style="font-size:13px;color:#334155;line-height:1.7"></div>
-      </div>
-
-      <div class="card">
-        <h3 style="font-size:15px;font-weight:800;margin-bottom:6px;">בחירת נכסים לסיור</h3>
-        <p style="font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.5">כל הנכסים ממאגר הנכסים. סמנו את אלו שיופיעו בסיור של הלקוח.</p>
-        <div id="client-detail-props"></div>
-        <label style="margin-top:16px;display:block;font-size:12px;font-weight:700;color:var(--muted);">הערות לסיור (יוצגו ללקוח)</label>
-        <textarea id="client-detail-tour-notes-input" style="min-height:88px;margin-top:6px;" placeholder="אופציונלי — הערות שיופיעו בראש מסך הסיור"></textarea>
-        <div class="form-actions" style="margin-top:16px;">
-          <button type="button" class="btn btn-primary" id="client-detail-save-tour">שמור ושלח ללקוח</button>
-        </div>
-      </div>
-
-      <div class="card">
-        <h3 style="font-size:15px;font-weight:800;margin-bottom:10px;">קישור סיור ייחודי</h3>
-        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-          <input id="client-detail-tour-link" readonly style="flex:1;min-width:260px">
-          <button type="button" class="btn btn-primary" id="client-detail-copy-link">העתק</button>
-          <a class="btn btn-outline" id="client-detail-open-link" target="_blank" rel="noopener">לחץ להצעות המשרדים עבורכם</a>
-        </div>
-        <p style="margin-top:10px;font-size:12px;color:var(--muted);line-height:1.6">אותו קישור תמיד מזהה את הלקוח; תוכן הנכסים תלוי במה ששמרתם ביצירת הסיור.</p>
-      </div>
-    </section>
-
-    <section id="panel-pool" class="panel">
-      <h2>מאגר נכסים</h2>
-      <p class="sub">נכסים נשמרים פעם אחת — ניתן לשייך אותם לסיורים שונים</p>
-      <div class="card">
-        <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px;align-items:center;">
-          <button type="button" class="btn btn-outline btn-sm" id="btn-pool-quick-add">+ הוסף נכס</button>
-          <button type="button" class="btn btn-outline btn-sm" id="btn-load-template-props">טען מתבנית (office-tour-TEMPLATE.html)</button>
-          <button type="button" class="btn btn-outline btn-sm" id="btn-export-props-json">ייצוא JSON מאגר</button>
-        </div>
-        <h3 style="font-size:15px;font-weight:800;margin-bottom:10px;">ייבוא קובץ</h3>
-        <div class="dropzone" id="pool-import-drop">גרור לכאן Excel / CSV / PDF — יוצגו כרטיסי עריכה לפני שמירה</div>
-        <input type="file" id="pool-import-file" accept=".xlsx,.xls,.csv,.pdf" style="display:none">
-        <p style="margin-top:10px;font-size:12px;color:var(--muted);line-height:1.6">לאחר הייבוא ערכו את השדות בכל כרטיס ולחצו ״שמור הכל״. נכסים קיימים יעודכנו לפי מזהה (id) מהקובץ אם קיים.</p>
-      </div>
-      <div id="pool-import-review" class="card" style="display:none;">
-        <h3 style="font-size:16px;font-weight:800;margin-bottom:6px;">נכסים מייבוא — עריכה לפני שמירה</h3>
-        <p style="font-size:13px;color:var(--muted);line-height:1.5;margin-bottom:4px;">בדקו ועדכנו את הפרטים בכל כרטיס. ניתן להוסיף תמונות לכל נכס בנפרד.</p>
-        <div id="pool-import-cards" class="pool-import-cards-grid"></div>
-        <div class="form-actions" style="margin-top:20px;">
-          <button type="button" class="btn btn-outline" id="pool-import-cancel">ביטול</button>
-          <button type="button" class="btn btn-primary" id="pool-import-save-all">שמור הכל</button>
-        </div>
-      </div>
-      <div class="card">
-        <h3 style="font-size:15px;font-weight:800;margin-bottom:10px;">כל הנכסים במאגר</h3>
-        <div id="props-manager-table"></div>
-      </div>
-    </section>
-
-    <section id="panel-tour" class="panel">
-      <h2>יצירת סיור</h2>
-      <p class="sub">בחרו לקוח, סמנו נכסים מהמאגר, הוסיפו הערות — קישור ייחודי ללקוח</p>
-      <div class="card">
-        <label>לקוח</label>
-        <select id="tour-client" style="margin-bottom:14px;"></select>
-        <label>נכסים לכלול בסיור</label>
-        <div class="prop-check-grid" id="tour-props" style="max-height:420px;"></div>
-        <label style="margin-top:14px;">הערות לסיור (יוצגו ללקוח בראש המסך)</label>
-        <textarea id="tour-notes" style="min-height:100px;margin-bottom:14px;" placeholder="למשל: התמקדו בנכסים עם זמינות מיידית..."></textarea>
-        <div class="form-actions">
-          <button type="button" class="btn btn-primary" id="tour-gen-link">צור קישור ייחודי ללקוח</button>
-        </div>
-      </div>
-      <div class="card" id="tour-link-wrap" style="display:none;">
-        <h3 style="font-size:15px;font-weight:800;margin-bottom:10px;">קישור הסיור</h3>
-        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-          <input id="tour-link-out" readonly style="flex:1;min-width:260px">
-          <button type="button" class="btn btn-primary" id="tour-copy-link">העתק</button>
-          <a class="btn btn-outline" id="tour-open-link" target="_blank" rel="noopener">לחץ להצעות המשרדים עבורכם</a>
-        </div>
-        <p style="margin-top:10px;font-size:12px;color:var(--muted);line-height:1.6">הלקוח נכנס עם הסיסמה שהגדרתם בכרטיס הלקוח. הקישור טוען את רשימת הנכסים שבחרתם.</p>
-      </div>
-    </section>
-  </main>
-</div>
-
-<!-- Modal: add/edit client -->
-<div id="modal-client" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(15,23,42,0.35);align-items:center;justify-content:center;padding:16px;">
-  <div style="background:#fff;border-radius:16px;max-width:420px;width:100%;padding:22px;box-shadow:0 20px 50px rgba(0,0,0,0.15);">
-    <h3 style="font-size:17px;font-weight:800;margin-bottom:14px;" id="mc-title">לקוח</h3>
-    <input type="hidden" id="mc-id">
-    <label>שם</label><input id="mc-name" style="margin-bottom:10px;">
-    <label>חברה</label><input id="mc-company" style="margin-bottom:10px;">
-    <label>אימייל</label><input id="mc-email" style="margin-bottom:10px;">
-    <label>טלפון (למשל 0526254747)</label><input id="mc-phone" style="margin-bottom:10px;" placeholder="נדרש ל-WhatsApp">
-    <label>סיסמת לקוח (אופציונלי)</label><input id="mc-pass" type="password" style="margin-bottom:6px;" placeholder="אופציונלי — אם מוגדר, הלקוח יתבקש להזין לפני צפייה">
-    <div style="font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.5">השאירו ריק כדי לא לדרוש סיסמה.</div>
-    <div style="display:flex;gap:10px;margin-top:16px;justify-content:flex-end;">
-      <button type="button" class="btn btn-outline" id="mc-cancel">ביטול</button>
-      <button type="button" class="btn btn-primary" id="mc-save">שמור</button>
     </div>
   </div>
 </div>
 
-<!-- Modal: add/edit property in pool -->
-<div id="modal-pool-prop" class="modal-overlay" aria-hidden="true">
-  <div class="modal-panel" role="dialog" aria-labelledby="ppe-title">
-    <div class="modal-panel-head" id="ppe-title">נכס</div>
-    <div class="modal-panel-body">
-      <div class="form-grid">
-        <div><label>מזהה (id)</label><input type="number" id="ppe-id" placeholder="אוטומטי בנכס חדש"></div>
-        <div style="grid-column:1/-1;"><label>שם הנכס</label><input id="ppe-name"></div>
-        <div style="grid-column:1/-1;"><label>כתובת</label><input id="ppe-address"></div>
-        <div><label>שטח (מ״ר)</label><input id="ppe-size" placeholder="מספר או טווח"></div>
-        <div><label>מחיר למ״ר</label><input type="number" id="ppe-price" step="0.1"></div>
-        <div><label>דמי ניהול</label><input type="number" id="ppe-mgmt" step="0.1" placeholder="ריק אם אין"></div>
-        <div style="grid-column:1/-1;"><label>זמינות</label><input id="ppe-availability" placeholder="מיידית / תאריך"></div>
-        <div><label>מרחק מרכבת ישראל (דק׳ הליכה)</label><input type="number" id="ppe-walk-heavy" min="0" step="1" placeholder="דקות"></div>
-        <div><label>מרחק מרכבת קלה (דק׳ הליכה)</label><input type="number" id="ppe-walk-light" min="0" step="1" placeholder="דקות"></div>
-        <div style="grid-column:1/-1;">
-          <label>תמונות</label>
-          <input type="file" id="ppe-images" accept="image/*" multiple>
-          <div class="thumb-row" id="ppe-thumbs"></div>
-        </div>
-        <div style="grid-column:1/-1;"><label>הערות (מאגר)</label><textarea id="ppe-notes" placeholder="הערות על הנכס במאגר"></textarea></div>
-        <div style="grid-column:1/-1;border-top:1px solid var(--border);padding-top:12px;margin-top:4px;">
-          <span style="font-size:12px;font-weight:800;color:var(--muted);">שדות נוספים (אופציונלי)</span>
-        </div>
-        <div><label>קומה</label><input id="ppe-floor"></div>
-        <div><label>עסקה / תיאור</label><input id="ppe-deal"></div>
-        <div><label>lat</label><input type="number" step="any" id="ppe-lat" placeholder="ריק — גיאוקוד אוטומטי"></div>
-        <div><label>lng</label><input type="number" step="any" id="ppe-lng"></div>
-        <div style="grid-column:1/-1;"><label>תמונה ראשית (URL — אם אין קבצים)</label><input id="ppe-img"></div>
-        <div><label>כביש / גישה</label><input id="ppe-t-highway"></div>
-        <div style="grid-column:1/-1;"><label>דיירים (שורה / פסיק)</label><textarea id="ppe-tenants" style="min-height:56px;"></textarea></div>
-        <div style="grid-column:1/-1;"><label>מסעדות</label><textarea id="ppe-restaurants" style="min-height:56px;"></textarea></div>
-      </div>
-    </div>
-    <div class="modal-panel-foot">
-      <button type="button" class="btn btn-outline" id="ppe-cancel">ביטול</button>
-      <button type="button" class="btn btn-primary" id="ppe-save">שמור</button>
-    </div>
-  </div>
-</div>
-
-<!-- Modal: quick add property from building -->
-<div id="modal-pool-quick" class="modal-overlay" aria-hidden="true">
-  <div class="modal-panel" role="dialog" aria-labelledby="pqa-title">
-    <div class="modal-panel-head" id="pqa-title">הוסף נכס</div>
-    <div class="modal-panel-body">
-      <div class="form-grid">
-        <div style="grid-column:1/-1;">
-          <label>שם בניין</label>
-          <input id="pqa-building" list="pqa-building-list" placeholder="התחל להקליד / לבחור...">
-          <datalist id="pqa-building-list"></datalist>
-        </div>
-        <div style="grid-column:1/-1;"><label>כתובת</label><input id="pqa-address"></div>
-        <div><label>קומה</label><input id="pqa-floor" placeholder="למשל 5 או 12–13"></div>
-        <div><label>דמי ניהול</label><input type="number" id="pqa-mgmt" step="0.1" placeholder="ריק אם אין"></div>
-        <div><label>מרחק רכבת (דק׳)</label><input type="number" id="pqa-walk-heavy" min="0" step="1" placeholder="דקות"></div>
-        <div><label>מרחק רכבת קלה (דק׳)</label><input type="number" id="pqa-walk-light" min="0" step="1" placeholder="דקות"></div>
-        <div><label>שטח (מ״ר)</label><input id="pqa-size" placeholder="מספר או טווח"></div>
-        <div><label>מחיר למ״ר</label><input type="number" id="pqa-price" step="0.1"></div>
-        <div style="grid-column:1/-1;"><label>זמינות</label><input id="pqa-availability" placeholder="מיידית / תאריך"></div>
-        <div style="grid-column:1/-1;">
-          <label>תמונות</label>
-          <input type="file" id="pqa-images" accept="image/*" multiple>
-          <div class="thumb-row" id="pqa-thumbs"></div>
-        </div>
-        <div style="grid-column:1/-1;"><label>הערות</label><textarea id="pqa-notes" placeholder="הערות על הנכס"></textarea></div>
-      </div>
-    </div>
-    <div class="modal-panel-foot">
-      <button type="button" class="btn btn-outline" id="pqa-cancel">ביטול</button>
-      <button type="button" class="btn btn-primary" id="pqa-save">שמור</button>
-    </div>
-  </div>
-</div>
+<div class="toast" id="toast"></div>
 
 <script>
-(function () {
-  'use strict';
+// ─── State ───
+let properties = JSON.parse(localStorage.getItem('os_properties') || '[]');
+let selectedIds = new Set();
+let editingId = null;
 
-  var ADMIN_PASSWORD = 'admin2024';
-  var LS_AUTH = 'om-admin-auth';
-  var LS_CLIENTS = 'om-admin-clients';
-  var LS_PROPS = 'om-admin-properties';
-  var LS_IMGS = 'om-admin-imgs';
-  var LS_CLIENT_TOURS = 'om-client-tours';
-  var LS_CLIENT_TOUR_PROPS = 'om-client-tour-props';
-  var LS_TOUR_META = 'om-client-tour-meta';
+// ─── Tabs ───
+function switchTab(name) {
+  document.querySelectorAll('.tab, .tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelector(`.tab[onclick="switchTab('${name}')"]`).classList.add('active');
+  document.getElementById(`tab-${name}`).classList.add('active');
+}
 
-  const JSONBIN_KEY = '$2a$10$HW.QVbOQ4z990.l/tM2d/OVSj3TFfSD4c9KuKw/WTz/n17oPpXHxm';
-  const JSONBIN_URL = 'https://api.jsonbin.io/v3/b';
-  var JSONBIN_BINS = {
-    clients: '6a01a71ec0954111d807ffd4',
-    properties: '6a01a71ec0954111d807ffd5',
-    tours: '6a01a71f250b1311c332eae6'
+// ─── Render ───
+function render() {
+  const search = document.getElementById('searchInput').value.toLowerCase();
+  const filtered = properties.filter(p =>
+    p.name.toLowerCase().includes(search) ||
+    p.address.toLowerCase().includes(search)
+  );
+
+  document.getElementById('propCount').textContent = properties.length;
+
+  const list = document.getElementById('propList');
+  if (!filtered.length) {
+    list.innerHTML = `<div class="empty"><div class="empty-icon">🏢</div>${search ? 'לא נמצאו נכסים' : 'אין נכסים עדיין'}</div>`;
+    return;
+  }
+
+  list.innerHTML = filtered.map(p => {
+    const imgs = p.images || [];
+    const sel = selectedIds.has(p.id);
+    const avail = p.availability === 'מיידי'
+      ? `<span class="badge badge-green">${p.availability}</span>`
+      : `<span class="badge badge-yellow">${p.availability}</span>`;
+    return `
+      <div class="prop-item ${sel ? 'selected' : ''}" onclick="toggleSelect('${p.id}')">
+        <div class="prop-thumb">
+          ${imgs[0] ? `<img src="${imgs[0]}" onerror="this.parentElement.innerHTML='🏢'">` : '🏢'}
+        </div>
+        <div class="prop-info">
+          <div class="prop-name">${p.name}</div>
+          <div class="prop-meta">${p.address} · ${p.area ? p.area + ' מ"ר' : ''} · ${p.price ? '₪' + p.price + '/מ"ר' : ''}</div>
+        </div>
+        ${avail}
+        <div class="prop-actions" onclick="event.stopPropagation()">
+          <button class="btn btn-ghost" style="padding:6px 10px;font-size:12px" onclick="editProperty('${p.id}')">✏️</button>
+          <button class="btn btn-danger" onclick="deleteProperty('${p.id}')">🗑</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  renderSelected();
+}
+
+function renderSelected() {
+  const selList = document.getElementById('selectedList');
+  document.getElementById('selCount').textContent = selectedIds.size;
+
+  if (!selectedIds.size) {
+    selList.innerHTML = `<div class="empty" style="padding:20px 0"><div style="font-size:28px;margin-bottom:8px">📋</div>בחר נכסים מהרשימה</div>`;
+    return;
+  }
+
+  const selProps = properties.filter(p => selectedIds.has(p.id));
+  selList.innerHTML = selProps.map(p => `
+    <div class="selected-item">
+      <span>${p.name} <span style="color:var(--text-muted);font-size:11px">· ${p.area || '—'} מ"ר</span></span>
+      <button class="remove-sel" onclick="toggleSelect('${p.id}')">×</button>
+    </div>
+  `).join('');
+}
+
+// ─── Toggle select ───
+function toggleSelect(id) {
+  if (selectedIds.has(id)) selectedIds.delete(id);
+  else selectedIds.add(id);
+  render();
+  document.getElementById('urlCard').style.display = 'none';
+}
+
+function clearSelection() {
+  selectedIds.clear();
+  render();
+  document.getElementById('urlCard').style.display = 'none';
+}
+
+// ─── Save property ───
+function saveProperty() {
+  const name = document.getElementById('f-name').value.trim();
+  const address = document.getElementById('f-address').value.trim();
+  if (!name || !address) { showToast('⚠️ שם וכתובת הם שדות חובה'); return; }
+
+  const imgs = document.getElementById('f-images').value
+    .split('\n').map(s => s.trim()).filter(Boolean);
+
+  const prop = {
+    id: editingId || 'p_' + Date.now(),
+    name,
+    address,
+    area: document.getElementById('f-area').value,
+    price: document.getElementById('f-price').value,
+    management: document.getElementById('f-mgmt').value,
+    floor: document.getElementById('f-floor').value,
+    availability: document.getElementById('f-avail').value,
+    images: imgs,
+    notes: document.getElementById('f-notes').value.trim(),
   };
 
-  var remoteData = {};
-  var remoteLoadPromise = null;
-  var remoteSaveTimers = {};
-
-  function cloneJSON(v) {
-    return JSON.parse(JSON.stringify(v));
-  }
-
-  function jsonbinHeaders(extra) {
-    return Object.assign({
-      'X-Master-Key': JSONBIN_KEY,
-      'X-Access-Key': '$2a$10$yveYqSOLL7beahc0U5tB5.2TBJuWPLbOIEJq6kb8dqJ4y4DuZ1x82',
-      accept: 'application/json'
-    }, extra || {});
-  }
-
-  function readJSONBin(binId, def) {
-    return fetch('https://api.jsonbin.io/v3/b/' + binId + '/latest', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Master-Key': '$2a$10$HW.QVbOQ4z990.l/tM2d/OVSj3TFfSD4c9KuKw/WTz/n17oPpXHxm'
-      }
-    }).then(function (r) {
-      if (!r.ok) throw new Error('JSONBin read failed: HTTP ' + r.status);
-      return r.json();
-    }).then(function (payload) {
-      return payload && payload.record != null ? payload.record : cloneJSON(def);
-    });
-  }
-
-  function writeJSONBin(binId, val) {
-    return fetch('https://api.jsonbin.io/v3/b/' + binId, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Master-Key': '$2a$10$HW.QVbOQ4z990.l/tM2d/OVSj3TFfSD4c9KuKw/WTz/n17oPpXHxm'
-      },
-      body: JSON.stringify(val)
-    }).then(function (r) {
-      if (!r.ok) throw new Error('JSONBin write failed: HTTP ' + r.status);
-      return true;
-    });
-  }
-
-  function normalizeClientsRecord(record) {
-    if (Array.isArray(record)) return record;
-    return Array.isArray(record && record.clients) ? record.clients : [];
-  }
-
-  function normalizePropertiesRecord(record) {
-    if (Array.isArray(record)) return { properties: record, images: {} };
-    return {
-      properties: Array.isArray(record && record.properties) ? record.properties : [],
-      images: record && typeof record.images === 'object' && record.images ? record.images : {}
-    };
-  }
-
-  function normalizeToursRecord(record) {
-    return {
-      byClient: record && typeof record.byClient === 'object' && record.byClient ? record.byClient : {},
-      meta: record && typeof record.meta === 'object' && record.meta ? record.meta : {}
-    };
-  }
-
-  function loadRemoteData() {
-    if (remoteLoadPromise) return remoteLoadPromise;
-    remoteLoadPromise = Promise.all([
-      readJSONBin(JSONBIN_BINS.clients, { clients: [] }),
-      readJSONBin(JSONBIN_BINS.properties, { properties: [], images: {} }),
-      readJSONBin(JSONBIN_BINS.tours, { byClient: {}, meta: {} })
-    ]).then(function (records) {
-      var clientsRecord = normalizeClientsRecord(records[0]);
-      var propertiesRecord = normalizePropertiesRecord(records[1]);
-      var toursRecord = normalizeToursRecord(records[2]);
-      remoteData[LS_CLIENTS] = clientsRecord;
-      remoteData[LS_PROPS] = propertiesRecord.properties;
-      remoteData[LS_IMGS] = propertiesRecord.images;
-      remoteData[LS_CLIENT_TOUR_PROPS] = toursRecord.byClient;
-      remoteData[LS_TOUR_META] = toursRecord.meta;
-    }).catch(function (err) {
-      console.error(err);
-      alert('שגיאה בטעינת נתונים מ-JSONBin. מוצגים נתונים ריקים עד שהחיבור יחזור.');
-      remoteData[LS_CLIENTS] = [];
-      remoteData[LS_PROPS] = [];
-      remoteData[LS_IMGS] = {};
-      remoteData[LS_CLIENT_TOUR_PROPS] = {};
-      remoteData[LS_TOUR_META] = {};
-    });
-    return remoteLoadPromise;
-  }
-
-  function binNameForStorageKey(key) {
-    if (key === LS_CLIENTS) return 'clients';
-    if (key === LS_PROPS || key === LS_IMGS) return 'properties';
-    if (key === LS_CLIENT_TOUR_PROPS || key === LS_TOUR_META) return 'tours';
-    return '';
-  }
-
-  function payloadForBinName(binName) {
-    if (binName === 'clients') {
-      return { clients: remoteData[LS_CLIENTS] || [] };
-    }
-    if (binName === 'properties') {
-      return {
-        properties: remoteData[LS_PROPS] || [],
-        images: remoteData[LS_IMGS] || {}
-      };
-    }
-    if (binName === 'tours') {
-      return {
-        byClient: remoteData[LS_CLIENT_TOUR_PROPS] || {},
-        meta: remoteData[LS_TOUR_META] || {}
-      };
-    }
-    return {};
-  }
-
-  function getJSON(key, def) {
-    if (remoteData[key] == null) return cloneJSON(def);
-    return cloneJSON(remoteData[key]);
-  }
-
-  function setJSON(key, val) {
-    remoteData[key] = cloneJSON(val);
-    var binName = binNameForStorageKey(key);
-    if (!binName) return Promise.resolve(true);
-    clearTimeout(remoteSaveTimers[binName]);
-    return new Promise(function (resolve) {
-      remoteSaveTimers[binName] = setTimeout(function () {
-        writeJSONBin(JSONBIN_BINS[binName], payloadForBinName(binName)).then(resolve).catch(function (err) {
-          console.error(err);
-          alert('שגיאה בשמירה ל-JSONBin. נסו שוב.');
-          resolve(false);
-        });
-      }, 0);
-    });
-  }
-
-  function clients() { return getJSON(LS_CLIENTS, []); }
-  function saveClients(arr) { setJSON(LS_CLIENTS, arr); }
-
-  function props() {
-    return getJSON(LS_PROPS, []);
-  }
-  function saveProps(arr) { setJSON(LS_PROPS, arr); }
-
-  function imgs() { return getJSON(LS_IMGS, {}); }
-  function saveImgs(obj) { setJSON(LS_IMGS, obj); }
-
-  function clientTourPropsMap() { return getJSON(LS_CLIENT_TOUR_PROPS, {}); }
-  function saveClientTourPropsMap(map) { setJSON(LS_CLIENT_TOUR_PROPS, map || {}); }
-  function clientTourPropsFor(cid) {
-    var m = clientTourPropsMap();
-    var v = m && m[cid];
-    return Array.isArray(v) ? v : [];
-  }
-  function saveClientTourPropsFor(cid, arr) {
-    var m = clientTourPropsMap();
-    m[cid] = Array.isArray(arr) ? arr : [];
-    saveClientTourPropsMap(m);
-  }
-
-  function tourMetaMap() { return getJSON(LS_TOUR_META, {}); }
-  function saveTourMetaMap(m) { setJSON(LS_TOUR_META, m || {}); }
-
-  function persistClientBundle(cid) {
-    return Promise.resolve(Boolean(cid));
-  }
-
-  function removeClientBundle(cid) {
-    return Promise.resolve(Boolean(cid));
-  }
-
-  function parseFirstWalkMins(s) {
-    var m = String(s || '').match(/(\d+)\s*דק/);
-    return m ? m[1] : '';
-  }
-
-  function adminDisplayWalkHeavyMins(p) {
-    if (!p) return '—';
-    if (p.walkHeavyMins != null && p.walkHeavyMins !== '') return String(p.walkHeavyMins) + ' דק׳';
-    var mm = parseFirstWalkMins(p.transport && p.transport.heavy);
-    return mm ? mm + ' דק׳' : '—';
-  }
-  function adminDisplayWalkLightMins(p) {
-    if (!p) return '—';
-    if (p.walkLightMins != null && p.walkLightMins !== '') return String(p.walkLightMins) + ' דק׳';
-    var mm = parseFirstWalkMins(p.transport && p.transport.light);
-    return mm ? mm + ' דק׳' : '—';
-  }
-
-  function galleryUrlsForProperty(pid) {
-    var im = imgs();
-    var v = im[pid];
-    if (v == null && im[String(pid)] != null) v = im[String(pid)];
-    var list = [];
-    if (Array.isArray(v)) list = v.filter(Boolean);
-    else if (typeof v === 'string' && v) list = [v];
-    return list.slice(0, 5);
-  }
-
-  function tourLinkForClientId(cid) {
-    // Same origin link; client page will load assigned properties by cid.
-    var base = location.origin + location.pathname.replace(/\/[^\/]*$/, '');
-    return base + '/office-tour-TEMPLATE.html?client=' + encodeURIComponent(cid);
-  }
-
-  function normalizePhone(p) {
-    var d = String(p || '').replace(/\D/g, '');
-    if (d.indexOf('972') === 0) return d;
-    if (d.charAt(0) === '0') return '972' + d.slice(1);
-    if (d.length === 9) return '972' + d;
-    return d;
-  }
-
-  function statusLabel(st) {
-    if (st === 'unavailable') return 'לא זמין';
-    if (st === 'closing') return 'בתהליך סגירה';
-    return 'זמין';
-  }
-  function statusClass(st) {
-    if (st === 'unavailable') return 'badge-unavail';
-    if (st === 'closing') return 'badge-closing';
-    return 'badge-avail';
-  }
-
-  function parseListarea(s) {
-    return String(s || '')
-      .split(/[\n,]+/)
-      .map(function (x) { return x.trim(); })
-      .filter(Boolean);
-  }
-
-  function extractPropertiesFromTourHtml(html) {
-    // Support `const/let/var properties = [...]` (template uses `let`).
-    var m = String(html || '').match(/(?:^|[\r\n;])\s*(?:const|let|var)\s+properties\s*=\s*/m);
-    if (!m) return null;
-    var a = (m.index || 0) + m[0].length;
-    while (a < html.length && /\s/.test(html[a])) a++;
-    if (html[a] !== '[') return null;
-    var depth = 0;
-    var inStr = false;
-    var q = '';
-    var esc = false;
-    for (var i = a; i < html.length; i++) {
-      var c = html[i];
-      if (esc) { esc = false; continue; }
-      if (inStr) {
-        if (c === '\\') { esc = true; continue; }
-        if (c === q) inStr = false;
-        continue;
-      }
-      if (c === '"' || c === "'") {
-        inStr = true;
-        q = c;
-        continue;
-      }
-      if (c === '[') depth++;
-      else if (c === ']') {
-        depth--;
-        if (depth === 0) {
-          var lit = html.slice(a, i + 1);
-          try {
-            return new Function('"use strict"; return ' + lit)();
-          } catch (e) {
-            console.error(e);
-            return null;
-          }
-        }
-      }
-    }
-    return null;
-  }
-
-  function mergeDashboardClients() {
-    return clients().slice();
-  }
-
-  function favCountFor(c) {
-    return c.favCount || 0;
-  }
-
-  function renderDashboard() {
-    var list = mergeDashboardClients();
-    var rows = list.map(function (c) {
-      var phoneOk = normalizePhone(c.phone).length >= 9;
-      var wa = phoneOk
-        ? 'https://wa.me/' + normalizePhone(c.phone) + '?text=' + encodeURIComponent('שלום ' + (c.name || '') + ',')
-        : '#';
-      var seen = c.tourOpened;
-      var badge = seen
-        ? '<span class="badge badge-green">צפה</span>'
-        : '<span class="badge badge-gray">לא פתח</span>';
-      var reg = c.registeredAt ? new Date(c.registeredAt).toLocaleString('he-IL') : '—';
-      var last = c.lastSeen ? new Date(c.lastSeen).toLocaleString('he-IL') : '—';
-      return (
-        '<tr data-client-row="' + escAttr(c.id) + '">' +
-        '<td>' + esc(c.name) + '</td>' +
-        '<td>' + esc(c.company) + '</td>' +
-        '<td>' + esc(c.email) + '</td>' +
-        '<td>' + esc(c.phone || '—') + '</td>' +
-        '<td>' + reg + '</td>' +
-        '<td>' + last + '</td>' +
-        '<td>' + favCountFor(c) + '</td>' +
-        '<td>' + badge + '</td>' +
-        '<td>' +
-        (phoneOk
-          ? '<a class="btn btn-primary btn-sm" href="' + wa + '" target="_blank" rel="noopener">WhatsApp</a>'
-          : '<span style="color:#94a3b8;font-size:12px;">אין טלפון</span>') +
-        ' <button type="button" class="btn btn-outline btn-sm" data-edit-client="' + escAttr(c.id) + '">ערוך</button>' +
-        '</td>' +
-        '<td style="text-align:center;width:52px;">' +
-        '<button type="button" class="btn btn-danger btn-sm" data-del-client="' +
-        escAttr(c.id) +
-        '" title="מחיקת לקוח" aria-label="מחיקת לקוח">🗑️</button>' +
-        '</td>' +
-        '</tr>'
-      );
-    }).join('');
-    document.getElementById('dashboard-table').innerHTML =
-      '<div class="table-wrap"><table><thead><tr>' +
-      '<th>שם</th><th>חברה</th><th>אימייל</th><th>טלפון</th><th>הרשמה</th><th>נראה לאחרונה</th><th>מועדפים</th><th>סטטוס</th><th></th><th></th>' +
-      '</tr></thead><tbody>' + (rows || '<tr><td colspan="10" style="text-align:center;color:#64748b;">אין לקוחות — הוסף לקוח חדש כדי לשמור ב-JSONBin</td></tr>') + '</tbody></table></div>';
-  }
-
-  function deleteClientById(cid) {
-    var list = clients();
-    if (!list.some(function (c) { return String(c.id) === String(cid); })) {
-      alert('לקוח לא נמצא במאגר.');
-      return;
-    }
-    if (!confirm('למחוק את הלקוח לצמיתות? נתוני הסיור וההערות השמורים לו יימחקו גם כן.')) return;
-    saveClients(list.filter(function (c) { return String(c.id) !== String(cid); }));
-    var m = clientTourPropsMap();
-    delete m[cid];
-    delete m[String(cid)];
-    saveClientTourPropsMap(m);
-    var meta = tourMetaMap();
-    delete meta[cid];
-    delete meta[String(cid)];
-    saveTourMetaMap(meta);
-    removeClientBundle(cid);
-    if (currentClientId != null && String(currentClientId) === String(cid)) {
-      currentClientId = null;
-      showPanel('clients');
-    }
-    renderDashboard();
-    fillClientSelects();
-  }
-
-  var currentClientId = null;
-
-  function renderClientDetail(cid) {
-    currentClientId = cid;
-    var list = mergeDashboardClients();
-    var c = list.find(function (x) { return x.id === cid; });
-    if (!c) {
-      alert('לקוח לא נמצא');
-      showPanel('clients');
-      return;
-    }
-    document.getElementById('client-detail-sub').textContent = (c.company || c.name || c.email) + ' · ' + (c.email || '');
-    document.getElementById('client-detail-info').innerHTML =
-      '<div><strong>שם:</strong> ' + esc(c.name || '—') + '</div>' +
-      '<div><strong>חברה:</strong> ' + esc(c.company || '—') + '</div>' +
-      '<div><strong>אימייל:</strong> ' + esc(c.email || '—') + '</div>' +
-      '<div><strong>טלפון:</strong> ' + esc(c.phone || '—') + '</div>' +
-      '<div><strong>סיסמת כניסה לסיור:</strong> ' +
-      (c.password ? 'מוגדרת' : '<span style="color:#b45309">לא הוגדרה — מומלץ לערוך את הלקוח</span>') +
-      '</div>' +
-      '<div><strong>סטטוס צפייה:</strong> ' + (c.tourOpened ? 'צפה' : 'לא פתח') + '</div>';
-
-    var assigned = clientTourPropsFor(cid);
-    var assignedIds = {};
-    assigned.forEach(function (p) {
-      if (p && p.id != null) assignedIds[String(p.id)] = true;
-    });
-    var pool = props();
-    var propsEl = document.getElementById('client-detail-props');
-    var notesTa = document.getElementById('client-detail-tour-notes-input');
-    var meta = tourMetaMap()[cid];
-    if (notesTa) {
-      notesTa.value = meta && meta.notes != null ? String(meta.notes) : '';
-    }
-
-    if (!pool.length) {
-      propsEl.innerHTML =
-        '<p style="color:#64748b;">אין נכסים במאגר — הוסיפו נכסים ב״מאגר נכסים״.</p>';
-    } else {
-      propsEl.innerHTML =
-        '<div class="client-prop-cards">' +
-        pool
-          .map(function (p) {
-            var pid = p.id;
-            var checked = assignedIds[String(pid)] ? ' checked' : '';
-            var sz = p.size != null && p.size !== '' ? esc(String(p.size)) : '—';
-            var pr = p.price != null && p.price !== '' ? esc(String(p.price)) : '—';
-            var mg =
-              p.mgmt != null && p.mgmt !== ''
-                ? esc(String(p.mgmt))
-                : '—';
-            var fl = p.floor != null && String(p.floor).trim() !== '' ? esc(String(p.floor)) : '—';
-            var av =
-              p.availability != null && String(p.availability).trim() !== ''
-                ? esc(String(p.availability))
-                : '—';
-            return (
-              '<label class="client-prop-card-select">' +
-              '<input type="checkbox" name="client-tour-pid" value="' +
-              escAttr(String(pid)) +
-              '"' +
-              checked +
-              '>' +
-              '<div class="client-prop-card-inner">' +
-              '<dl class="client-prop-dl">' +
-              '<dt>שם בניין</dt><dd>' +
-              esc(p.name || '—') +
-              '</dd>' +
-              '<dt>כתובת</dt><dd>' +
-              esc(p.address || '—') +
-              '</dd>' +
-              '<dt>שטח</dt><dd>' +
-              sz +
-              ' מ״ר</dd>' +
-              '<dt>מחיר למ״ר</dt><dd>₪' +
-              pr +
-              '</dd>' +
-              '<dt>דמי ניהול</dt><dd>₪' +
-              mg +
-              '</dd>' +
-              '<dt>קומה</dt><dd>' +
-              fl +
-              '</dd>' +
-              '<dt>זמינות</dt><dd>' +
-              av +
-              '</dd>' +
-              '<dt>מרחק רכבת</dt><dd>' +
-              esc(adminDisplayWalkHeavyMins(p)) +
-              '</dd>' +
-              '<dt>מרחק רכבת קלה</dt><dd>' +
-              esc(adminDisplayWalkLightMins(p)) +
-              '</dd>' +
-              '</dl>' +
-              '</div>' +
-              '</label>'
-            );
-          })
-          .join('') +
-        '</div>';
-    }
-
-    var link = tourLinkForClientId(cid);
-    document.getElementById('client-detail-tour-link').value = link;
-    document.getElementById('client-detail-open-link').href = link;
-
-    showPanel('client-detail');
-  }
-
-  var poolEditId = null;
-  var ppeGallery = [];
-  var pqaGallery = [];
-  var pqaTemplatePropsCache = null;
-  var pqaCombinedIndex = null;
-
-  function normalizeBuildingName(s) {
-    return String(s || '')
-      .replace(/\s+/g, ' ')
-      .replace(/["'׳״]/g, '')
-      .trim()
-      .toLowerCase();
-  }
-
-  function getTemplatePropsCached() {
-    if (pqaTemplatePropsCache) return Promise.resolve(pqaTemplatePropsCache);
-    return fetch('office-tour-TEMPLATE.html', { cache: 'no-store' })
-      .then(function (r) { return r.text(); })
-      .then(function (html) {
-        var arr = extractPropertiesFromTourHtml(html);
-        pqaTemplatePropsCache = Array.isArray(arr) ? arr : [];
-        return pqaTemplatePropsCache;
-      })
-      .catch(function () {
-        pqaTemplatePropsCache = [];
-        return pqaTemplatePropsCache;
-      });
-  }
-
-  function buildPqaIndex() {
-    var pool = props();
-    var tpl = pqaTemplatePropsCache || [];
-    var all = [].concat(pool || [], tpl || []);
-    var seen = Object.create(null);
-    var names = [];
-    var map = Object.create(null);
-    all.forEach(function (p) {
-      if (!p) return;
-      var nm = String(p.name || '').trim();
-      if (!nm) return;
-      var k = normalizeBuildingName(nm);
-      if (!k) return;
-      if (!seen[k]) {
-        seen[k] = true;
-        names.push(nm);
-      }
-      if (!map[k]) map[k] = p;
-    });
-    names.sort(function (a, b) { return a.localeCompare(b, 'he'); });
-    pqaCombinedIndex = { names: names, map: map };
-  }
-
-  function fillPqaDatalist() {
-    var dl = document.getElementById('pqa-building-list');
-    if (!dl) return;
-    if (!pqaCombinedIndex) buildPqaIndex();
-    var opts = (pqaCombinedIndex.names || [])
-      .map(function (n) { return '<option value="' + escAttr(n) + '"></option>'; })
-      .join('');
-    dl.innerHTML = opts;
-  }
-
-  function setPqaFromBuildingName(nm) {
-    if (!pqaCombinedIndex) buildPqaIndex();
-    var k = normalizeBuildingName(nm);
-    var p = (pqaCombinedIndex.map && pqaCombinedIndex.map[k]) || null;
-    if (!p) return;
-    if (document.getElementById('pqa-address') && (!document.getElementById('pqa-address').value || !document.getElementById('pqa-address').value.trim())) {
-      document.getElementById('pqa-address').value = p.address || '';
-    }
-    var flEl = document.getElementById('pqa-floor');
-    if (flEl && (!flEl.value || !String(flEl.value).trim())) {
-      flEl.value = p.floor != null && p.floor !== '' ? String(p.floor) : '';
-    }
-    if (document.getElementById('pqa-mgmt') && (document.getElementById('pqa-mgmt').value === '' || document.getElementById('pqa-mgmt').value == null)) {
-      document.getElementById('pqa-mgmt').value = p.mgmt != null && p.mgmt !== '' ? String(p.mgmt) : '';
-    }
-    var wh =
-      p.walkHeavyMins != null && p.walkHeavyMins !== ''
-        ? String(p.walkHeavyMins)
-        : parseFirstWalkMins(p.transport && p.transport.heavy);
-    var wl =
-      p.walkLightMins != null && p.walkLightMins !== ''
-        ? String(p.walkLightMins)
-        : parseFirstWalkMins(p.transport && p.transport.light);
-    if (document.getElementById('pqa-walk-heavy') && (document.getElementById('pqa-walk-heavy').value === '' || document.getElementById('pqa-walk-heavy').value == null)) {
-      document.getElementById('pqa-walk-heavy').value = wh;
-    }
-    if (document.getElementById('pqa-walk-light') && (document.getElementById('pqa-walk-light').value === '' || document.getElementById('pqa-walk-light').value == null)) {
-      document.getElementById('pqa-walk-light').value = wl;
-    }
-  }
-
-  function renderPqaThumbs() {
-    var el = document.getElementById('pqa-thumbs');
-    if (!el) return;
-    el.innerHTML = (pqaGallery || [])
-      .map(function (src, i) {
-        return (
-          '<div class="cpe-thumb-wrap">' +
-          '<img class="thumb" src="' +
-          escAttr(src) +
-          '" alt="">' +
-          '<button type="button" data-pqa-rm="' +
-          i +
-          '" aria-label="הסר">×</button>' +
-          '</div>'
-        );
-      })
-      .join('');
-  }
-
-  function openPoolQuickAddModal() {
-    pqaGallery = [];
-    renderPqaThumbs();
-    document.getElementById('pqa-building').value = '';
-    document.getElementById('pqa-address').value = '';
-    document.getElementById('pqa-mgmt').value = '';
-    document.getElementById('pqa-walk-heavy').value = '';
-    document.getElementById('pqa-walk-light').value = '';
-    document.getElementById('pqa-size').value = '';
-    document.getElementById('pqa-price').value = '';
-    document.getElementById('pqa-floor').value = '';
-    document.getElementById('pqa-availability').value = '';
-    document.getElementById('pqa-notes').value = '';
-    document.getElementById('pqa-images').value = '';
-
-    pqaCombinedIndex = null;
-    fillPqaDatalist(); // saved pool first
-    getTemplatePropsCached().then(function () {
-      pqaCombinedIndex = null;
-      fillPqaDatalist(); // add template names
-    });
-
-    var modal = document.getElementById('modal-pool-quick');
-    modal.classList.add('visible');
-    modal.setAttribute('aria-hidden', 'false');
-  }
-
-  function closePoolQuickAddModal() {
-    pqaGallery = [];
-    renderPqaThumbs();
-    var modal = document.getElementById('modal-pool-quick');
-    modal.classList.remove('visible');
-    modal.setAttribute('aria-hidden', 'true');
-  }
-
-  function savePoolQuickAdd() {
-    var ps = props().slice();
-    var id = nextPropId(ps);
-    var name = document.getElementById('pqa-building').value.trim();
-    if (!name) {
-      alert('חובה שם בניין');
-      return;
-    }
-    var p = { id: id, transport: { light: '', heavy: '', highway: '' }, tenants: [], restaurants: [], omStatus: 'available' };
-    p.name = name;
-    p.address = document.getElementById('pqa-address').value.trim();
-    var mg = document.getElementById('pqa-mgmt').value.trim();
-    p.mgmt = mg === '' ? null : Number(mg);
-    var sz = document.getElementById('pqa-size').value.trim();
-    p.size = sz === '' ? null : isNaN(Number(sz)) ? sz : Number(sz);
-    var pr = document.getElementById('pqa-price').value.trim();
-    p.price = pr === '' ? null : Number(pr);
-    p.floor = document.getElementById('pqa-floor').value.trim();
-    p.availability = document.getElementById('pqa-availability').value.trim() || null;
-
-    var whRaw = document.getElementById('pqa-walk-heavy').value.trim();
-    var wlRaw = document.getElementById('pqa-walk-light').value.trim();
-    if (whRaw !== '') {
-      var wh = parseInt(whRaw, 10);
-      if (!isNaN(wh) && wh >= 0) {
-        p.walkHeavyMins = wh;
-        p.transport.heavy = 'רכבת ישראל — ' + wh + ' דק׳ הליכה';
-      }
-    }
-    if (wlRaw !== '') {
-      var wl = parseInt(wlRaw, 10);
-      if (!isNaN(wl) && wl >= 0) {
-        p.walkLightMins = wl;
-        p.transport.light = 'רכבת קלה — ' + wl + ' דק׳ הליכה';
-      }
-    }
-
-    p.clientNotes = document.getElementById('pqa-notes').value.trim() || null;
-
-    var g = (pqaGallery || []).filter(Boolean).slice(0, 5);
-    if (g.length) p.img = g[0];
-    else p.img = '';
-
-    ps.push(p);
-    saveProps(ps);
-
-    var im = imgs();
-    if (g.length) im[p.id] = g;
-    saveImgs(im);
-
-    closePoolQuickAddModal();
-    renderPropsTable();
-    renderTourProps();
-    alert('נשמר נכס למאגר.');
-  }
-
-  function parseXlsxWorkbookToProps(wb) {
-    var sheet = wb.Sheets[wb.SheetNames[0]];
-    function cleanLabel(s) {
-      return String(s || '').replace(/\s+/g, ' ').trim();
-    }
-    function normalizeLabel(s) {
-      return cleanLabel(s).replace(/["'׳״]/g, '').toLowerCase();
-    }
-    function cleanNum(s) {
-      if (s == null) return null;
-      if (typeof s === 'number') return Number.isFinite(s) ? s : null;
-      var t = String(s).trim();
-      if (!t) return null;
-      t = t.replace(/,/g, '');
-      var m = t.match(/-?\d+(\.\d+)?/);
-      if (!m) return null;
-      var n = parseFloat(m[0]);
-      return isNaN(n) ? null : n;
-    }
-
-    // Horizontal layout (your file): rows are labels, columns are properties.
-    // Row 1: כתובת, Row 2: בניין, Row 3: גודל, Row 4: מחיר, Row 5: זמינות, Row 6: דמי ניהול
-    try {
-      var grid = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
-      if (Array.isArray(grid) && grid.length) {
-        var labelRows = Object.create(null);
-        for (var r = 0; r < grid.length; r++) {
-          var row = grid[r];
-          if (!row || !row.length) continue;
-          var lbl = normalizeLabel(row[0]);
-          if (!lbl) continue;
-          if (
-            lbl === 'כתובת' ||
-            lbl === 'בניין' ||
-            lbl === 'גודל' ||
-            lbl === 'מחיר' ||
-            lbl === 'זמינות' ||
-            lbl === 'דמי ניהול' ||
-            lbl === 'דמי ניהול ' ||
-            lbl === 'דמי  ניהול' ||
-            lbl === 'דמי ניהול למר' ||
-            lbl === 'ניהול'
-          ) {
-            labelRows[lbl] = row;
-          }
-        }
-
-        var hasCore =
-          !!labelRows['כתובת'] &&
-          !!labelRows['בניין'] &&
-          !!labelRows['גודל'] &&
-          !!labelRows['מחיר'];
-
-        if (hasCore) {
-          var outH = [];
-          var maxCols = 0;
-          Object.keys(labelRows).forEach(function (k) {
-            var rr = labelRows[k];
-            if (rr && rr.length > maxCols) maxCols = rr.length;
-          });
-
-          for (var c = 1; c < maxCols; c++) {
-            var nameV = (labelRows['בניין'] && labelRows['בניין'][c] != null ? labelRows['בניין'][c] : '').toString().trim();
-            var addrV = (labelRows['כתובת'] && labelRows['כתובת'][c] != null ? labelRows['כתובת'][c] : '').toString().trim();
-            var sizeV = labelRows['גודל'] && labelRows['גודל'][c] != null ? labelRows['גודל'][c] : '';
-            var priceV = labelRows['מחיר'] && labelRows['מחיר'][c] != null ? labelRows['מחיר'][c] : '';
-            var availV = labelRows['זמינות'] && labelRows['זמינות'][c] != null ? labelRows['זמינות'][c] : '';
-            var mgmtRow = labelRows['דמי ניהול'] || labelRows['ניהול'];
-            var mgmtV = mgmtRow && mgmtRow[c] != null ? mgmtRow[c] : '';
-
-            if (!nameV && !addrV) continue;
-
-            outH.push({
-              id: c,
-              name: nameV || '',
-              address: addrV || '',
-              address_english: '',
-              floor: '',
-              size: cleanNum(sizeV) != null ? cleanNum(sizeV) : (String(sizeV || '').trim() || null),
-              price: cleanNum(priceV),
-              mgmt: cleanNum(mgmtV),
-              availability: cleanLabel(availV) || null,
-              deal: '',
-              lat: null,
-              lng: null,
-              img: '',
-              tenants: [],
-              restaurants: [],
-              transport: { light: '', heavy: '', highway: '' },
-            });
-          }
-          return outH.filter(function (p) { return String(p.name || '').trim(); });
-        }
-      }
-    } catch (e) {}
-
-    // Default vertical layout: columns are fields, rows are properties.
-    var rows = XLSX.utils.sheet_to_json(sheet, { defval: '' });
-    var out = [];
-    rows.forEach(function (row, idx) {
-      // Accept both Hebrew and English column names.
-      var id = parseInt(row.id || row.ID || row.Id || row['מזהה'] || '', 10);
-      if (isNaN(id)) id = idx + 1;
-      var tenants = row.tenants ? String(row.tenants).split(/[,;]/).map(function (s) { return s.trim(); }).filter(Boolean) : parseListarea(row.Tenants);
-      var restaurants = row.restaurants ? String(row.restaurants).split(/[,;]/).map(function (s) { return s.trim(); }).filter(Boolean) : parseListarea(row.Restaurants);
-      var p = {
-        id: id,
-        name: String(row.name || row.Name || row['שם'] || '').trim(),
-        address: String(row.address || row.Address || row['כתובת'] || '').trim(),
-        address_english: String(row.address_english || row.addressEnglish || row['כתובת_אנגלית'] || '').trim(),
-        floor: String(row.floor || row.Floor || row['קומה'] || '').trim(),
-        size: row.size !== '' && row.size != null ? (isNaN(Number(row.size)) ? row.size : Number(row.size)) : (row['שטח_מ"ר'] !== '' && row['שטח_מ"ר'] != null ? Number(row['שטח_מ"ר']) : null),
-        price: row.price !== '' && row.price != null ? Number(row.price) : (row['מחיר_למ"ר'] !== '' && row['מחיר_למ"ר'] != null ? Number(row['מחיר_למ"ר']) : null),
-        mgmt: row.mgmt !== '' && row.mgmt != null ? Number(row.mgmt) : (row['ניהול_למ"ר'] !== '' && row['ניהול_למ"ר'] != null ? Number(row['ניהול_למ"ר']) : null),
-        availability: row.availability || row.Availability || row['זמינות'] || null,
-        deal: String(row.deal || row.Deal || row['סוג_עסקה'] || '').trim(),
-        lat: row.lat !== '' && row.lat != null ? Number(row.lat) : (row['קו_רוחב'] !== '' && row['קו_רוחב'] != null ? Number(row['קו_רוחב']) : null),
-        lng: row.lng !== '' && row.lng != null ? Number(row.lng) : (row['קו_אורך'] !== '' && row['קו_אורך'] != null ? Number(row['קו_אורך']) : null),
-        img: String(row.img || row.Img || row.image || '').trim(),
-        tenants: tenants.length ? tenants : [],
-        restaurants: restaurants.length ? restaurants : [],
-        transport: {
-          light: String(row.light || row.transport_light || row['תחבורה_קלה'] || '').trim(),
-          heavy: String(row.heavy || row.transport_heavy || row['תחבורה_כבדה'] || '').trim(),
-          highway: String(row.highway || row.transport_highway || row['כביש'] || '').trim()
-        },
-      };
-      if (!p.name) return;
-      out.push(p);
-    });
-    return out;
-  }
-
-  function esc(s) {
-    return String(s == null ? '' : s)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
-  }
-  function escAttr(s) {
-    return esc(s).replace(/'/g, '&#39;');
-  }
-
-  function nextPropId(ps) {
-    var max = 0;
-    ps.forEach(function (p) {
-      var n = parseInt(p.id, 10);
-      if (!isNaN(n) && n > max) max = n;
-    });
-    return max + 1;
-  }
-
-  function mergePropsIntoPool(incoming) {
-    var ps = props().slice();
-    incoming.forEach(function (raw) {
-      if (!raw || !String(raw.name || '').trim()) return;
-      var id = raw.id;
-      if (id == null || id === '' || isNaN(Number(id))) id = nextPropId(ps);
-      id = Number(id);
-      var p = Object.assign({}, raw);
-      p.id = id;
-      var ix = ps.findIndex(function (x) { return Number(x.id) === id; });
-      if (ix >= 0) p = Object.assign({}, ps[ix], p);
-      if (!p.transport || typeof p.transport !== 'object') {
-        p.transport = { light: '', heavy: '', highway: '' };
-      }
-      if (!Array.isArray(p.tenants)) p.tenants = [];
-      if (!Array.isArray(p.restaurants)) p.restaurants = [];
-      if (!p.omStatus) p.omStatus = 'available';
-      if (ix >= 0) ps[ix] = p;
-      else ps.push(p);
-    });
-    saveProps(ps);
-  }
-
-  var poolImportStaging = [];
-  var poolImportImages = [];
-
-  function openPoolImportReview(arr) {
-    if (!arr || !arr.length) {
-      alert('לא נמצאו נכסים בקובץ');
-      return;
-    }
-    poolImportStaging = arr.map(function (p) {
-      return JSON.parse(JSON.stringify(p));
-    });
-    poolImportImages = arr.map(function (p) {
-      var pid = p.id;
-      var gl =
-        pid != null && pid !== '' && !isNaN(Number(pid)) ? galleryUrlsForProperty(Number(pid)) : [];
-      if (!gl.length && p.img) gl = [p.img];
-      return gl.slice(0, 5);
-    });
-    showPanel('pool');
-    renderPoolImportCards();
-    var rev = document.getElementById('pool-import-review');
-    if (rev) {
-      rev.style.display = 'block';
-      rev.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  }
-
-  function clearPoolImportReview() {
-    poolImportStaging = [];
-    poolImportImages = [];
-    var rev = document.getElementById('pool-import-review');
-    var cards = document.getElementById('pool-import-cards');
-    if (rev) rev.style.display = 'none';
-    if (cards) cards.innerHTML = '';
-  }
-
-  function renderPoolImportThumbs(i) {
-    var el = document.getElementById('pic-' + i + '-thumbs');
-    if (!el) return;
-    var arr = poolImportImages[i] || [];
-    el.innerHTML = arr
-      .map(function (src, j) {
-        return (
-          '<div class="cpe-thumb-wrap">' +
-          '<img class="thumb" src="' +
-          escAttr(src) +
-          '" alt="">' +
-          '<button type="button" data-pool-pic-rm="' +
-          i +
-          ':' +
-          j +
-          '" aria-label="הסר">×</button>' +
-          '</div>'
-        );
-      })
-      .join('');
-  }
-
-  function renderPoolImportCards() {
-    var host = document.getElementById('pool-import-cards');
-    if (!host) return;
-    host.innerHTML = poolImportStaging
-      .map(function (p, i) {
-        var wh =
-          p.walkHeavyMins != null && p.walkHeavyMins !== ''
-            ? String(p.walkHeavyMins)
-            : parseFirstWalkMins(p.transport && p.transport.heavy);
-        var wl =
-          p.walkLightMins != null && p.walkLightMins !== ''
-            ? String(p.walkLightMins)
-            : parseFirstWalkMins(p.transport && p.transport.light);
-        var notesVal =
-          p.clientNotes != null ? String(p.clientNotes) : p.deal ? String(p.deal) : '';
-        return (
-          '<div class="pool-import-card" data-pool-imp-idx="' +
-          i +
-          '">' +
-          '<h4>נכס ' +
-          (i + 1) +
-          (p.name ? ' — ' + esc(p.name) : '') +
-          '</h4>' +
-          '<div class="form-grid">' +
-          '<div><label>שם בניין</label><input type="text" id="pic-' +
-          i +
-          '-name" value="' +
-          escAttr(p.name || '') +
-          '"></div>' +
-          '<div><label>כתובת</label><input type="text" id="pic-' +
-          i +
-          '-address" value="' +
-          escAttr(p.address || '') +
-          '"></div>' +
-          '<div><label>שטח</label><input type="text" id="pic-' +
-          i +
-          '-size" value="' +
-          escAttr(p.size != null && p.size !== '' ? String(p.size) : '') +
-          '"></div>' +
-          '<div><label>מחיר</label><input type="text" id="pic-' +
-          i +
-          '-price" value="' +
-          escAttr(p.price != null && p.price !== '' ? String(p.price) : '') +
-          '"></div>' +
-          '<div><label>דמי ניהול</label><input type="text" id="pic-' +
-          i +
-          '-mgmt" value="' +
-          escAttr(p.mgmt != null && p.mgmt !== '' ? String(p.mgmt) : '') +
-          '"></div>' +
-          '<div><label>זמינות</label><input type="text" id="pic-' +
-          i +
-          '-availability" value="' +
-          escAttr(p.availability != null ? String(p.availability) : '') +
-          '"></div>' +
-          '<div><label>מרחק רכבת (דק׳)</label><input type="text" id="pic-' +
-          i +
-          '-train" value="' +
-          escAttr(wh) +
-          '"></div>' +
-          '<div><label>מרחק רכבת קלה (דק׳)</label><input type="text" id="pic-' +
-          i +
-          '-light" value="' +
-          escAttr(wl) +
-          '"></div>' +
-          '<div><label>קומה</label><input type="text" id="pic-' +
-          i +
-          '-floor" value="' +
-          escAttr(p.floor || '') +
-          '"></div>' +
-          '<div style="grid-column:1/-1"><label>הערות</label><textarea id="pic-' +
-          i +
-          '-notes">' +
-          esc(notesVal) +
-          '</textarea></div>' +
-          '</div>' +
-          '<div style="margin-top:12px">' +
-          '<label>תמונות (עד 5)</label>' +
-          '<input type="file" class="pool-import-file-inp" data-idx="' +
-          i +
-          '" accept="image/*" multiple>' +
-          '<div id="pic-' +
-          i +
-          '-thumbs" class="thumb-row"></div>' +
-          '</div>' +
-          '</div>'
-        );
-      })
-      .join('');
-    for (var j = 0; j < poolImportStaging.length; j++) {
-      renderPoolImportThumbs(j);
-    }
-  }
-
-  function buildPropertyFromImportCard(i) {
-    var base = poolImportStaging[i] || {};
-    var p = Object.assign({}, base);
-    var nameEl = document.getElementById('pic-' + i + '-name');
-    p.name = nameEl && nameEl.value ? nameEl.value.trim() : '';
-    var addrEl = document.getElementById('pic-' + i + '-address');
-    p.address = addrEl && addrEl.value ? addrEl.value.trim() : '';
-    var szEl = document.getElementById('pic-' + i + '-size');
-    var sz = szEl && szEl.value ? szEl.value.trim() : '';
-    p.size = sz === '' ? null : isNaN(Number(sz)) ? sz : Number(sz);
-    var prEl = document.getElementById('pic-' + i + '-price');
-    var pr = prEl && prEl.value ? prEl.value.trim() : '';
-    p.price = pr === '' ? null : Number(pr);
-    var mgEl = document.getElementById('pic-' + i + '-mgmt');
-    var mg = mgEl && mgEl.value ? mgEl.value.trim() : '';
-    p.mgmt = mg === '' ? null : Number(mg);
-    var avEl = document.getElementById('pic-' + i + '-availability');
-    var av = avEl && avEl.value ? avEl.value.trim() : '';
-    p.availability = av || null;
-    var flEl = document.getElementById('pic-' + i + '-floor');
-    p.floor = flEl && flEl.value ? flEl.value.trim() : '';
-
-    p.transport =
-      p.transport && typeof p.transport === 'object'
-        ? Object.assign({}, p.transport)
-        : { light: '', heavy: '', highway: '' };
-
-    var whEl = document.getElementById('pic-' + i + '-train');
-    var whRaw = whEl && whEl.value ? whEl.value.trim() : '';
-    var wlEl = document.getElementById('pic-' + i + '-light');
-    var wlRaw = wlEl && wlEl.value ? wlEl.value.trim() : '';
-    if (whRaw === '') {
-      delete p.walkHeavyMins;
-      p.transport.heavy = '';
-    } else {
-      var wh = parseInt(whRaw, 10);
-      if (!isNaN(wh) && wh >= 0) {
-        p.walkHeavyMins = wh;
-        p.transport.heavy = 'רכבת ישראל — ' + wh + ' דק׳ הליכה';
-      }
-    }
-    if (wlRaw === '') {
-      delete p.walkLightMins;
-      p.transport.light = '';
-    } else {
-      var wl = parseInt(wlRaw, 10);
-      if (!isNaN(wl) && wl >= 0) {
-        p.walkLightMins = wl;
-        p.transport.light = 'רכבת קלה — ' + wl + ' דק׳ הליכה';
-      }
-    }
-
-    var notesEl = document.getElementById('pic-' + i + '-notes');
-    var notes = notesEl && notesEl.value ? notesEl.value.trim() : '';
-    p.clientNotes = notes || null;
-
-    var g = (poolImportImages[i] || []).filter(Boolean).slice(0, 5);
-    if (g.length) p.img = g[0];
-    else if (!p.img) p.img = '';
-
-    if (!p.omStatus) p.omStatus = 'available';
-    if (!Array.isArray(p.tenants)) p.tenants = [];
-    if (!Array.isArray(p.restaurants)) p.restaurants = [];
-    return p;
-  }
-
-  function savePoolImportAll() {
-    var ps = props().slice();
-    var im = imgs();
-    var saved = 0;
-    for (var i = 0; i < poolImportStaging.length; i++) {
-      var nameEl = document.getElementById('pic-' + i + '-name');
-      if (!nameEl || !nameEl.value.trim()) continue;
-      var raw = buildPropertyFromImportCard(i);
-      var id = raw.id;
-      if (id == null || id === '' || isNaN(Number(id))) id = nextPropId(ps);
-      id = Number(id);
-      raw.id = id;
-      var ix = ps.findIndex(function (x) { return Number(x.id) === id; });
-      if (ix >= 0) raw = Object.assign({}, ps[ix], raw);
-      if (!raw.transport || typeof raw.transport !== 'object') {
-        raw.transport = { light: '', heavy: '', highway: '' };
-      }
-      if (!Array.isArray(raw.tenants)) raw.tenants = [];
-      if (!Array.isArray(raw.restaurants)) raw.restaurants = [];
-      if (!raw.omStatus) raw.omStatus = 'available';
-
-      var g = (poolImportImages[i] || []).filter(Boolean).slice(0, 5);
-      if (g.length) {
-        im[id] = g;
-        raw.img = g[0];
-      } else {
-        delete im[id];
-        if (!raw.img) raw.img = '';
-      }
-
-      if (ix >= 0) ps[ix] = raw;
-      else ps.push(raw);
-      saved++;
-    }
-    if (!saved) {
-      alert('אין נכסים לשמור — מלאו לפחות שם בניין בכרטיס אחד.');
-      return;
-    }
-    saveImgs(im);
-    saveProps(ps);
-    clearPoolImportReview();
-    renderPropsTable();
-    renderTourProps();
-    alert('נשמרו ' + saved + ' נכסים למאגר.');
-  }
-
-  function renderPpeThumbs() {
-    var el = document.getElementById('ppe-thumbs');
-    if (!el) return;
-    el.innerHTML = ppeGallery
-      .map(function (src, i) {
-        return (
-          '<div class="cpe-thumb-wrap">' +
-          '<img class="thumb" src="' +
-          escAttr(src) +
-          '" alt="">' +
-          '<button type="button" data-ppe-rm="' +
-          i +
-          '" aria-label="הסר">×</button>' +
-          '</div>'
-        );
-      })
-      .join('');
-  }
-
-  function openPoolPropModal(p) {
-    poolEditId = p && p.id != null ? Number(p.id) : null;
-    document.getElementById('ppe-title').textContent = poolEditId != null ? 'עריכת נכס #' + poolEditId : 'נכס חדש במאגר';
-
-    if (!p) {
-      document.getElementById('ppe-id').value = '';
-      document.getElementById('ppe-name').value = '';
-      document.getElementById('ppe-address').value = '';
-      document.getElementById('ppe-size').value = '';
-      document.getElementById('ppe-price').value = '';
-      document.getElementById('ppe-mgmt').value = '';
-      document.getElementById('ppe-availability').value = '';
-      document.getElementById('ppe-walk-heavy').value = '';
-      document.getElementById('ppe-walk-light').value = '';
-      document.getElementById('ppe-notes').value = '';
-      document.getElementById('ppe-floor').value = '';
-      document.getElementById('ppe-deal').value = '';
-      document.getElementById('ppe-lat').value = '';
-      document.getElementById('ppe-lng').value = '';
-      document.getElementById('ppe-img').value = '';
-      document.getElementById('ppe-t-highway').value = '';
-      document.getElementById('ppe-tenants').value = '';
-      document.getElementById('ppe-restaurants').value = '';
-      ppeGallery = [];
-    } else {
-      document.getElementById('ppe-id').value = p.id != null ? String(p.id) : '';
-      document.getElementById('ppe-name').value = p.name || '';
-      document.getElementById('ppe-address').value = p.address || '';
-      document.getElementById('ppe-size').value = p.size != null && p.size !== '' ? String(p.size) : '';
-      document.getElementById('ppe-price').value = p.price != null && p.price !== '' ? String(p.price) : '';
-      document.getElementById('ppe-mgmt').value = p.mgmt != null && p.mgmt !== '' ? String(p.mgmt) : '';
-      document.getElementById('ppe-availability').value = p.availability != null ? String(p.availability) : '';
-      var wh =
-        p.walkHeavyMins != null && p.walkHeavyMins !== ''
-          ? String(p.walkHeavyMins)
-          : parseFirstWalkMins(p.transport && p.transport.heavy);
-      var wl =
-        p.walkLightMins != null && p.walkLightMins !== ''
-          ? String(p.walkLightMins)
-          : parseFirstWalkMins(p.transport && p.transport.light);
-      document.getElementById('ppe-walk-heavy').value = wh;
-      document.getElementById('ppe-walk-light').value = wl;
-      document.getElementById('ppe-notes').value = p.clientNotes != null ? String(p.clientNotes) : '';
-      document.getElementById('ppe-floor').value = p.floor || '';
-      document.getElementById('ppe-deal').value = p.deal || '';
-      document.getElementById('ppe-lat').value = p.lat != null && Number.isFinite(Number(p.lat)) ? String(p.lat) : '';
-      document.getElementById('ppe-lng').value = p.lng != null && Number.isFinite(Number(p.lng)) ? String(p.lng) : '';
-      document.getElementById('ppe-img').value = p.img || '';
-      document.getElementById('ppe-t-highway').value = (p.transport && p.transport.highway) || '';
-      document.getElementById('ppe-tenants').value = Array.isArray(p.tenants) ? p.tenants.join('\n') : '';
-      document.getElementById('ppe-restaurants').value = Array.isArray(p.restaurants) ? p.restaurants.join('\n') : '';
-      var gl = galleryUrlsForProperty(p.id);
-      if (!gl.length && p.img) gl = [p.img];
-      ppeGallery = gl.slice(0, 5);
-    }
-    document.getElementById('ppe-images').value = '';
-    renderPpeThumbs();
-
-    var modal = document.getElementById('modal-pool-prop');
-    modal.classList.add('visible');
-    modal.setAttribute('aria-hidden', 'false');
-  }
-
-  function closePoolPropModal() {
-    poolEditId = null;
-    ppeGallery = [];
-    var modal = document.getElementById('modal-pool-prop');
-    modal.classList.remove('visible');
-    modal.setAttribute('aria-hidden', 'true');
-  }
-
-  function savePoolPropFromModal() {
-    var ps = props().slice();
-    var idRaw = document.getElementById('ppe-id').value.trim();
-    var id = idRaw ? parseInt(idRaw, 10) : poolEditId != null ? poolEditId : nextPropId(ps);
-    if (isNaN(id)) {
-      alert('מזהה לא תקין');
-      return;
-    }
-
-    var name = document.getElementById('ppe-name').value.trim();
-    if (!name) {
-      alert('חובה שם נכס');
-      return;
-    }
-
-    var p = ps.find(function (x) { return Number(x.id) === id; });
-    if (!p) p = { id: id, transport: { light: '', heavy: '', highway: '' }, tenants: [], restaurants: [], omStatus: 'available' };
-    else p = Object.assign({}, p);
-
-    p.name = name;
-    p.address = document.getElementById('ppe-address').value.trim();
-    var sz = document.getElementById('ppe-size').value.trim();
-    p.size = sz === '' ? null : isNaN(Number(sz)) ? sz : Number(sz);
-    var pr = document.getElementById('ppe-price').value.trim();
-    p.price = pr === '' ? null : Number(pr);
-    var mg = document.getElementById('ppe-mgmt').value.trim();
-    p.mgmt = mg === '' ? null : Number(mg);
-    p.availability = document.getElementById('ppe-availability').value.trim() || null;
-    p.floor = document.getElementById('ppe-floor').value.trim();
-    p.deal = document.getElementById('ppe-deal').value.trim();
-    var latS = document.getElementById('ppe-lat').value.trim();
-    var lngS = document.getElementById('ppe-lng').value.trim();
-    p.lat = latS === '' ? null : Number(latS);
-    p.lng = lngS === '' ? null : Number(lngS);
-    if (!Number.isFinite(p.lat)) p.lat = null;
-    if (!Number.isFinite(p.lng)) p.lng = null;
-    p.img = document.getElementById('ppe-img').value.trim() || '';
-    p.tenants = parseListarea(document.getElementById('ppe-tenants').value);
-    p.restaurants = parseListarea(document.getElementById('ppe-restaurants').value);
-    p.transport = p.transport || {};
-    p.transport.highway = document.getElementById('ppe-t-highway').value.trim();
-
-    var whRaw = document.getElementById('ppe-walk-heavy').value.trim();
-    var wlRaw = document.getElementById('ppe-walk-light').value.trim();
-    if (whRaw === '') {
-      delete p.walkHeavyMins;
-      p.transport.heavy = '';
-    } else {
-      var wh = parseInt(whRaw, 10);
-      if (!isNaN(wh) && wh >= 0) {
-        p.walkHeavyMins = wh;
-        p.transport.heavy = 'רכבת ישראל — ' + wh + ' דק׳ הליכה';
-      }
-    }
-    if (wlRaw === '') {
-      delete p.walkLightMins;
-      p.transport.light = '';
-    } else {
-      var wl = parseInt(wlRaw, 10);
-      if (!isNaN(wl) && wl >= 0) {
-        p.walkLightMins = wl;
-        p.transport.light = 'רכבת קלה — ' + wl + ' דק׳ הליכה';
-      }
-    }
-
-    p.clientNotes = document.getElementById('ppe-notes').value.trim() || null;
-
-    var g = ppeGallery.filter(Boolean).slice(0, 5);
-    var imgUrl = document.getElementById('ppe-img').value.trim();
-    if (g.length) p.img = g[0];
-    else p.img = imgUrl || '';
-    var imap = imgs();
-    if (g.length) imap[p.id] = g;
-    else delete imap[p.id];
-    saveImgs(imap);
-
-    var ix = ps.findIndex(function (x) { return Number(x.id) === id; });
-    if (ix >= 0) ps[ix] = p;
-    else ps.push(p);
-    saveProps(ps);
-
-    closePoolPropModal();
-    renderPropsTable();
-    renderTourProps();
-  }
-
-  function fillClientSelects() {
-    var list = mergeDashboardClients();
-    var opts = list.map(function (c) {
-      return '<option value="' + escAttr(c.id) + '">' + esc(c.name || c.email) + ' — ' + esc(c.email) + '</option>';
-    }).join('');
-    var sel = document.getElementById('tour-client');
-    if (sel) sel.innerHTML = '<option value="">— בחר לקוח —</option>' + opts;
-  }
-
-  function renderPropsTable() {
-    var ps = props();
-    if (!ps.length) {
-      document.getElementById('props-manager-table').innerHTML =
-        '<p style="color:#64748b;font-size:14px;">אין נכסים במאגר — הוסיפו ידנית או ייבאו קובץ.</p>';
-      return;
-    }
-    var rows = ps
-      .map(function (p) {
-        var sz = p.size != null && p.size !== '' ? esc(String(p.size)) : '—';
-        var fl = p.floor != null && p.floor !== '' ? esc(String(p.floor)) : '—';
-        var pr = p.price != null && p.price !== '' ? esc(String(p.price)) : '—';
-        var mg = p.mgmt != null && p.mgmt !== '' ? esc(String(p.mgmt)) : '—';
-        var av = p.availability != null ? esc(String(p.availability)) : '—';
-        return (
-          '<tr>' +
-          '<td>' +
-          p.id +
-          '</td>' +
-          '<td>' +
-          esc(p.name) +
-          '</td>' +
-          '<td style="color:#64748b;">' +
-          esc(p.address) +
-          '</td>' +
-          '<td>' +
-          fl +
-          '</td>' +
-          '<td>' +
-          sz +
-          '</td>' +
-          '<td>' +
-          pr +
-          '</td>' +
-          '<td>' +
-          mg +
-          '</td>' +
-          '<td>' +
-          av +
-          '</td>' +
-          '<td>' +
-          '<button type="button" class="btn btn-outline btn-sm" data-edit-prop="' +
-          escAttr(String(p.id)) +
-          '">ערוך</button> ' +
-          '<button type="button" class="btn btn-danger btn-sm" data-del-prop="' +
-          escAttr(String(p.id)) +
-          '">מחק</button>' +
-          '</td>' +
-          '</tr>'
-        );
-      })
-      .join('');
-    document.getElementById('props-manager-table').innerHTML =
-      '<div class="table-wrap"><table><thead><tr>' +
-      '<th>ID</th><th>שם</th><th>כתובת</th><th>קומה</th><th>שטח</th><th>מחיר/מ״ר</th><th>ניהול</th><th>זמינות</th><th></th>' +
-      '</tr></thead><tbody>' +
-      rows +
-      '</tbody></table></div>';
-  }
-
-  function hydrateTourNotesForSelection() {
-    var cidEl = document.getElementById('tour-client');
-    var ta = document.getElementById('tour-notes');
-    var wrap = document.getElementById('tour-link-wrap');
-    if (!cidEl || !ta) return;
-    var cid = cidEl.value;
-    if (!cid) {
-      ta.value = '';
-      if (wrap) wrap.style.display = 'none';
-      return;
-    }
-    var meta = tourMetaMap()[cid];
-    ta.value = meta && meta.notes ? meta.notes : '';
-    if (wrap) wrap.style.display = 'none';
-  }
-
-  function renderTourProps() {
-    var ps = props();
-    var el = document.getElementById('tour-props');
-    if (!el) return;
-    var cidEl = document.getElementById('tour-client');
-    var cid = cidEl ? cidEl.value : '';
-    var savedIds = [];
-    if (cid) {
-      var om = tourMetaMap()[cid];
-      if (om && Array.isArray(om.propertyIds)) savedIds = om.propertyIds.map(function (x) { return Number(x); });
-    }
-    if (!ps.length) {
-      el.innerHTML = '<p style="color:#b91c1c;">אין נכסים במאגר — הוסיפו נכסים תחילה.</p>';
-      return;
-    }
-    var defaultAll = savedIds.length === 0;
-    el.innerHTML = ps
-      .map(function (p) {
-        var pid = Number(p.id);
-        var checked = defaultAll || savedIds.indexOf(pid) !== -1;
-        return (
-          '<label class="prop-check">' +
-          '<input type="checkbox" name="tour-pid" value="' +
-          escAttr(String(p.id)) +
-          '"' +
-          (checked ? ' checked' : '') +
-          '>' +
-          '<span><strong>' +
-          esc(p.name) +
-          '</strong><br><span style="color:#64748b;font-size:12px;">' +
-          esc(p.address) +
-          '</span></span>' +
-          '</label>'
-        );
-      })
-      .join('');
-  }
-
-  function deleteProp(id) {
-    if (!confirm('למחוק נכס #' + id + '?')) return;
-    saveProps(props().filter(function (p) { return Number(p.id) !== Number(id); }));
-    var allIm = imgs();
-    delete allIm[String(id)];
-    saveImgs(allIm);
-    renderPropsTable();
-    renderTourProps();
-  }
-
-  function showPanel(id) {
-    document.querySelectorAll('.nav-btn').forEach(function (b) {
-      var pid = b.getAttribute('data-panel');
-      if (id === 'client-detail') {
-        b.classList.toggle('active', pid === 'clients');
-      } else {
-        b.classList.toggle('active', pid === id);
-      }
-    });
-    document.querySelectorAll('.panel').forEach(function (p) {
-      p.classList.toggle('active', p.id === 'panel-' + id);
-    });
-    if (id === 'clients') renderDashboard();
-    if (id === 'pool') renderPropsTable();
-    if (id === 'tour') {
-      renderTourProps();
-      hydrateTourNotesForSelection();
-    }
-    fillClientSelects();
-  }
-
-  function openClientModal(id) {
-    var m = document.getElementById('modal-client');
-    var list = mergeDashboardClients();
-    var c = id ? list.find(function (x) { return x.id === id; }) : null;
-    document.getElementById('mc-id').value = c ? c.id : '';
-    document.getElementById('mc-name').value = c ? c.name : '';
-    document.getElementById('mc-company').value = c ? c.company : '';
-    document.getElementById('mc-email').value = c ? c.email : '';
-    document.getElementById('mc-phone').value = c ? c.phone : '';
-    document.getElementById('mc-pass').value = c ? (c.password || '') : '';
-    document.getElementById('mc-title').textContent = c ? 'עריכת לקוח' : 'לקוח חדש';
-    m.style.display = 'flex';
-  }
-
-  function closeClientModal() {
-    document.getElementById('modal-client').style.display = 'none';
-  }
-
-  function saveClientModal() {
-    var list = clients().slice();
-    var id = document.getElementById('mc-id').value.trim();
-    var rec = {
-      id: id || ('c_' + Date.now()),
-      name: document.getElementById('mc-name').value.trim(),
-      company: document.getElementById('mc-company').value.trim(),
-      email: document.getElementById('mc-email').value.trim(),
-      phone: document.getElementById('mc-phone').value.trim(),
-      password: document.getElementById('mc-pass').value.trim(),
-      registeredAt: new Date().toISOString(),
-      lastSeen: null,
-      tourOpened: false,
-      favCount: 0
-    };
-    if (!rec.email) {
-      alert('חובה אימייל');
-      return;
-    }
-    var ix = list.findIndex(function (x) { return x.id === id; });
-    if (ix >= 0) {
-      rec.registeredAt = list[ix].registeredAt || rec.registeredAt;
-      rec.lastSeen = list[ix].lastSeen;
-      rec.tourOpened = list[ix].tourOpened;
-      rec.favCount = list[ix].favCount;
-      if (!rec.password) rec.password = list[ix].password || '';
-      list[ix] = rec;
-    } else {
-      var byEmail = list.findIndex(function (x) { return (x.email || '').toLowerCase() === rec.email.toLowerCase(); });
-      if (byEmail >= 0) {
-        rec.id = list[byEmail].id;
-        rec.registeredAt = list[byEmail].registeredAt || rec.registeredAt;
-        rec.lastSeen = list[byEmail].lastSeen;
-        rec.tourOpened = list[byEmail].tourOpened;
-        if (!rec.password) rec.password = list[byEmail].password || '';
-        list[byEmail] = rec;
-      } else {
-        if (id && String(id).indexOf('browser_') === 0) rec.id = 'c_' + Date.now();
-        list.push(rec);
-      }
-    }
-    saveClients(list);
-    persistClientBundle(rec.id);
-    closeClientModal();
-    renderDashboard();
-    fillClientSelects();
-    if (currentClientId && id === currentClientId) renderClientDetail(rec.id);
-  }
-
-  function syncBrowserClient() {
-    alert('הסנכרון מהדפדפן הוסר. נתוני לקוחות נשמרים כעת ב-JSONBin — הוסף או ערוך לקוח דרך המסך הזה.');
-  }
-
-  function generateClientTourLink() {
-    var cid = document.getElementById('tour-client').value;
-    if (!cid) {
-      alert('בחרו לקוח');
-      return;
-    }
-    var client = mergeDashboardClients().find(function (c) { return c.id === cid; });
-    if (!client) {
-      alert('לקוח לא נמצא');
-      return;
-    }
-    var ids = Array.prototype.map
-      .call(document.querySelectorAll('#tour-props input[name="tour-pid"]:checked'), function (x) {
-        return parseInt(x.value, 10);
-      })
-      .filter(function (n) {
-        return !isNaN(n);
-      });
-    var pool = props();
-    var ps = pool.filter(function (p) {
-      return ids.indexOf(Number(p.id)) !== -1;
-    });
-    if (!ps.length) {
-      alert('בחרו לפחות נכס אחד');
-      return;
-    }
-    var snapshot = JSON.parse(JSON.stringify(ps));
-    saveClientTourPropsFor(cid, snapshot);
-
-    var notes = document.getElementById('tour-notes').value.trim();
-    var meta = tourMetaMap();
-    meta[cid] = {
-      notes: notes,
-      propertyIds: ids,
-      updatedAt: new Date().toISOString()
-    };
-    saveTourMetaMap(meta);
-    persistClientBundle(cid);
-
-    var link = tourLinkForClientId(cid);
-    document.getElementById('tour-link-wrap').style.display = 'block';
-    document.getElementById('tour-link-out').value = link;
-    document.getElementById('tour-open-link').href = link;
-    alert('הסיור נשמר ללקוח. הקישור מוצג למטה.');
-    if (currentClientId != null && String(currentClientId) === String(cid)) renderClientDetail(cid);
-  }
-
-  function saveClientTourFromDetail() {
-    if (!currentClientId) {
-      alert('לא נבחר לקוח');
-      return;
-    }
-    var cid = currentClientId;
-    var client = mergeDashboardClients().find(function (c) {
-      return String(c.id) === String(cid);
-    });
-    if (!client) {
-      alert('לקוח לא נמצא');
-      return;
-    }
-    var ids = Array.prototype.map
-      .call(document.querySelectorAll('#client-detail-props input[name="client-tour-pid"]:checked'), function (x) {
-        return parseInt(x.value, 10);
-      })
-      .filter(function (n) {
-        return !isNaN(n);
-      });
-    var pool = props();
-    var ps = pool.filter(function (p) {
-      return ids.indexOf(Number(p.id)) !== -1;
-    });
-    if (!ps.length) {
-      alert('בחרו לפחות נכס אחד');
-      return;
-    }
-    var snapshot = JSON.parse(JSON.stringify(ps));
-    saveClientTourPropsFor(cid, snapshot);
-
-    var notesEl = document.getElementById('client-detail-tour-notes-input');
-    var notes = notesEl ? notesEl.value.trim() : '';
-    var meta = tourMetaMap();
-    meta[cid] = {
-      notes: notes,
-      propertyIds: ids,
-      updatedAt: new Date().toISOString(),
-    };
-    saveTourMetaMap(meta);
-    persistClientBundle(cid);
-
-    var link = tourLinkForClientId(cid);
-    document.getElementById('client-detail-tour-link').value = link;
-    document.getElementById('client-detail-open-link').href = link;
-    alert('הסיור נשמר. ניתן לשלוח ללקוח את הקישור למטה.');
-  }
-
-  function renderInitialData() {
-    renderDashboard();
-    fillClientSelects();
-    renderPropsTable();
-    renderTourProps();
-  }
-
-  /* --- Auth --- */
-  function tryLogin() {
-    var p = document.getElementById('login-pass').value;
-    if (p === ADMIN_PASSWORD) {
-      sessionStorage.setItem(LS_AUTH, '1');
-      document.getElementById('login-wrap').style.display = 'none';
-      document.getElementById('app').classList.add('visible');
-      loadRemoteData().then(renderInitialData);
-    } else {
-      document.getElementById('login-err').style.display = 'block';
-    }
-  }
-  document.getElementById('login-btn').addEventListener('click', tryLogin);
-  document.getElementById('login-pass').addEventListener('keydown', function (e) {
-    if (e.key === 'Enter') tryLogin();
-  });
-
-  if (sessionStorage.getItem(LS_AUTH) === '1') {
-    document.getElementById('login-wrap').style.display = 'none';
-    document.getElementById('app').classList.add('visible');
-    loadRemoteData().then(renderInitialData);
-  }
-
-  document.querySelectorAll('.nav-btn').forEach(function (b) {
-    b.addEventListener('click', function () {
-      showPanel(b.getAttribute('data-panel'));
-    });
-  });
-
-  document.getElementById('btn-add-client').addEventListener('click', function () { openClientModal(null); });
-  document.getElementById('btn-sync-browser-client').addEventListener('click', syncBrowserClient);
-  document.getElementById('mc-cancel').addEventListener('click', closeClientModal);
-  document.getElementById('mc-save').addEventListener('click', saveClientModal);
-
-  document.getElementById('dashboard-table').addEventListener('click', function (e) {
-    var delBtn = e.target.closest && e.target.closest('[data-del-client]');
-    if (delBtn) {
-      deleteClientById(delBtn.getAttribute('data-del-client'));
-      return;
-    }
-    var editId = e.target.getAttribute('data-edit-client');
-    if (editId) {
-      openClientModal(editId);
-      return;
-    }
-    if (e.target.closest && (e.target.closest('button') || e.target.closest('a'))) return;
-    var tr = e.target.closest && e.target.closest('tr[data-client-row]');
-    if (!tr) return;
-    var cid = tr.getAttribute('data-client-row');
-    if (cid) renderClientDetail(cid);
-  });
-
-  document.getElementById('client-detail-back').addEventListener('click', function () {
-    showPanel('clients');
-  });
-  document.getElementById('client-detail-edit').addEventListener('click', function () {
-    if (currentClientId) openClientModal(currentClientId);
-  });
-  document.getElementById('client-detail-goto-tour').addEventListener('click', function () {
-    if (!currentClientId) return;
-    var sel = document.getElementById('tour-client');
-    if (sel) sel.value = currentClientId;
-    showPanel('tour');
-    renderTourProps();
-    hydrateTourNotesForSelection();
-    var tw = document.getElementById('tour-link-wrap');
-    if (tw) tw.style.display = clientTourPropsFor(currentClientId).length ? 'block' : 'none';
-    if (tw && tw.style.display === 'block') {
-      var link = tourLinkForClientId(currentClientId);
-      document.getElementById('tour-link-out').value = link;
-      document.getElementById('tour-open-link').href = link;
-    }
-  });
-  document.getElementById('client-detail-save-tour').addEventListener('click', saveClientTourFromDetail);
-  document.getElementById('client-detail-copy-link').addEventListener('click', function () {
-    var v = document.getElementById('client-detail-tour-link').value;
-    try {
-      navigator.clipboard.writeText(v);
-    } catch (e) {}
-    alert('הקישור הועתק');
-  });
-
-  document.getElementById('btn-pool-quick-add').addEventListener('click', function () {
-    openPoolQuickAddModal();
-  });
-
-  document.getElementById('ppe-cancel').addEventListener('click', closePoolPropModal);
-  document.getElementById('ppe-save').addEventListener('click', savePoolPropFromModal);
-  document.getElementById('modal-pool-prop').addEventListener('click', function (e) {
-    if (e.target.id === 'modal-pool-prop') closePoolPropModal();
-  });
-
-  document.getElementById('pqa-cancel').addEventListener('click', closePoolQuickAddModal);
-  document.getElementById('pqa-save').addEventListener('click', savePoolQuickAdd);
-  document.getElementById('modal-pool-quick').addEventListener('click', function (e) {
-    if (e.target.id === 'modal-pool-quick') closePoolQuickAddModal();
-  });
-  document.getElementById('pqa-building').addEventListener('change', function () {
-    setPqaFromBuildingName(document.getElementById('pqa-building').value);
-  });
-  document.getElementById('pqa-images').addEventListener('change', function (e) {
-    var files = e.target.files;
-    if (!files || !files.length) return;
-    var remaining = 5 - pqaGallery.length;
-    if (remaining <= 0) return;
-    var toRead = Math.min(remaining, files.length);
-    var done = 0;
-    for (var i = 0; i < toRead; i++) {
-      (function (file) {
-        var r = new FileReader();
-        r.onload = function () {
-          if (typeof r.result === 'string' && pqaGallery.length < 5) pqaGallery.push(r.result);
-          done++;
-          if (done === toRead) renderPqaThumbs();
-        };
-        r.readAsDataURL(file);
-      })(files[i]);
-    }
-    e.target.value = '';
-  });
-  document.getElementById('pqa-thumbs').addEventListener('click', function (e) {
-    var b = e.target.closest && e.target.closest('[data-pqa-rm]');
-    if (!b) return;
-    var i = parseInt(b.getAttribute('data-pqa-rm'), 10);
-    if (isNaN(i)) return;
-    pqaGallery.splice(i, 1);
-    renderPqaThumbs();
-  });
-  document.getElementById('ppe-thumbs').addEventListener('click', function (e) {
-    var b = e.target.closest && e.target.closest('[data-ppe-rm]');
-    if (!b) return;
-    var i = parseInt(b.getAttribute('data-ppe-rm'), 10);
-    if (isNaN(i)) return;
-    ppeGallery.splice(i, 1);
-    renderPpeThumbs();
-  });
-  document.getElementById('ppe-images').addEventListener('change', function (e) {
-    var files = e.target.files;
-    if (!files || !files.length) return;
-    var remaining = 5 - ppeGallery.length;
-    if (remaining <= 0) return;
-    var toRead = Math.min(remaining, files.length);
-    var done = 0;
-    for (var i = 0; i < toRead; i++) {
-      (function (file) {
-        var r = new FileReader();
-        r.onload = function () {
-          if (typeof r.result === 'string' && ppeGallery.length < 5) ppeGallery.push(r.result);
-          done++;
-          if (done === toRead) renderPpeThumbs();
-        };
-        r.readAsDataURL(file);
-      })(files[i]);
-    }
-    e.target.value = '';
-  });
-
-  var poolDrop = document.getElementById('pool-import-drop');
-  var poolFile = document.getElementById('pool-import-file');
-  if (poolDrop && poolFile) {
-    poolDrop.addEventListener('click', function () { poolFile.click(); });
-    poolDrop.addEventListener('dragover', function (e) { e.preventDefault(); poolDrop.classList.add('drag'); });
-    poolDrop.addEventListener('dragleave', function () { poolDrop.classList.remove('drag'); });
-    poolDrop.addEventListener('drop', function (e) {
-      e.preventDefault();
-      poolDrop.classList.remove('drag');
-      var f = e.dataTransfer.files[0];
-      if (f) handlePoolImportFile(f);
-    });
-    poolFile.addEventListener('change', function () {
-      if (poolFile.files[0]) handlePoolImportFile(poolFile.files[0]);
-    });
-  }
-
-  var poolCardsHost = document.getElementById('pool-import-cards');
-  if (poolCardsHost) {
-    poolCardsHost.addEventListener('change', function (e) {
-      var inp = e.target.closest && e.target.closest('.pool-import-file-inp');
-      if (!inp) return;
-      var i = parseInt(inp.getAttribute('data-idx'), 10);
-      if (isNaN(i)) return;
-      var files = inp.files;
-      if (!files || !files.length) return;
-      if (!poolImportImages[i]) poolImportImages[i] = [];
-      var remaining = 5 - poolImportImages[i].length;
-      if (remaining <= 0) return;
-      var toRead = Math.min(remaining, files.length);
-      var done = 0;
-      for (var fi = 0; fi < toRead; fi++) {
-        (function (file) {
-          var r = new FileReader();
-          r.onload = function () {
-            if (typeof r.result === 'string' && poolImportImages[i].length < 5) {
-              poolImportImages[i].push(r.result);
-            }
-            done++;
-            if (done === toRead) renderPoolImportThumbs(i);
-          };
-          r.readAsDataURL(file);
-        })(files[fi]);
-      }
-      inp.value = '';
-    });
-    poolCardsHost.addEventListener('click', function (e) {
-      var b = e.target.closest && e.target.closest('[data-pool-pic-rm]');
-      if (!b) return;
-      var parts = String(b.getAttribute('data-pool-pic-rm') || '').split(':');
-      var ii = parseInt(parts[0], 10);
-      var jj = parseInt(parts[1], 10);
-      if (isNaN(ii) || isNaN(jj)) return;
-      if (poolImportImages[ii]) {
-        poolImportImages[ii].splice(jj, 1);
-        renderPoolImportThumbs(ii);
-      }
-    });
-  }
-  var poolImportCancel = document.getElementById('pool-import-cancel');
-  if (poolImportCancel) {
-    poolImportCancel.addEventListener('click', function () {
-      clearPoolImportReview();
-    });
-  }
-  var poolImportSaveAll = document.getElementById('pool-import-save-all');
-  if (poolImportSaveAll) {
-    poolImportSaveAll.addEventListener('click', function () {
-      savePoolImportAll();
-    });
-  }
-
-  function handlePoolImportFile(f) {
-    var name = (f.name || '').toLowerCase();
-    var reader = new FileReader();
-    reader.onload = function (ev) {
-      try {
-        if (name.endsWith('.pdf')) {
-          importPdfToPool(ev.target.result);
-          return;
-        }
-        var wb;
-        if (name.endsWith('.csv')) wb = XLSX.read(ev.target.result, { type: 'string' });
-        else wb = XLSX.read(new Uint8Array(ev.target.result), { type: 'array' });
-        var arr = parseXlsxWorkbookToProps(wb);
-        if (!arr.length) {
-          alert('לא נמצאו נכסים בקובץ');
-          return;
-        }
-        openPoolImportReview(arr);
-      } catch (err) {
-        alert('שגיאה בקריאת הקובץ');
-      } finally {
-        try {
-          var pf = document.getElementById('pool-import-file');
-          if (pf) pf.value = '';
-        } catch (e2) {}
-      }
-    };
-    if (name.endsWith('.csv')) reader.readAsText(f, 'UTF-8');
-    else reader.readAsArrayBuffer(f);
-  }
-
-  function importPdfToPool(arrayBuffer) {
-    try {
-      if (!window.pdfjsLib) {
-        alert('PDF.js לא נטען');
-        return;
-      }
-      if (!pdfjsLib.GlobalWorkerOptions.workerSrc) {
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-      }
-    } catch (e) {}
-
-    (async function () {
-      try {
-        console.log('[pdf import pool] start', { bytes: arrayBuffer ? arrayBuffer.byteLength : null });
-        var doc = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-        var rows = await extractPdfTableRows(doc);
-        var parsed = parsePropertiesFromPdfTableRows(rows);
-        if (!parsed.length) {
-          alert('לא הצלחתי לחלץ טבלת נכסים מה-PDF.');
-          return;
-        }
-        openPoolImportReview(parsed);
-      } catch (e) {
-        console.log('[pdf import pool] failed', e);
-        alert('שגיאה בפענוח PDF');
-      }
-    })();
-  }
-
-  async function extractPdfTableRows(doc) {
-    // Returns array of row objects: { cells: [{x,text}], text }.
-    var rows = [];
-    for (var p = 1; p <= doc.numPages; p++) {
-      var page = await doc.getPage(p);
-      var txt = await page.getTextContent();
-      var items = txt.items || [];
-      var byY = Object.create(null);
-
-      items.forEach(function (it) {
-        var str = String(it.str || '').trim();
-        if (!str) return;
-        var tr = it.transform || [];
-        var x = Number(tr[4]) || 0;
-        var y = Number(tr[5]) || 0;
-        var yk = String(Math.round(y / 3) * 3); // bucket
-        if (!byY[yk]) byY[yk] = [];
-        byY[yk].push({ x: x, text: str });
-      });
-
-      Object.keys(byY)
-        .sort(function (a, b) { return Number(b) - Number(a); }) // top to bottom
-        .forEach(function (yk) {
-          var cells = byY[yk].sort(function (a, b) { return a.x - b.x; });
-          var lineText = cells.map(function (c) { return c.text; }).join(' ');
-          rows.push({ cells: cells, text: lineText });
-        });
-    }
-    return rows;
-  }
-
-  function parsePropertiesFromPdfTableRows(rows) {
-    // PDF variant A (classic): header row contains columns (כתובת/בניין/גודל/מחיר/זמינות/דמי ניהול).
-    // PDF variant B (requested): horizontal table (rows are labels; columns are properties).
-
-    function cleanNum(s) {
-      s = String(s || '').replace(/,/g, '').replace(/[^\d.]/g, '');
-      var n = parseFloat(s);
-      return isNaN(n) ? null : n;
-    }
-
-    function parseHorizontal() {
-      var labels = [
-        { key: 'address', re: /^כתובת$/ },
-        { key: 'building', re: /^בניין$/ },
-        { key: 'size', re: /^גודל$/ },
-        { key: 'price', re: /^מחיר$/ },
-        { key: 'availability', re: /^זמינות$/ },
-        { key: 'mgmt', re: /^דמי\s*ניהול$|^דמי$|^ניהול$/ },
-      ];
-
-      function findRowForLabel(re) {
-        for (var i = 0; i < rows.length; i++) {
-          var r = rows[i];
-          if (!r || !r.cells || !r.cells.length) continue;
-          // Look for an exact cell match first.
-          for (var j = 0; j < r.cells.length; j++) {
-            var cellT = String(r.cells[j].text || '').replace(/\s+/g, ' ').trim();
-            if (re.test(cellT)) return { row: r, labelCell: r.cells[j] };
-          }
-          // Fallback: row text contains the label
-          var t = String(r.text || '').replace(/\s+/g, ' ').trim();
-          if (re.test(t)) return { row: r, labelCell: r.cells[0] };
-        }
-        return null;
-      }
-
-      function clusterColumnCentersFromAddressRow(foundAddress) {
-        if (!foundAddress || !foundAddress.row || !foundAddress.row.cells) return [];
-        var cells = foundAddress.row.cells.slice().sort(function (a, b) { return a.x - b.x; });
-        var labelX = Number(foundAddress.labelCell && foundAddress.labelCell.x) || 0;
-        // Exclude the label cell by picking cells that are far from labelX.
-        var xs = cells
-          .filter(function (c) { return Math.abs((Number(c.x) || 0) - labelX) > 18; })
-          .map(function (c) { return Number(c.x) || 0; })
-          .filter(function (x) { return isFinite(x); })
-          .sort(function (a, b) { return a - b; });
-
-        if (!xs.length) return [];
-
-        // Cluster by gaps: tokens within the same property column are usually close together.
-        var GAP = 34; // px-ish; tuned for PDFs where words are split into fragments
-        var clusters = [];
-        var cur = [xs[0]];
-        for (var i = 1; i < xs.length; i++) {
-          if (xs[i] - xs[i - 1] <= GAP) cur.push(xs[i]);
-          else {
-            clusters.push(cur);
-            cur = [xs[i]];
-          }
-        }
-        clusters.push(cur);
-
-        // Convert clusters to centers.
-        var centers = clusters
-          .map(function (arr) {
-            var s = 0;
-            for (var j = 0; j < arr.length; j++) s += arr[j];
-            return s / (arr.length || 1);
-          })
-          .sort(function (a, b) { return a - b; });
-
-        // De-dup very close centers.
-        var out = [];
-        var MIN_SEP = 26;
-        centers.forEach(function (c) {
-          if (!out.length || Math.abs(c - out[out.length - 1]) > MIN_SEP) out.push(c);
-        });
-        return out;
-      }
-
-      function nearestCenterIdx(x, centers) {
-        var best = 0;
-        var bestD = Infinity;
-        for (var i = 0; i < centers.length; i++) {
-          var d = Math.abs(x - centers[i]);
-          if (d < bestD) { bestD = d; best = i; }
-        }
-        return best;
-      }
-
-      function valuesFromRow(found, centers) {
-        if (!found || !found.row) return [];
-        var cells = found.row.cells.slice().sort(function (a, b) { return a.x - b.x; });
-        var labelX = Number(found.labelCell && found.labelCell.x) || 0;
-        // Remove label cell fragments by x-proximity (not by exact bucket).
-        cells = cells.filter(function (c) { return Math.abs((Number(c.x) || 0) - labelX) > 18; });
-
-        if (!centers || !centers.length) {
-          // Fallback: join everything into one cell
-          return [cells.map(function (c) { return c.text; }).join(' ').trim()];
-        }
-
-        // Assign each text fragment to the nearest property column center.
-        var byIdx = new Array(centers.length);
-        for (var i = 0; i < byIdx.length; i++) byIdx[i] = [];
-        cells.forEach(function (c) {
-          var x = Number(c.x) || 0;
-          var idx = nearestCenterIdx(x, centers);
-          byIdx[idx].push({ x: x, text: c.text });
-        });
-
-        // For each column, preserve left-to-right order and join fragments.
-        return byIdx.map(function (arr) {
-          arr.sort(function (a, b) { return a.x - b.x; });
-          return arr.map(function (v) { return v.text; }).join(' ').replace(/\s+/g, ' ').trim();
-        });
-      }
-
-      var found = {};
-      labels.forEach(function (l) { found[l.key] = findRowForLabel(l.re); });
-      console.log('[pdf parse] label rows found', Object.keys(found).reduce(function (acc, k) {
-        acc[k] = found[k] ? found[k].row.text : null;
-        return acc;
-      }, {}));
-
-      // Must at least have address/building/price/size rows to form properties.
-      if (!found.address || !found.building) return [];
-
-      // Use address row to define property columns (cluster text fragments into columns).
-      var centers = clusterColumnCentersFromAddressRow(found.address);
-      console.log('[pdf parse] address column centers', centers);
-      if (!centers.length) return [];
-
-      var addresses = valuesFromRow(found.address, centers);
-      var buildings = valuesFromRow(found.building, centers);
-      var sizes = valuesFromRow(found.size, centers);
-      var prices = valuesFromRow(found.price, centers);
-      var avails = valuesFromRow(found.availability, centers);
-      var mgmts = valuesFromRow(found.mgmt, centers);
-      console.log('[pdf parse] extracted columns (first 6)', {
-        addresses: addresses.slice(0, 6),
-        buildings: buildings.slice(0, 6),
-        sizes: sizes.slice(0, 6),
-        prices: prices.slice(0, 6),
-        avails: avails.slice(0, 6),
-        mgmts: mgmts.slice(0, 6),
-      });
-
-      var count = Math.max(addresses.length, buildings.length, sizes.length, prices.length, avails.length, mgmts.length);
-      var out = [];
-      var seen = Object.create(null);
-      for (var i = 0; i < count; i++) {
-        var address = String(addresses[i] || '').replace(/\s+/g, ' ').trim();
-        var name = String(buildings[i] || '').replace(/\s+/g, ' ').trim();
-        var size = cleanNum(sizes[i]);
-        // Only create a property when we have a real "שטח" number and a building name (per request).
-        if (!name || size == null) continue;
-
-        // If address is empty, try borrowing the nearest non-empty address.
-        if (!address) {
-          for (var b = i - 1; b >= 0; b--) {
-            var prevA = String(addresses[b] || '').replace(/\s+/g, ' ').trim();
-            if (prevA) { address = prevA; break; }
-          }
-          if (!address) {
-            for (var f = i + 1; f < count; f++) {
-              var nextA = String(addresses[f] || '').replace(/\s+/g, ' ').trim();
-              if (nextA) { address = nextA; break; }
-            }
-          }
-        }
-
-        // Merge obvious address fragments that were split into adjacent columns.
-        // If the current address looks incomplete and the next column looks like continuation, join them.
-        var nextFrag = String(addresses[i + 1] || '').replace(/\s+/g, ' ').trim();
-        if (address && nextFrag) {
-          var looksLikeAddr = /תל אביב|יפו|ישראל/.test(nextFrag) || nextFrag.indexOf(',') === 0;
-          var incomplete = address.indexOf(',') === -1 && address.length < 18;
-          if (looksLikeAddr && incomplete) address = (address + ' ' + nextFrag).replace(/\s+/g, ' ').trim();
-        }
-
-        var price = cleanNum(prices[i]);
-        var availability = String(avails[i] || '').trim() || null;
-        var mgmt = cleanNum(mgmts[i]);
-
-        // Deduplicate by normalized address + size + name.
-        var k =
-          name.toLowerCase() +
-          '|' +
-          String(address || '').toLowerCase().replace(/\s+/g, ' ').trim() +
-          '|' +
-          String(size);
-        if (seen[k]) continue;
-        seen[k] = 1;
-
-        out.push({
-          id: i + 1,
-          name: name || address || ('נכס ' + (i + 1)),
-          address: address,
-          size: size,
-          price: price,
-          mgmt: mgmt,
-          availability: availability,
-          deal: '',
-          lat: null,
-          lng: null,
-          img: '',
-          tenants: [],
-          restaurants: [],
-          transport: { light: '', heavy: '', highway: '' },
-        });
-      }
-      return out;
-    }
-
-    // Try horizontal first (matches the described PDF structure).
-    var horiz = parseHorizontal();
-    if (horiz.length) return horiz;
-
-    // --- Fallback to old "header row" style if needed ---
-    var required = ['כתובת', 'בניין', 'גודל', 'מחיר', 'זמינות', 'דמי', 'ניהול'];
-    var headerIdx = -1;
-    for (var i = 0; i < rows.length; i++) {
-      var t = String(rows[i].text || '');
-      var hit = required.every(function (w) { return t.indexOf(w) !== -1; });
-      if (hit) { headerIdx = i; break; }
-    }
-    if (headerIdx === -1) return [];
-
-    var header = rows[headerIdx].cells;
-    function findHeaderX(labelRe) {
-      for (var j = 0; j < header.length; j++) {
-        if (labelRe.test(header[j].text)) return header[j].x;
-      }
-      return null;
-    }
-
-    var xAddress = findHeaderX(/כתובת/);
-    var xBuilding = findHeaderX(/בניין/);
-    var xSize = findHeaderX(/גודל/);
-    var xPrice = findHeaderX(/מחיר/);
-    var xAvail = findHeaderX(/זמינות/);
-    var xMgmt = findHeaderX(/דמי|ניהול/); // "דמי ניהול" might be split
-
-    var cols = [
-      { key: 'address', x: xAddress },
-      { key: 'building', x: xBuilding },
-      { key: 'size', x: xSize },
-      { key: 'price', x: xPrice },
-      { key: 'availability', x: xAvail },
-      { key: 'mgmt', x: xMgmt },
-    ].filter(function (c) { return c.x != null; }).sort(function (a, b) { return a.x - b.x; });
-
-    if (cols.length < 4) return [];
-
-    function colForX(x) {
-      var idx = 0;
-      for (var k = 0; k < cols.length; k++) {
-        if (x >= cols[k].x) idx = k;
-      }
-      return cols[idx].key;
-    }
-    var out = [];
-    var id = 1;
-    for (var r = headerIdx + 1; r < rows.length; r++) {
-      var row = rows[r];
-      // Stop if we hit another header-like line or an empty separator.
-      if (!row || !row.cells || row.cells.length < 2) continue;
-      var t = String(row.text || '').trim();
-      if (!t) continue;
-      if (t.indexOf('כתובת') !== -1 && t.indexOf('בניין') !== -1) continue;
-
-      var acc = { address: '', building: '', size: '', price: '', availability: '', mgmt: '' };
-      row.cells.forEach(function (c) {
-        var k = colForX(c.x);
-        acc[k] = (acc[k] ? acc[k] + ' ' : '') + c.text;
-      });
-
-      var name = String(acc.building || '').trim();
-      var address = String(acc.address || '').trim();
-      var size = cleanNum(acc.size);
-      var price = cleanNum(acc.price);
-      var availability = String(acc.availability || '').trim() || null;
-      var mgmt = cleanNum(acc.mgmt);
-
-      if (!name && !address) continue;
-      out.push({
-        id: id++,
-        name: name || address || ('נכס ' + id),
-        address: address,
-        size: size,
-        price: price,
-        mgmt: mgmt,
-        availability: availability,
-        deal: '',
-        lat: null,
-        lng: null,
-        img: '',
-        tenants: [],
-        restaurants: [],
-        transport: { light: '', heavy: '', highway: '' },
-      });
-    }
-
-    return out;
-  }
-
-  document.getElementById('btn-load-template-props').addEventListener('click', function () {
-    fetch('office-tour-TEMPLATE.html', { cache: 'no-store' })
-      .then(function (r) { return r.text(); })
-      .then(function (html) {
-        var arr = extractPropertiesFromTourHtml(html);
-        if (!arr || !arr.length) {
-          alert('לא ניתן לחלץ נכסים מהקובץ');
-          return;
-        }
-        if (!confirm('ייבוא ' + arr.length + ' נכסים — ידרוס את המאגר והתמונות השמורות. להמשיך?')) return;
-        saveProps(arr);
-        saveImgs({});
-        renderPropsTable();
-        renderTourProps();
-        alert('נשמרו ' + arr.length + ' נכסים במאגר.');
-      })
-      .catch(function () {
-        alert('שגיאה בטעינת הקובץ — השתמש ב-http:// ולא file://');
-      });
-  });
-
-  document.getElementById('btn-export-props-json').addEventListener('click', function () {
-    var blob = new Blob([JSON.stringify(props(), null, 2)], { type: 'application/json' });
-    var a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'om-properties.json';
-    a.click();
-    URL.revokeObjectURL(a.href);
-  });
-
-  document.getElementById('props-manager-table').addEventListener('click', function (e) {
-    var edit = e.target.getAttribute('data-edit-prop');
-    var del = e.target.getAttribute('data-del-prop');
-    if (edit) {
-      var p = props().find(function (x) { return String(x.id) === String(edit); });
-      if (p) openPoolPropModal(p);
-    }
-    if (del) deleteProp(parseInt(del, 10));
-  });
-
-  document.getElementById('tour-client').addEventListener('change', function () {
-    renderTourProps();
-    hydrateTourNotesForSelection();
-  });
-
-  document.getElementById('tour-gen-link').addEventListener('click', generateClientTourLink);
-  document.getElementById('tour-copy-link').addEventListener('click', function () {
-    var v = document.getElementById('tour-link-out').value;
-    try {
-      navigator.clipboard.writeText(v);
-    } catch (e) {}
-    alert('הקישור הועתק');
-  });
-})();
+  if (editingId) {
+    const idx = properties.findIndex(p => p.id === editingId);
+    properties[idx] = prop;
+    editingId = null;
+    document.getElementById('formTitle').textContent = 'הוספת נכס חדש';
+  } else {
+    properties.push(prop);
+  }
+
+  localStorage.setItem('os_properties', JSON.stringify(properties));
+  clearForm();
+  render();
+  switchTab('properties');
+  showToast('✅ הנכס נשמר בהצלחה');
+}
+
+function clearForm() {
+  ['f-name','f-address','f-area','f-price','f-mgmt','f-floor','f-images','f-notes']
+    .forEach(id => document.getElementById(id).value = '');
+  document.getElementById('f-avail').value = 'מיידי';
+  editingId = null;
+  document.getElementById('formTitle').textContent = 'הוספת נכס חדש';
+}
+
+function editProperty(id) {
+  const p = properties.find(x => x.id === id);
+  if (!p) return;
+  editingId = id;
+  document.getElementById('f-name').value = p.name;
+  document.getElementById('f-address').value = p.address;
+  document.getElementById('f-area').value = p.area || '';
+  document.getElementById('f-price').value = p.price || '';
+  document.getElementById('f-mgmt').value = p.management || '';
+  document.getElementById('f-floor').value = p.floor || '';
+  document.getElementById('f-avail').value = p.availability || 'מיידי';
+  document.getElementById('f-images').value = (p.images || []).join('\n');
+  document.getElementById('f-notes').value = p.notes || '';
+  document.getElementById('formTitle').textContent = 'עריכת נכס';
+  switchTab('add');
+}
+
+function deleteProperty(id) {
+  if (!confirm('למחוק את הנכס?')) return;
+  properties = properties.filter(p => p.id !== id);
+  selectedIds.delete(id);
+  localStorage.setItem('os_properties', JSON.stringify(properties));
+  render();
+  showToast('🗑 הנכס נמחק');
+}
+
+// ─── Generate Link ───
+function generateLink() {
+  if (!selectedIds.size) { showToast('⚠️ בחר לפחות נכס אחד'); return; }
+
+  const clientName = document.getElementById('clientName').value.trim() || 'לקוח';
+  const selProps = properties.filter(p => selectedIds.has(p.id));
+
+  const payload = {
+    client: clientName,
+    props: selProps,
+    ts: Date.now()
+  };
+
+  const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+  const base = window.location.href.replace('admin.html', 'client.html');
+  const url = `${base}?d=${encoded}`;
+
+  document.getElementById('urlOutput').textContent = url;
+  document.getElementById('urlCard').style.display = 'block';
+}
+
+function copyLink() {
+  const url = document.getElementById('urlOutput').textContent;
+  navigator.clipboard.writeText(url).then(() => showToast('📋 הקישור הועתק!'));
+}
+
+function openLink() {
+  const url = document.getElementById('urlOutput').textContent;
+  window.open(url, '_blank');
+}
+
+// ─── Toast ───
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ─── Search ───
+document.getElementById('searchInput').addEventListener('input', render);
+
+// ─── Init ───
+render();
 </script>
 </body>
 </html>
