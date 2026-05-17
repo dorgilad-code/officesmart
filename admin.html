@@ -2970,7 +2970,6 @@ textarea { min-height: 72px; resize: vertical; }
     } catch (e) {}
     alert('הקישור הועתק');
   });
-  // ══ TOUR CREATION (URL-encoded) ══
   var _tourClientId = null;
   var _tourProps = [];
 
@@ -2994,72 +2993,43 @@ textarea { min-height: 72px; resize: vertical; }
 
   function _renderTourProps() {
     var host = document.getElementById('tm-props-list');
-    if (!_tourProps.length) {
-      host.innerHTML = '<p style="color:#64748b;font-size:13px;padding:8px 0;">אין נכסים עדיין — לחץ &ldquo;+ הוסף נכס&rdquo;</p>';
-      return;
-    }
-    host.innerHTML = _tourProps.map(function(p, i) {
-      return '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;margin-bottom:6px;">' +
-        '<div style="font-size:13px;"><strong>' + esc(p.name) + '</strong>' + (p.address ? ' · ' + esc(p.address) : '') + (p.size ? ' · ' + esc(String(p.size)) + ' מ"ר' : '') + '</div>' +
-        '<button type="button" class="btn btn-danger btn-sm" onclick="removeTourProp(' + i + ')">הסר</button></div>';
-    }).join('');
+    if (!_tourProps.length) { host.innerHTML = '<p style="color:#64748b;font-size:13px;padding:8px 0;">אין נכסים — לחץ + הוסף נכס</p>'; return; }
+    host.innerHTML = _tourProps.map(function(p,i){ return '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;margin-bottom:6px;"><div style="font-size:13px;"><strong>'+p.name+'</strong>'+(p.address?' · '+p.address:'')+(p.size?' · '+p.size+' מ"ר':'')+'</div><button type="button" class="btn btn-danger btn-sm" onclick="removeTourProp('+i+')">הסר</button></div>'; }).join('');
   }
 
-  function removeTourProp(i) { _tourProps.splice(i, 1); _renderTourProps(); }
+  function removeTourProp(i) { _tourProps.splice(i,1); _renderTourProps(); }
 
   function openAddTourPropForm() {
     document.getElementById('tm-prop-form').style.display = 'block';
-    ['tpf-name','tpf-address','tpf-size','tpf-price','tpf-mgmt','tpf-floor','tpf-avail','tpf-images','tpf-notes'].forEach(function(id){ document.getElementById(id).value = ''; });
+    ['tpf-name','tpf-address','tpf-size','tpf-price','tpf-mgmt','tpf-floor','tpf-avail','tpf-images','tpf-notes'].forEach(function(id){ document.getElementById(id).value=''; });
   }
 
-  function cancelAddProp() { document.getElementById('tm-prop-form').style.display = 'none'; }
+  function cancelAddProp() { document.getElementById('tm-prop-form').style.display='none'; }
 
   function confirmAddProp() {
     var name = document.getElementById('tpf-name').value.trim();
     if (!name) { alert('חובה שם נכס'); return; }
-    var imgsRaw = document.getElementById('tpf-images').value.trim();
-    var images = imgsRaw ? imgsRaw.split('\n').map(function(s){ return s.trim(); }).filter(Boolean) : [];
-    _tourProps.push({
-      id: 'tp_' + Date.now() + '_' + Math.random().toString(36).slice(2,7),
-      name: name,
-      address: document.getElementById('tpf-address').value.trim() || '',
-      size: document.getElementById('tpf-size').value.trim() || null,
-      price: document.getElementById('tpf-price').value.trim() || null,
-      mgmt: document.getElementById('tpf-mgmt').value.trim() || null,
-      floor: document.getElementById('tpf-floor').value.trim() || null,
-      availability: document.getElementById('tpf-avail').value.trim() || null,
-      images: images,
-      clientNotes: document.getElementById('tpf-notes').value.trim() || null,
-    });
-    document.getElementById('tm-prop-form').style.display = 'none';
+    var imgs = document.getElementById('tpf-images').value.trim();
+    var images = imgs ? imgs.split('\n').map(function(s){return s.trim();}).filter(Boolean) : [];
+    _tourProps.push({ id:'tp_'+Date.now(), name:name, address:document.getElementById('tpf-address').value.trim(), size:document.getElementById('tpf-size').value.trim()||null, price:document.getElementById('tpf-price').value.trim()||null, mgmt:document.getElementById('tpf-mgmt').value.trim()||null, floor:document.getElementById('tpf-floor').value.trim()||null, availability:document.getElementById('tpf-avail').value.trim()||null, images:images, clientNotes:document.getElementById('tpf-notes').value.trim()||null });
+    document.getElementById('tm-prop-form').style.display='none';
     _renderTourProps();
   }
 
   function generateTourLink() {
     if (!_tourProps.length) { alert('הוסף לפחות נכס אחד'); return; }
-    var c = mergeDashboardClients().find(function(x){ return x.id === _tourClientId; });
-    var password = document.getElementById('tm-password').value.trim();
-    var notes = document.getElementById('tm-notes').value.trim();
-    var payload = {
-      clientId: _tourClientId,
-      clientName: c ? (c.name || c.email) : '',
-      password: password,
-      notes: notes,
-      props: _tourProps,
-      ts: Date.now()
-    };
+    var c = mergeDashboardClients().find(function(x){ return x.id===_tourClientId; });
+    var payload = { clientId:_tourClientId, clientName:c?(c.name||c.email):'', password:document.getElementById('tm-password').value.trim(), notes:document.getElementById('tm-notes').value.trim(), props:_tourProps, ts:Date.now() };
     var encoded = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
-    var base = location.origin + location.pathname.replace(/\/[^\/]*$/, '');
-    var url = base + '/client.html?d=' + encoded;
-    document.getElementById('tm-link-out').value = url;
-    var openEl = document.getElementById('tm-link-open');
-    if (openEl) openEl.href = url;
-    document.getElementById('tm-link-wrap').style.display = 'block';
+    var base = location.origin + location.pathname.replace(/\/[^\/]*$/,'');
+    var url = base+'/client.html?d='+encoded;
+    document.getElementById('tm-link-out').value=url;
+    var a=document.getElementById('tm-link-open'); if(a) a.href=url;
+    document.getElementById('tm-link-wrap').style.display='block';
   }
 
   function copyTourLink() {
-    var v = document.getElementById('tm-link-out').value;
-    try { navigator.clipboard.writeText(v); } catch(e) {}
+    try { navigator.clipboard.writeText(document.getElementById('tm-link-out').value); } catch(e){}
     alert('הקישור הועתק!');
   }
 
