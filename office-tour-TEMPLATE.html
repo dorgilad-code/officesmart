@@ -5571,12 +5571,12 @@ function cardHTML(p) {
   const heavyText = hasRealCoords(p) ? nearestHeavyRailWalkText(p) : (needGeo ? distLoading : (p.transport.heavy || '—'));
 
   return `
-  <div class="card ${isFav ? 'favorited' : ''}" id="card-${p.id}" onclick="openPropGallery(${p.id}, event)" style="cursor:pointer">
+  <div class="card ${isFav ? 'favorited' : ''}" id="card-${p.id}" onclick="openPropGallery('${p.id}', event)" style="cursor:pointer">
     <div class="card-img">
       <img src="${propPrimaryImage(p.id) || ''}" alt="${p.name}" onerror="this.style.display='none'">
       <div class="card-img-overlay"></div>
       <span class="avail-pill ${ac}">${avLabel}</span>
-      <button class="fav-toggle ${isFav ? 'on' : ''}" onclick="toggleFav(${p.id}, event)">${isFav ? '❤️' : '❤️'}</button>
+      <button class="fav-toggle ${isFav ? 'on' : ''}" onclick="toggleFav('${p.id}', event)">${isFav ? '❤️' : '❤️'}</button>
     </div>
     <div class="card-body">
       <div class="card-name">${p.name}</div>
@@ -5589,10 +5589,10 @@ function cardHTML(p) {
       <div class="card-deal">🏷 ${p.deal}</div>
     </div>
     <div class="card-actions">
-      <button type="button" class="card-action-btn js-gallery-btn" onclick="openPropGallery(${p.id}, event); event.stopPropagation();">
+      <button type="button" class="card-action-btn js-gallery-btn" onclick="openPropGallery('${p.id}', event); event.stopPropagation();">
         <span class="icon">🖼</span><span>פרטים נוספים</span>
       </button>
-      <button type="button" class="card-action-btn ${floorplans[p.id] ? 'active-fp' : ''}" onclick="openFloorplan(${p.id}, event)">
+      <button type="button" class="card-action-btn ${floorplans[p.id] ? 'active-fp' : ''}" onclick="openFloorplan('${p.id}', event)">
         <span class="icon">📐</span><span>${floorplans[p.id] ? 'תשריט ✓' : 'תשריט'}</span>
       </button>
       <button type="button" class="card-action-btn" id="loc-btn-${p.id}" onclick="toggleInlineMap(${p.id}, this); event.stopPropagation();">
@@ -5640,7 +5640,7 @@ function openPropGallery(id, e) {
     if (t.closest && t.closest('.card-actions button') && !t.closest('.js-gallery-btn')) return;
     if (t.closest && t.closest('.inline-map-wrap')) return;
   }
-  var p = properties.find(function (x) { return x.id === id; });
+  var p = properties.find(function (x) { return String(x.id) === String(id); });
   if (!p) return;
   pgState.id = id;
   pgState.images = getPropGalleryImages(p);
@@ -5873,7 +5873,7 @@ function pgFillModalActions(p) {
 
 function propGalleryToggleFav(id) {
   toggleFav(id, { stopPropagation: function () {} });
-  var p = properties.find(function (x) { return x.id === id; });
+  var p = properties.find(function (x) { return String(x.id) === String(id); });
   if (p && document.getElementById('pg-overlay').classList.contains('open')) pgFillModalActions(p);
 }
 
@@ -7412,7 +7412,7 @@ let noteCurrentId = null;
 function openNote(id, e) {
   e.stopPropagation();
   noteCurrentId = id;
-  const p = properties.find(x => x.id === id);
+  const p = properties.find(x => String(x.id) === String(id));
   document.getElementById('note-prop-name').textContent = '📝 ' + p.name;
   const ta = document.getElementById('note-textarea');
   ta.value = notes[id] || '';
@@ -8700,7 +8700,7 @@ function toggleCheck(i) {
 
 // ===== PROPERTY DRAWER =====
 function openDrawer(id) {
-  const p = properties.find(x => x.id === id);
+  const p = properties.find(x => String(x.id) === String(id));
   if (!p) return;
 
   // Image
@@ -8762,7 +8762,7 @@ function openDrawer(id) {
     <div>
       <div class="drawer-section-title">תשריט</div>
       <img src="${floorplans[p.id].src}" style="width:100%;border-radius:var(--r-sm);cursor:pointer"
-           onclick="openFloorplan(${p.id},{stopPropagation:()=>{}})">
+           onclick="openFloorplan('${p.id}',{stopPropagation:()=>{}})">
     </div>` : ''}
   `;
 
@@ -8820,7 +8820,7 @@ function toggleInlineMap(id, btn) {
     return;
   }
 
-  const p = properties.find(x => x.id === id);
+  const p = properties.find(x => String(x.id) === String(id));
   setTimeout(() => {
     var ll = propertyLatLng(p);
     if (!ll) {
@@ -8893,7 +8893,7 @@ function openCalc() {
 
 function selectCalcProp(id) {
   calcPropId = id;
-  const p = properties.find(x => x.id === id);
+  const p = properties.find(x => String(x.id) === String(id));
   if (!p) return;
   document.getElementById('ci-size').value  = typeof p.size === 'number' ? p.size : parseInt(p.size) || 650;
   document.getElementById('ci-price').value = p.price || 175;
@@ -8945,7 +8945,7 @@ function recalc() {
   const parkLabel = document.getElementById('park-total-label');
   var parkLabelAmt = parkN * parkP;
   if (calcPropId) {
-    var pSel = properties.find(function (x) { return x.id === calcPropId; });
+    var pSel = properties.find(function (x) { return String(x.id) === String(calcPropId); });
     if (pSel) {
       var elP = document.getElementById('ci-park-p');
       var inpP = elP && String(elP.value).trim() !== '' ? parseFloat(elP.value) : NaN;
@@ -8960,7 +8960,7 @@ function recalc() {
   if (!calcPropId) {
     resultBody.innerHTML = '<div style="color:var(--text3);font-size:13px;text-align:center;padding:20px">👆 בחר נכס מהרשימה למעלה</div>';
   } else {
-    const p = properties.find(x => x.id === calcPropId);
+    const p = properties.find(x => String(x.id) === String(calcPropId));
     var ppSingle = (function () {
       var el = document.getElementById('ci-park-p');
       if (el && String(el.value).trim() !== '') {
@@ -10404,7 +10404,7 @@ let currentFpId = null;
 function openFloorplan(id, e) {
   e.stopPropagation();
   currentFpId = id;
-  const p = properties.find(x => x.id === id);
+  const p = properties.find(x => String(x.id) === String(id));
   document.getElementById('fp-name').textContent = '📐  תשריט — ' + p.name;
   document.getElementById('fp-addr').textContent = p.address;
   renderFpBody(id);
