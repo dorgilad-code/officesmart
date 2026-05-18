@@ -8485,6 +8485,25 @@ window.addEventListener('load', async () => {
   } catch (e) {}
   if (urlClient) {
     resetFavoritesForClientLink();
+    // Try to get client from tours meta if not in clients bin
+    if (!omLinkedClient && omRemoteTours && omRemoteTours.meta && omRemoteTours.meta[urlClient]) {
+      var tourMeta = omRemoteTours.meta[urlClient];
+      omLinkedClient = {
+        id: urlClient,
+        name: tourMeta.clientName || '',
+        password: tourMeta.password || ''
+      };
+      omLinkedTour = tourMeta;
+      // Load properties from tours bin
+      var assigned = omRemoteTours.byClient[urlClient] || omRemoteTours.byClient[String(urlClient)];
+      if (Array.isArray(assigned) && assigned.length) {
+        properties = assigned;
+        properties.forEach(function (p) {
+          var imgs = Array.isArray(p.images) && p.images.length ? p.images : (p.img ? [p.img] : []);
+          if (imgs.length) IMGS[p.id] = imgs;
+        });
+      }
+    }
     if (!omLinkedClient) {
       alert('לא נמצאו נתוני לקוח ב-JSONBin עבור הקישור הזה.');
       showPanel('landing');
