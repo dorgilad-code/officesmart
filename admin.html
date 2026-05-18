@@ -459,7 +459,7 @@ textarea { min-height: 72px; resize: vertical; }
     <button type="button" class="nav-btn" data-panel="pool">מאגר נכסים</button>
     <button type="button" class="nav-btn" data-panel="tour">יצירת סיור</button>
     <div class="sidebar-footer">
-      נתונים ב-JSONBin.io. <a href="office-tour-TEMPLATE.html" target="_blank" rel="noopener">לאפליקציית לקוח</a>
+      נתונים ב-JSONBin.io. <a href="office-tour-template.html" target="_blank" rel="noopener">לאפליקציית לקוח</a>
     </div>
   </aside>
   <main class="main">
@@ -521,7 +521,7 @@ textarea { min-height: 72px; resize: vertical; }
       <div class="card">
         <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px;align-items:center;">
           <button type="button" class="btn btn-outline btn-sm" id="btn-pool-quick-add">+ הוסף נכס</button>
-          <button type="button" class="btn btn-outline btn-sm" id="btn-load-template-props">טען מתבנית (office-tour-TEMPLATE.html)</button>
+          <button type="button" class="btn btn-outline btn-sm" id="btn-load-template-props">טען מתבנית (office-tour-template.html)</button>
           <button type="button" class="btn btn-outline btn-sm" id="btn-export-props-json">ייצוא JSON מאגר</button>
         </div>
         <h3 style="font-size:15px;font-weight:800;margin-bottom:10px;">ייבוא קובץ</h3>
@@ -890,7 +890,7 @@ textarea { min-height: 72px; resize: vertical; }
   function tourLinkForClientId(cid) {
     // Same origin link; client page will load assigned properties by cid.
     var base = location.origin + location.pathname.replace(/\/[^\/]*$/, '');
-    return base + '/office-tour-TEMPLATE.html?client=' + encodeURIComponent(cid);
+    return base + '/office-tour-template.html?client=' + encodeURIComponent(cid);
   }
 
   function normalizePhone(p) {
@@ -1161,7 +1161,7 @@ textarea { min-height: 72px; resize: vertical; }
 
   function getTemplatePropsCached() {
     if (pqaTemplatePropsCache) return Promise.resolve(pqaTemplatePropsCache);
-    return fetch('office-tour-TEMPLATE.html', { cache: 'no-store' })
+    return fetch('office-tour-template.html', { cache: 'no-store' })
       .then(function (r) { return r.text(); })
       .then(function (html) {
         var arr = extractPropertiesFromTourHtml(html);
@@ -2918,7 +2918,7 @@ textarea { min-height: 72px; resize: vertical; }
   }
 
   document.getElementById('btn-load-template-props').addEventListener('click', function () {
-    fetch('office-tour-TEMPLATE.html', { cache: 'no-store' })
+    fetch('office-tour-template.html', { cache: 'no-store' })
       .then(function (r) { return r.text(); })
       .then(function (html) {
         var arr = extractPropertiesFromTourHtml(html);
@@ -3055,7 +3055,7 @@ textarea { min-height: 72px; resize: vertical; }
 
     // Build the permanent URL (no payload in URL)
     var base = location.origin + location.pathname.replace(/\/[^\/]*$/,'');
-    var url = base+'/office-tour-TEMPLATE.html?client='+encodeURIComponent(_tourClientId);
+    var url = base+'/office-tour-template.html?client='+encodeURIComponent(_tourClientId);
 
     // Show loading state
     var btn = document.querySelector('#modal-tour .btn-primary');
