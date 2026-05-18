@@ -5611,7 +5611,7 @@ function cardHTML(p) {
         <div class="tags">${p.restaurants.map(r => `<span class="tag-rest">${r}</span>`).join('')}</div>
       </div>
       <div class="detail-block">
-        <div class="detail-title">חברות בבניין</div>
+
         <div class="tags">${p.tenants.map(t => `<span class="tag-tenant">${t}</span>`).join('')}</div>
       </div>
       <div class="mgmt-chip">דמי ניהול: <strong>${p.mgmt ? `₪${p.mgmt}/מ"ר` : 'כלול'}</strong></div>
@@ -5781,12 +5781,7 @@ function pgFillModalBody(p) {
     '<div class="pg-transport-line"><span>🚗</span><span>' +
     String(trH).replace(/</g, '') +
     '</span></div>' +
-    '<div class="pg-section-title">חברות בבניין</div>' +
-    '<div class="pg-tags">' +
-    tenHtml +
-    '</div>' +
-    '<div class="pg-section-title">🍽️ בסביבה</div>' +
-    '<div id="pg-nearby-wrap" class="pg-nearby-wrap"></div>' +
+    '<div class="pg-section-title">פירוט עלות</div>' +
     '<div class="pg-section-title">פירוט עלות חודשית (הערכה)</div>' +
     '<p style="font-size:11px;color:var(--text3);margin:0 0 8px">שכירות + ניהול + חשמל/מים + ניקיון + ארנונה (ברירות מחדל למחשבון)</p>' +
     '<dl class="pg-cost-grid">' +
@@ -8743,15 +8738,7 @@ function openDrawer(id) {
       <div class="drawer-transport-item"><span>🚗</span><span>${p.transport.highway}</span></div>
     </div>
 
-    <div>
-      <div class="drawer-section-title">מסעדות ופנאי</div>
-      <div class="drawer-tags">${p.restaurants.map(r => renderNearbyPlaceChip(r)).join('')}</div>
-    </div>
 
-    <div>
-      <div class="drawer-section-title">חברות בבניין</div>
-      <div class="drawer-tags">${p.tenants.map(t=>`<span class="drawer-tag-tenant">${t}</span>`).join('')}</div>
-    </div>
 
     <div class="drawer-mgmt">
       <span>דמי ניהול</span>
