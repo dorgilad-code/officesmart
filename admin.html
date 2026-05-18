@@ -3006,7 +3006,7 @@ textarea { min-height: 72px; resize: vertical; }
     window._tpfDropImages = [];
     window._tpfDropBlueprint = null;
     document.getElementById('tm-prop-form').style.display = 'block';
-    ['tpf-name','tpf-address','tpf-size','tpf-price','tpf-mgmt','tpf-floor','tpf-avail','tpf-notes'].forEach(function(id){ document.getElementById(id).value=''; });
+    ['tpf-name','tpf-address','tpf-size','tpf-price','tpf-mgmt','tpf-floor','tpf-avail','tpf-notes','tpf-transport-light','tpf-transport-heavy','tpf-transport-highway'].forEach(function(id){ document.getElementById(id).value=''; });
     var tpfImgFile = document.getElementById('tpf-images-file'); if (tpfImgFile) tpfImgFile.value = '';
     var tpfBpFile = document.getElementById('tpf-blueprint-file'); if (tpfBpFile) tpfBpFile.value = '';
     var ti = document.getElementById('tpf-thumbs-images'); if (ti) ti.innerHTML = '';
@@ -3030,6 +3030,11 @@ textarea { min-height: 72px; resize: vertical; }
       mgmt:document.getElementById('tpf-mgmt').value.trim()||null,
       floor:document.getElementById('tpf-floor').value.trim()||null,
       availability:document.getElementById('tpf-avail').value.trim()||null,
+      transport:{
+        light:document.getElementById('tpf-transport-light').value.trim()||'',
+        heavy:document.getElementById('tpf-transport-heavy').value.trim()||'',
+        highway:document.getElementById('tpf-transport-highway').value.trim()||''
+      },
       images:allImages,
       img:allImages[0]||null,
       blueprint:window._tpfDropBlueprint||null,
@@ -3165,6 +3170,9 @@ textarea { min-height: 72px; resize: vertical; }
           <div><label style="font-size:12px;font-weight:700;color:#64748b;display:block;margin-bottom:4px;">דמי ניהול (₪/מ"ר)</label><input id="tpf-mgmt" type="number" style="width:100%;padding:9px 12px;border:1px solid #e2e8f0;border-radius:8px;font-family:inherit;font-size:13px;"></div>
           <div><label style="font-size:12px;font-weight:700;color:#64748b;display:block;margin-bottom:4px;">קומה</label><input id="tpf-floor" style="width:100%;padding:9px 12px;border:1px solid #e2e8f0;border-radius:8px;font-family:inherit;font-size:13px;"></div>
           <div><label style="font-size:12px;font-weight:700;color:#64748b;display:block;margin-bottom:4px;">זמינות</label><input id="tpf-avail" style="width:100%;padding:9px 12px;border:1px solid #e2e8f0;border-radius:8px;font-family:inherit;font-size:13px;" placeholder="מיידית"></div>
+          <div style="grid-column:1/-1;"><label style="font-size:12px;font-weight:700;color:#64748b;display:block;margin-bottom:4px;">🚋 רכבת קלה</label><input id="tpf-transport-light" style="width:100%;padding:9px 12px;border:1px solid #e2e8f0;border-radius:8px;font-family:inherit;font-size:13px;" placeholder="למשל: תחנת ארלוזורוב — 6 דק'"></div>
+          <div style="grid-column:1/-1;"><label style="font-size:12px;font-weight:700;color:#64748b;display:block;margin-bottom:4px;">🚂 רכבת כבדה</label><input id="tpf-transport-heavy" style="width:100%;padding:9px 12px;border:1px solid #e2e8f0;border-radius:8px;font-family:inherit;font-size:13px;" placeholder="למשל: תחנה מרכזית — 12 דק'"></div>
+          <div style="grid-column:1/-1;"><label style="font-size:12px;font-weight:700;color:#64748b;display:block;margin-bottom:4px;">🚗 כביש</label><input id="tpf-transport-highway" style="width:100%;padding:9px 12px;border:1px solid #e2e8f0;border-radius:8px;font-family:inherit;font-size:13px;" placeholder="למשל: כביש 20 ו-2"></div>
           <div style="grid-column:1/-1;">
             <label style="font-size:12px;font-weight:700;color:#64748b;display:block;margin-bottom:4px;">תמונות</label>
             <div id="tpf-drop-images" onclick="document.getElementById('tpf-images-file').click()" style="border:2px dashed #e2e8f0;border-radius:8px;padding:12px;text-align:center;color:#94a3b8;font-size:13px;margin-bottom:6px;cursor:pointer;">📷 גרור תמונות לכאן</div>
