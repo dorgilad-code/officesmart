@@ -3061,34 +3061,67 @@ textarea { min-height: 72px; resize: vertical; }
   }
   window.copyTourLink = copyTourLink;
 
+  // ── Cloudinary upload helper ─────────────────────────────────────────────
+  var CLOUDINARY_CLOUD = 'duqictgcv';
+  var CLOUDINARY_PRESET = 'officesmart';
+
+  function uploadToCloudinary(file, onSuccess, onError) {
+    var fd = new FormData();
+    fd.append('file', file);
+    fd.append('upload_preset', CLOUDINARY_PRESET);
+    fetch('https://api.cloudinary.com/v1_1/' + CLOUDINARY_CLOUD + '/auto/upload', {
+      method: 'POST',
+      body: fd
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.secure_url) onSuccess(data.secure_url);
+      else onError(data.error && data.error.message || 'שגיאה בהעלאה');
+    })
+    .catch(function(err) { onError(err.message); });
+  }
+  // ─────────────────────────────────────────────────────────────────────────
+
   document.addEventListener('change', function(e) {
     if (e.target.id === 'tpf-images-file') {
       window._tpfDropImages = window._tpfDropImages || [];
       var thumbs = document.getElementById('tpf-thumbs-images');
       Array.from(e.target.files).forEach(function(file) {
+        // Show preview immediately
         var r = new FileReader();
         r.onload = function(ev) {
-          window._tpfDropImages.push(ev.target.result);
           var img = document.createElement('img');
           img.src = ev.target.result;
           img.className = 'thumb';
+          img.style.opacity = '0.5';
           thumbs.appendChild(img);
+          // Upload to Cloudinary
+          uploadToCloudinary(file, function(url) {
+            img.src = url;
+            img.style.opacity = '1';
+            window._tpfDropImages.push(url);
+          }, function(err) {
+            img.style.border = '2px solid red';
+            img.title = err;
+          });
         };
         r.readAsDataURL(file);
       });
     }
     if (e.target.id === 'tpf-blueprint-file') {
-      var r = new FileReader();
-      r.onload = function(ev) {
-        window._tpfDropBlueprint = ev.target.result;
-        var el = document.getElementById('tpf-thumbs-blueprint');
+      var file = e.target.files[0];
+      var el = document.getElementById('tpf-thumbs-blueprint');
+      el.innerHTML = '<span style="color:#64748b;font-size:12px;">מעלה תשריט...</span>';
+      uploadToCloudinary(file, function(url) {
+        window._tpfDropBlueprint = url;
         el.innerHTML = '';
         var img = document.createElement('img');
-        img.src = ev.target.result;
+        img.src = url;
         img.className = 'thumb';
         el.appendChild(img);
-      };
-      r.readAsDataURL(e.target.files[0]);
+      }, function(err) {
+        el.innerHTML = '<span style="color:red;font-size:12px;">שגיאה: ' + err + '</span>';
+      });
     }
   });
 
