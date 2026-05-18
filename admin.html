@@ -3050,13 +3050,51 @@ textarea { min-height: 72px; resize: vertical; }
   function generateTourLink() {
     if (!_tourProps.length) { alert('הוסף לפחות נכס אחד'); return; }
     var c = mergeDashboardClients().find(function(x){ return x.id===_tourClientId; });
-    var payload = { clientId:_tourClientId, clientName:c?(c.name||c.email):'', password:document.getElementById('tm-password').value.trim(), notes:document.getElementById('tm-notes').value.trim(), props:_tourProps, ts:Date.now() };
-    var encoded = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+    var password = document.getElementById('tm-password').value.trim();
+    var notes = document.getElementById('tm-notes').value.trim();
+
+    // Build the permanent URL (no payload in URL)
     var base = location.origin + location.pathname.replace(/\/[^\/]*$/,'');
-    var url = base+'/office-tour-TEMPLATE.html?d='+encoded;
-    document.getElementById('tm-link-out').value=url;
-    var a=document.getElementById('tm-link-open'); if(a) a.href=url;
-    document.getElementById('tm-link-wrap').style.display='block';
+    var url = base+'/office-tour-TEMPLATE.html?client='+encodeURIComponent(_tourClientId);
+
+    // Show loading state
+    var btn = document.querySelector('#modal-tour .btn-primary');
+    if (btn) { btn.disabled = true; btn.textContent = 'שומר...'; }
+
+    // Save to JSONBin tours bin
+    readJSONBin(JSONBIN_BINS.tours, { byClient: {}, meta: {} }).then(function(toursData) {
+      if (!toursData.byClient) toursData.byClient = {};
+      if (!toursData.meta) toursData.meta = {};
+
+      // Save props under client ID
+      toursData.byClient[_tourClientId] = _tourProps;
+
+      // Save meta (password, notes)
+      toursData.meta[_tourClientId] = {
+        clientId: _tourClientId,
+        clientName: c ? (c.name || c.email) : '',
+        password: password,
+        notes: notes,
+        updatedAt: Date.now()
+      };
+
+      return writeJSONBin(JSONBIN_BINS.tours, toursData);
+    }).then(function() {
+      // Also update client password if set
+      if (password && c) {
+        c.password = password;
+        saveData();
+      }
+
+      document.getElementById('tm-link-out').value = url;
+      var a = document.getElementById('tm-link-open'); if(a) a.href = url;
+      document.getElementById('tm-link-wrap').style.display = 'block';
+
+      if (btn) { btn.disabled = false; btn.textContent = '🔗 צור קישור ללקוח'; }
+    }).catch(function(err) {
+      alert('שגיאה בשמירה: ' + err.message);
+      if (btn) { btn.disabled = false; btn.textContent = '🔗 צור קישור ללקוח'; }
+    });
   }
   window.generateTourLink = generateTourLink;
 
