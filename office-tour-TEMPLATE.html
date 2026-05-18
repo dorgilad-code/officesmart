@@ -4440,8 +4440,70 @@ var omRemoteImages = {};
 var omRemoteTours = { byClient: {}, meta: {} };
 var omLinkedClient = null;
 var omLinkedTour = null;
+// ── ?d= URL-encoded tour payload (no JSONBin) ──────────────────────────────
+var omDirectPayload = (function () {
+  try {
+    var sp = new URLSearchParams(location.search || '');
+    var d = sp.get('d');
+    if (!d) return null;
+    return JSON.parse(decodeURIComponent(escape(atob(d))));
+  } catch (e) {
+    return null;
+  }
+})();
+
+if (omDirectPayload) {
+  // Override properties with payload props
+  if (Array.isArray(omDirectPayload.props) && omDirectPayload.props.length) {
+    properties = omDirectPayload.props.map(function (p, i) {
+      return Object.assign({
+        id: p.id || ('dp_' + i),
+        name: p.name || 'נכס ' + (i + 1),
+        address: p.address || '',
+        floor: p.floor || null,
+        size: p.size || null,
+        price: p.price ? Number(p.price) : null,
+        mgmt: p.mgmt ? Number(p.mgmt) : null,
+        availability: p.availability || null,
+        img: p.img || (Array.isArray(p.images) && p.images[0]) || null,
+        images: Array.isArray(p.images) ? p.images : (p.img ? [p.img] : []),
+        blueprint: p.blueprint || null,
+        clientNotes: p.clientNotes || null,
+        // defaults so the template doesn't break
+        lat: p.lat || null,
+        lng: p.lng || null,
+        tenants: p.tenants || [],
+        transport: p.transport || {},
+        restaurants: p.restaurants || [],
+        deal: p.deal || null,
+        parking_price: p.parking_price || null
+      }, p);
+    });
+    // Populate IMGS lookup so gallery and primary image both work
+    properties.forEach(function (p) {
+      var imgs = Array.isArray(p.images) && p.images.length ? p.images : (p.img ? [p.img] : []);
+      if (imgs.length) IMGS[p.id] = imgs;
+    });
+  }
+  // Synthesise omLinkedClient & omLinkedTour so password + notes work
+  omLinkedClient = {
+    id: omDirectPayload.clientId || 'direct',
+    name: omDirectPayload.clientName || '',
+    password: omDirectPayload.password || ''
+  };
+  omLinkedTour = {
+    clientId: omDirectPayload.clientId || 'direct',
+    notes: omDirectPayload.notes || ''
+  };
+}
+// ────────────────────────────────────────────────────────────────────────────
+
 var omLinkedClientId = (function () {
   try {
+    // If a direct ?d= payload was loaded, use its clientId so the app
+    // treats this as a "linked client" session (shows password screen,
+    // tour-notes banner, etc.)
+    if (omDirectPayload) return omDirectPayload.clientId || 'direct';
     var sp = new URLSearchParams(location.search || '');
     return sp.get('client') || sp.get('cid') || '';
   } catch (e) {
@@ -8398,6 +8460,28 @@ window.addEventListener('load', async () => {
     window.__didLogAllPropertyCoords = true;
     logAllPropertyCoords();
   }
+  // ── Direct ?d= payload — skip JSONBin entirely ──────────────────────────
+  if (omDirectPayload) {
+    resetFavoritesForClientLink();
+    // Populate floorplans now that the const is defined
+    properties.forEach(function (p) {
+      if (p.blueprint) {
+        var isPdf = typeof p.blueprint === 'string' && p.blueprint.indexOf('application/pdf') !== -1;
+        floorplans[p.id] = { src: p.blueprint, type: isPdf ? 'pdf' : 'img', name: (p.name || '') + '_תשריט' };
+      }
+    });
+    var _dp = omDirectPayload;
+    if (_dp.password && String(_dp.password).trim()) {
+      document.querySelector('.header').style.display = 'none';
+      document.querySelector('.main').style.display = 'none';
+      showPanel('existing');
+    } else {
+      enterApp();
+    }
+    return;
+  }
+  // ─────────────────────────────────────────────────────────────────────────
+
   // If opened via a specific client link, force password screen.
   var urlClient = '';
   try {

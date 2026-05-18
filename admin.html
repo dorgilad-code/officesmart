@@ -3048,7 +3048,7 @@ textarea { min-height: 72px; resize: vertical; }
     var payload = { clientId:_tourClientId, clientName:c?(c.name||c.email):'', password:document.getElementById('tm-password').value.trim(), notes:document.getElementById('tm-notes').value.trim(), props:_tourProps, ts:Date.now() };
     var encoded = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
     var base = location.origin + location.pathname.replace(/\/[^\/]*$/,'');
-    var url = base+'/client.html?d='+encoded;
+    var url = base+'/office-tour-TEMPLATE.html?d='+encoded;
     document.getElementById('tm-link-out').value=url;
     var a=document.getElementById('tm-link-open'); if(a) a.href=url;
     document.getElementById('tm-link-wrap').style.display='block';
@@ -3134,12 +3134,14 @@ textarea { min-height: 72px; resize: vertical; }
           <div><label style="font-size:12px;font-weight:700;color:#64748b;display:block;margin-bottom:4px;">זמינות</label><input id="tpf-avail" style="width:100%;padding:9px 12px;border:1px solid #e2e8f0;border-radius:8px;font-family:inherit;font-size:13px;" placeholder="מיידית"></div>
           <div style="grid-column:1/-1;">
             <label style="font-size:12px;font-weight:700;color:#64748b;display:block;margin-bottom:4px;">תמונות</label>
-            <input type="file" id="tpf-images-file" accept="image/*" multiple style="margin-bottom:6px;">
+            <div id="tpf-drop-images" onclick="document.getElementById('tpf-images-file').click()" style="border:2px dashed #e2e8f0;border-radius:8px;padding:12px;text-align:center;color:#94a3b8;font-size:13px;margin-bottom:6px;cursor:pointer;">📷 גרור תמונות לכאן</div>
+            <input type="file" id="tpf-images-file" accept="image/*" multiple style="margin-top:6px;">
             <div id="tpf-thumbs-images" class="thumb-row"></div>
           </div>
           <div style="grid-column:1/-1;">
             <label style="font-size:12px;font-weight:700;color:#64748b;display:block;margin-bottom:4px;">תשריט</label>
-            <input type="file" id="tpf-blueprint-file" accept="image/*,.pdf" style="margin-bottom:6px;">
+            <div id="tpf-drop-blueprint" onclick="document.getElementById('tpf-blueprint-file').click()" style="border:2px dashed #e2e8f0;border-radius:8px;padding:12px;text-align:center;color:#94a3b8;font-size:13px;margin-bottom:6px;cursor:pointer;">📐 גרור תשריט לכאן</div>
+            <input type="file" id="tpf-blueprint-file" accept="image/*,.pdf" style="margin-top:6px;">
             <div id="tpf-thumbs-blueprint" class="thumb-row"></div>
           </div>
           <div style="grid-column:1/-1;"><label style="font-size:12px;font-weight:700;color:#64748b;display:block;margin-bottom:4px;">הערות</label><input id="tpf-notes" style="width:100%;padding:9px 12px;border:1px solid #e2e8f0;border-radius:8px;font-family:inherit;font-size:13px;"></div>
