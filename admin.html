@@ -3083,7 +3083,9 @@ textarea { min-height: 72px; resize: vertical; }
       // Also update client password if set
       if (password && c) {
         c.password = password;
-        saveData();
+        var clients = mergeDashboardClients();
+        var idx = clients.findIndex(function(x){ return x.id === c.id; });
+        if (idx >= 0) { clients[idx] = c; saveClients(clients); }
       }
 
       document.getElementById('tm-link-out').value = url;
