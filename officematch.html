@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OfficeMatch · השוואת נכסים</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --green:#10B981;--green-d:#059669;--gl:#ecfdf5;
+  --text:#0f172a;--muted:#64748b;--border:#e2e8f0;
+  --white:#fff;--bg:#f8fafc;--shadow:0 1px 3px rgba(0,0,0,.06),0 8px 24px rgba(0,0,0,.06)
+}
+body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;direction:rtl}
+.hdr{background:var(--white);border-bottom:1px solid var(--border);padding:0 28px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.logo{font-size:20px;font-weight:900;letter-spacing:-.5px}.logo span{color:var(--green)}
+.hdr-btns{display:flex;gap:8px}
+.btn-mode{background:var(--bg);border:1.5px solid var(--border);border-radius:8px;padding:7px 14px;font-size:13px;font-weight:600;font-family:'Heebo',sans-serif;cursor:pointer;color:var(--muted);transition:all .15s}
+.btn-mode.active{background:var(--green);color:#fff;border-color:var(--green)}
+#admin-panel{max-width:980px;margin:0 auto;padding:32px 20px}
+.panel-title{font-size:22px;font-weight:800;margin-bottom:6px}
+.panel-sub{font-size:14px;color:var(--muted);margin-bottom:28px}
+.add-card{background:var(--white);border-radius:20px;padding:28px;box-shadow:var(--shadow);border:1px solid var(--border);margin-bottom:24px}
+.add-card h3{font-size:16px;font-weight:700;margin-bottom:18px;display:flex;align-items:center;gap:8px}
+.add-card h3 .ico{background:var(--gl);color:var(--green-d);width:28px;height:28px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:14px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:14px}
+.form-grid.two{grid-template-columns:1fr 1fr}
+.field label{display:block;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;margin-bottom:4px}
+.field input,.field select,.field textarea{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:'Heebo',sans-serif;color:var(--text);background:var(--bg);transition:border-color .2s;outline:none}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--green);background:var(--white)}
+.field textarea{min-height:70px;resize:vertical}
+.imgs-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.img-field{display:flex;align-items:center;gap:6px}
+.img-field label{font-size:11px;font-weight:700;color:var(--muted);width:60px;flex-shrink:0}
+.img-field input{flex:1;padding:8px 10px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:'Heebo',sans-serif;color:var(--text);background:var(--bg);outline:none;transition:border-color .2s}
+.img-field input:focus{border-color:var(--green)}
+.btn-add{background:var(--green);color:#fff;border:none;border-radius:10px;padding:11px 24px;font-size:14px;font-weight:700;font-family:'Heebo',sans-serif;cursor:pointer;transition:all .15s}
+.btn-add:hover{background:var(--green-d)}
+.btn-secondary{background:var(--white);color:var(--text);border:1.5px solid var(--border);border-radius:10px;padding:10px 20px;font-size:14px;font-weight:600;font-family:'Heebo',sans-serif;cursor:pointer;transition:all .15s}
+.btn-secondary:hover{border-color:var(--text)}
+.btn-danger{background:#fff5f5;color:#e53e3e;border:1.5px solid #fed7d7;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600;font-family:'Heebo',sans-serif;cursor:pointer;transition:all .15s}
+.btn-danger:hover{background:#e53e3e;color:#fff}
+.props-list{display:grid;gap:10px}
+.prop-row{background:var(--white);border:1.5px solid var(--border);border-radius:14px;padding:16px 20px;display:flex;align-items:center;gap:16px;transition:border-color .2s}
+.prop-row:hover{border-color:var(--green)}
+.prop-row.selected{border-color:var(--green);background:var(--gl)}
+.prop-check{width:20px;height:20px;accent-color:var(--green);cursor:pointer;flex-shrink:0}
+.prop-name{font-size:15px;font-weight:700}
+.prop-addr{font-size:12px;color:var(--muted)}
+.prop-tags{display:flex;gap:6px;flex-wrap:wrap}
+.tag{background:var(--bg);border:1px solid var(--border);border-radius:99px;padding:3px 10px;font-size:11px;font-weight:600;color:var(--muted)}
+.tag.green{background:var(--gl);border-color:rgba(16,185,129,.2);color:var(--green-d)}
+.client-card{background:var(--white);border-radius:20px;padding:28px;box-shadow:var(--shadow);border:1px solid var(--border)}
+.client-form{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px}
+.link-box{background:var(--gl);border:1.5px solid rgba(16,185,129,.3);border-radius:12px;padding:14px 18px;font-size:12px;font-family:monospace;word-break:break-all;color:var(--green-d);display:none;margin-top:12px;line-height:1.6}
+.copy-btn{background:var(--green);color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:600;font-family:'Heebo',sans-serif;cursor:pointer;margin-top:8px;display:none}
+.sel-count{font-size:13px;color:var(--green-d);font-weight:600;margin-bottom:12px;display:none}
+#client-view{display:none;max-width:1200px;margin:0 auto;padding:28px 20px}
+.cv-header{margin-bottom:28px}
+.cv-title{font-size:26px;font-weight:900;margin-bottom:4px}
+.cv-sub{font-size:14px;color:var(--muted)}
+.filters{background:var(--white);border-radius:16px;padding:18px 20px;box-shadow:var(--shadow);border:1px solid var(--border);margin-bottom:24px;display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end}
+.fg{display:flex;flex-direction:column;gap:4px;min-width:130px}
+.fg label{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.5px;text-transform:uppercase}
+.fg input,.fg select{padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:'Heebo',sans-serif;color:var(--text);background:var(--bg);outline:none;transition:border-color .2s}
+.fg input:focus,.fg select:focus{border-color:var(--green)}
+.btn-reset{background:var(--bg);border:1.5px solid var(--border);border-radius:8px;padding:8px 14px;font-size:13px;font-weight:600;font-family:'Heebo',sans-serif;cursor:pointer;color:var(--muted);transition:all .15s;align-self:flex-end}
+.btn-reset:hover{border-color:var(--text);color:var(--text)}
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:18px}
+.prop-card{background:var(--white);border-radius:20px;overflow:hidden;box-shadow:var(--shadow);border:1.5px solid var(--border);transition:all .2s}
+.prop-card:hover{transform:translateY(-3px);box-shadow:0 8px 32px rgba(0,0,0,.1);border-color:var(--green)}
+.prop-card.fav{border-color:#f6ad55}
+
+/* IMAGE GALLERY */
+.card-gallery{position:relative;height:200px;background:#e2e8f0;overflow:hidden}
+.gallery-img{width:100%;height:100%;object-fit:cover;display:none;cursor:pointer}
+.gallery-img.active{display:block}
+.gallery-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:42px}
+.gallery-nav{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);display:flex;gap:5px}
+.gallery-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.5);cursor:pointer;transition:all .15s}
+.gallery-dot.active{background:#fff;width:16px;border-radius:99px}
+.gallery-prev,.gallery-next{position:absolute;top:50%;transform:translateY(-50%);background:rgba(0,0,0,.35);color:#fff;border:none;border-radius:50%;width:30px;height:30px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.gallery-prev{right:8px}.gallery-next{left:8px}
+.gallery-prev:hover,.gallery-next:hover{background:rgba(0,0,0,.6)}
+.card-avail{position:absolute;top:10px;right:10px;background:var(--green);color:#fff;font-size:11px;font-weight:700;padding:4px 10px;border-radius:99px;z-index:2}
+.card-fav{position:absolute;top:10px;left:10px;background:rgba(255,255,255,.9);border:none;border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;z-index:2;transition:all .15s}
+.card-fav:hover{transform:scale(1.1)}
+.card-body{padding:18px}
+.card-name{font-size:16px;font-weight:800;margin-bottom:4px}
+.card-addr{font-size:12px;color:var(--muted);margin-bottom:14px}
+.card-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.stat{background:var(--bg);border-radius:8px;padding:8px 10px}
+.stat-label{font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.3px;margin-bottom:2px}
+.stat-val{font-size:15px;font-weight:800}
+.stat-val.green{color:var(--green)}
+.card-notes{font-size:12px;color:var(--muted);line-height:1.5;border-top:1px solid var(--border);padding-top:10px;margin-bottom:10px}
+.floor-link{display:inline-flex;align-items:center;gap:5px;background:var(--bg);border:1.5px solid var(--border);border-radius:8px;padding:7px 12px;font-size:12px;font-weight:600;color:var(--text);text-decoration:none;transition:all .15s;margin-bottom:10px}
+.floor-link:hover{border-color:var(--green);color:var(--green-d)}
+.compare-bar{position:fixed;bottom:0;left:0;right:0;background:var(--text);color:#fff;padding:14px 28px;display:none;align-items:center;justify-content:space-between;z-index:200;flex-wrap:wrap;gap:10px}
+.compare-items{display:flex;gap:8px;flex-wrap:wrap}
+.compare-chip{background:rgba(255,255,255,.15);border-radius:99px;padding:5px 14px;font-size:13px;font-weight:600}
+.btn-compare{background:var(--green);color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:14px;font-weight:700;font-family:'Heebo',sans-serif;cursor:pointer}
+.btn-clear-cmp{background:transparent;color:rgba(255,255,255,.6);border:none;font-size:13px;cursor:pointer;font-family:'Heebo',sans-serif}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:300;padding:20px;overflow-y:auto}
+.modal{background:var(--white);border-radius:24px;padding:32px;max-width:920px;margin:0 auto;animation:up .25s ease}
+@keyframes up{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.modal-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
+.modal-title{font-size:20px;font-weight:800}
+.modal-close{background:var(--bg);border:none;border-radius:50%;width:36px;height:36px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center}
+
+/* LIGHTBOX */
+.lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:400;align-items:center;justify-content:center}
+.lightbox.open{display:flex}
+.lightbox img{max-width:90vw;max-height:90vh;border-radius:12px;object-fit:contain}
+.lb-close{position:fixed;top:20px;right:20px;background:rgba(255,255,255,.15);color:#fff;border:none;border-radius:50%;width:40px;height:40px;cursor:pointer;font-size:20px;display:flex;align-items:center;justify-content:center}
+
+.cmp-table{width:100%;border-collapse:separate;border-spacing:0}
+.cmp-table th{background:var(--bg);font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;padding:12px 16px;text-align:center}
+.cmp-table th:first-child{text-align:right}
+.cmp-table td{padding:12px 16px;border-bottom:1px solid var(--border);font-size:14px;text-align:center;vertical-align:middle}
+.cmp-table td:first-child{font-weight:600;text-align:right;color:var(--muted);font-size:12px}
+.cmp-table tr:last-child td{border-bottom:none}
+.best{color:var(--green);font-weight:800}
+.cmp-name{font-size:14px;font-weight:800}
+.cmp-addr{font-size:11px;color:var(--muted)}
+.empty{text-align:center;padding:60px 20px;color:var(--muted)}
+.empty-icon{font-size:48px;margin-bottom:12px}
+.empty-title{font-size:18px;font-weight:700;margin-bottom:6px;color:var(--text)}
+@media(max-width:600px){.form-grid,.client-form{grid-template-columns:1fr}.cards-grid{grid-template-columns:1fr}.filters{flex-direction:column}.imgs-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <div class="logo">Office<span>Match</span></div>
+  <div class="hdr-btns">
+    <button class="btn-mode active" id="btn-admin" onclick="setMode('admin')">ניהול</button>
+    <button class="btn-mode" id="btn-client" onclick="setMode('client')">תצוגת לקוח</button>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div id="admin-panel">
+  <div class="panel-title">לוח ניהול</div>
+  <div class="panel-sub">הוסף נכסים ושלח ללקוח</div>
+  <div class="add-card">
+    <h3><span class="ico">+</span> הוספת נכס</h3>
+    <div class="form-grid">
+      <div class="field"><label>שם הנכס</label><input id="p-name" placeholder="מגדל הסוללים"></div>
+      <div class="field"><label>כתובת</label><input id="p-addr" placeholder="הסוללים 1, תל אביב"></div>
+      <div class="field"><label>שטח (מ"ר)</label><input id="p-size" type="number" placeholder="500"></div>
+      <div class="field"><label>מחיר למ"ר (₪)</label><input id="p-price" type="number" placeholder="175"></div>
+      <div class="field"><label>דמי ניהול (₪)</label><input id="p-mgmt" type="number" placeholder="20"></div>
+      <div class="field"><label>קומה</label><input id="p-floor" placeholder="12"></div>
+      <div class="field"><label>זמינות</label><input id="p-avail" placeholder="מיידית"></div>
+      <div class="field"><label>סגנון</label>
+        <select id="p-type"><option>Plug&Play</option><option>גלם</option><option>משופץ</option><option>Open Space</option><option>חדרים</option><option>משולב</option></select>
+      </div>
+      <div class="field"><label>הערות</label><input id="p-notes" placeholder="מה מיוחד בנכס..."></div>
+    </div>
+    <div style="font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px">תמונות (קישורי URL — עד 5)</div>
+    <div class="imgs-grid">
+      <div class="img-field"><label>תמונה 1</label><input id="img-1" placeholder="https://..."></div>
+      <div class="img-field"><label>תמונה 2</label><input id="img-2" placeholder="https://..."></div>
+      <div class="img-field"><label>תמונה 3</label><input id="img-3" placeholder="https://..."></div>
+      <div class="img-field"><label>תמונה 4</label><input id="img-4" placeholder="https://..."></div>
+      <div class="img-field"><label>תמונה 5</label><input id="img-5" placeholder="https://..."></div>
+      <div class="img-field"><label>תשריט</label><input id="img-floor" placeholder="https://... (קישור לתשריט)"></div>
+    </div>
+    <button class="btn-add" onclick="addProp()">+ הוסף נכס</button>
+  </div>
+
+  <div class="add-card">
+    <h3><span id="prop-count" class="ico">0</span> נכסים במאגר</h3>
+    <div id="props-list"><div class="empty"><div class="empty-icon">🏢</div><div class="empty-title">אין נכסים עדיין</div></div></div>
+  </div>
+
+  <div class="client-card">
+    <h3 style="font-size:16px;font-weight:700;margin-bottom:18px;display:flex;align-items:center;gap:8px">
+      <span style="background:var(--gl);color:var(--green-d);width:28px;height:28px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center">✉</span>
+      שליחה ללקוח
+    </h3>
+    <div class="sel-count" id="sel-count"></div>
+    <div class="client-form">
+      <div class="field"><label>שם הלקוח</label><input id="c-name" placeholder="ישראל ישראלי"></div>
+      <div class="field"><label>שם החברה</label><input id="c-company" placeholder="חברה בע״מ"></div>
+      <div class="field"><label>הערה אישית</label><input id="c-note" placeholder="שיחה נעימה, ממליץ על..."></div>
+    </div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:12px">✅ סמן נכסים ברשימה למעלה ואז לחץ כאן</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn-add" onclick="genLink()">צור קישור ללקוח</button>
+      <button class="btn-secondary" onclick="setMode('client')">תצוגה מקדימה</button>
+    </div>
+    <div class="link-box" id="link-box"></div>
+    <button class="copy-btn" id="copy-btn" onclick="copyLink()">העתק קישור</button>
+  </div>
+</div>
+
+<!-- CLIENT VIEW -->
+<div id="client-view">
+  <div class="cv-header">
+    <div class="cv-title" id="cv-title">הנכסים שנבחרו עבורך</div>
+    <div class="cv-sub" id="cv-sub"></div>
+  </div>
+  <div class="filters">
+    <div class="fg"><label>שטח מינימלי (מ"ר)</label><input type="number" id="f-size" placeholder="0" oninput="applyFilters()"></div>
+    <div class="fg"><label>מחיר מקסימלי למ"ר</label><input type="number" id="f-price" placeholder="ללא הגבלה" oninput="applyFilters()"></div>
+    <div class="fg"><label>סגנון</label>
+      <select id="f-type" onchange="applyFilters()">
+        <option value="">הכל</option><option>Plug&Play</option><option>גלם</option><option>משופץ</option><option>Open Space</option><option>חדרים</option><option>משולב</option>
+      </select>
+    </div>
+    <div class="fg"><label>זמינות</label>
+      <select id="f-avail" onchange="applyFilters()"><option value="">הכל</option><option>מיידית</option></select>
+    </div>
+    <div class="fg"><label>מיון</label>
+      <select id="f-sort" onchange="applyFilters()">
+        <option value="">ברירת מחדל</option>
+        <option value="price-asc">מחיר: נמוך לגבוה</option>
+        <option value="price-desc">מחיר: גבוה לנמוך</option>
+        <option value="size-desc">שטח: גדול לקטן</option>
+        <option value="size-asc">שטח: קטן לגדול</option>
+      </select>
+    </div>
+    <button class="btn-reset" onclick="resetFilters()">איפוס</button>
+  </div>
+  <div class="cards-grid" id="cards-grid"></div>
+</div>
+
+<!-- COMPARE BAR -->
+<div class="compare-bar" id="compare-bar">
+  <div><div style="font-size:13px;font-weight:700;margin-bottom:6px">השוואה</div><div class="compare-items" id="compare-items"></div></div>
+  <div style="display:flex;gap:10px;align-items:center">
+    <button class="btn-clear-cmp" onclick="clearCompare()">נקה</button>
+    <button class="btn-compare" onclick="openCompare()">השווה עכשיו →</button>
+  </div>
+</div>
+
+<!-- COMPARE MODAL -->
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-hdr"><div class="modal-title">השוואת נכסים</div><button class="modal-close" onclick="closeModal()">✕</button></div>
+    <div id="modal-body" style="overflow-x:auto"></div>
+  </div>
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="closeLB()">
+  <button class="lb-close" onclick="closeLB()">✕</button>
+  <img id="lb-img" src="" alt="">
+</div>
+
+<script>
+var props=[],favs=[],compareList=[],clientProps=[],generatedLink='';
+
+function v(id){var el=document.getElementById(id);return el?el.value.trim():''}
+
+function addProp(){
+  var name=v('p-name'),addr=v('p-addr'),size=parseFloat(v('p-size')),price=parseFloat(v('p-price'));
+  if(!name||!addr||!size||!price){alert('נא למלא שם, כתובת, שטח ומחיר');return}
+  var imgs=[];
+  for(var i=1;i<=5;i++){var u=v('img-'+i);if(u)imgs.push(u)}
+  var prop={id:Date.now(),name:name,addr:addr,size:size,price:price,
+    mgmt:parseFloat(v('p-mgmt'))||0,floor:v('p-floor'),avail:v('p-avail')||'מיידית',
+    type:v('p-type'),notes:v('p-notes'),imgs:imgs,floorPlan:v('img-floor')};
+  props.push(prop);
+  clearForm();renderAdminList();
+}
+
+function clearForm(){
+  ['p-name','p-addr','p-size','p-price','p-mgmt','p-floor','p-avail','p-notes','img-1','img-2','img-3','img-4','img-5','img-floor'].forEach(function(id){var el=document.getElementById(id);if(el)el.value=''});
+}
+
+function renderAdminList(){
+  var el=document.getElementById('props-list');
+  document.getElementById('prop-count').textContent=props.length;
+  if(!props.length){el.innerHTML='<div class="empty"><div class="empty-icon">🏢</div><div class="empty-title">אין נכסים עדיין</div></div>';return}
+  el.innerHTML=props.map(function(p){
+    return '<div class="prop-row" id="row-'+p.id+'">'+
+      '<input type="checkbox" class="prop-check" onchange="toggleSel('+p.id+',this)">'+
+      '<div style="flex:1"><div class="prop-name">'+p.name+'</div><div class="prop-addr">'+p.addr+'</div></div>'+
+      '<div class="prop-tags">'+
+        '<span class="tag green">'+p.size+' מ"ר</span>'+
+        '<span class="tag green">₪'+p.price+'</span>'+
+        '<span class="tag">'+p.type+'</span>'+
+        (p.imgs.length?'<span class="tag">📷 '+p.imgs.length+'</span>':'')+
+        (p.floorPlan?'<span class="tag">📐 תשריט</span>':'')+
+      '</div>'+
+      '<button class="btn-danger" onclick="deleteProp('+p.id+')">מחק</button>'+
+    '</div>';
+  }).join('');
+  updateSelCount();
+}
+
+function toggleSel(id,cb){
+  var row=document.getElementById('row-'+id);
+  if(cb.checked)row.classList.add('selected');else row.classList.remove('selected');
+  updateSelCount();
+}
+function updateSelCount(){
+  var n=document.querySelectorAll('.prop-check:checked').length;
+  var el=document.getElementById('sel-count');
+  el.style.display=n?'block':'none';
+  if(n)el.textContent=n+' נכסים נבחרו';
+}
+function deleteProp(id){props=props.filter(function(p){return p.id!==id});renderAdminList()}
+
+function genLink(){
+  var sel=[];
+  document.querySelectorAll('.prop-check:checked').forEach(function(cb){
+    var id=parseInt(cb.closest('.prop-row').id.replace('row-',''));
+    var p=props.find(function(x){return x.id===id});if(p)sel.push(p);
+  });
+  if(!sel.length){alert('נא לסמן לפחות נכס אחד');return}
+  var payload={name:v('c-name')||'לקוח',company:v('c-company'),note:v('c-note'),props:sel};
+  var encoded=btoa(encodeURIComponent(JSON.stringify(payload)));
+  generatedLink=window.location.href.split('?')[0]+'?data='+encoded;
+  var lb=document.getElementById('link-box');
+  lb.style.display='block';lb.textContent=generatedLink;
+  document.getElementById('copy-btn').style.display='inline-block';
+}
+function copyLink(){navigator.clipboard.writeText(generatedLink).then(function(){alert('הקישור הועתק!')})}
+
+function setMode(mode){
+  document.getElementById('btn-admin').classList.toggle('active',mode==='admin');
+  document.getElementById('btn-client').classList.toggle('active',mode==='client');
+  document.getElementById('admin-panel').style.display=mode==='admin'?'block':'none';
+  document.getElementById('client-view').style.display=mode==='client'?'block':'none';
+  if(mode==='client')renderClientView(clientProps.length?clientProps:props);
+}
+
+function renderClientView(list){
+  clientProps=list;
+  document.getElementById('cv-title').textContent='הנכסים שנבחרו עבורך';
+  document.getElementById('cv-sub').textContent=list.length+' נכסים — סנן, השווה ובחר';
+  applyFilters();
+}
+
+function applyFilters(){
+  var minSize=parseFloat(v('f-size'))||0,maxPrice=parseFloat(v('f-price'))||Infinity;
+  var type=v('f-type'),avail=v('f-avail'),sort=v('f-sort');
+  var list=clientProps.filter(function(p){
+    return p.size>=minSize&&p.price<=maxPrice&&(!type||p.type===type)&&(!avail||p.avail===avail);
+  });
+  if(sort==='price-asc')list.sort(function(a,b){return a.price-b.price});
+  if(sort==='price-desc')list.sort(function(a,b){return b.price-a.price});
+  if(sort==='size-asc')list.sort(function(a,b){return a.size-b.size});
+  if(sort==='size-desc')list.sort(function(a,b){return b.size-a.size});
+  renderCards(list);
+}
+
+function resetFilters(){
+  ['f-size','f-price'].forEach(function(id){var el=document.getElementById(id);if(el)el.value=''});
+  ['f-type','f-avail','f-sort'].forEach(function(id){var el=document.getElementById(id);if(el)el.value=''});
+  applyFilters();
+}
+
+function renderCards(list){
+  var el=document.getElementById('cards-grid');
+  if(!list.length){el.innerHTML='<div class="empty" style="grid-column:1/-1"><div class="empty-icon">🔍</div><div class="empty-title">אין תוצאות</div><p>נסה לאפס את הסינון</p></div>';return}
+  el.innerHTML=list.map(function(p){
+    var isFav=favs.indexOf(p.id)>=0,isCmp=compareList.indexOf(p.id)>=0;
+    var monthly=Math.round(p.size*(p.price+p.mgmt));
+    var imgs=p.imgs||[];
+    var gallery='';
+    if(imgs.length){
+      gallery=imgs.map(function(u,i){return '<img class="gallery-img'+(i===0?' active':'')+'" src="'+u+'" onclick="openLB(\''+u+'\')" onerror="this.style.display=\'none\'">'}).join('');
+      if(imgs.length>1){
+        gallery+='<div class="gallery-nav">'+imgs.map(function(_,i){return '<div class="gallery-dot'+(i===0?' active':'')+'" onclick="goImg(event,\'gal-'+p.id+'\','+i+')"></div>'}).join('')+'</div>';
+        gallery+='<button class="gallery-prev" onclick="changeImg(event,\'gal-'+p.id+'\',1)">&#8250;</button>';
+        gallery+='<button class="gallery-next" onclick="changeImg(event,\'gal-'+p.id+'\',-1)">&#8249;</button>';
+      }
+    }else{
+      gallery='<div class="gallery-placeholder">🏢</div>';
+    }
+    return '<div class="prop-card'+(isFav?' fav':'')+'" id="card-'+p.id+'">'+
+      '<div class="card-gallery" id="gal-'+p.id+'">'+gallery+
+        (p.avail==='מיידית'?'<div class="card-avail">מיידית</div>':'')+
+        '<button class="card-fav" onclick="toggleFav('+p.id+',event)">'+(isFav?'❤️':'🤍')+'</button>'+
+      '</div>'+
+      '<div class="card-body">'+
+        '<div class="card-name">'+p.name+'</div>'+
+        '<div class="card-addr">📍 '+p.addr+(p.floor?' · קומה '+p.floor:'')+'</div>'+
+        '<div class="card-stats">'+
+          '<div class="stat"><div class="stat-label">שטח</div><div class="stat-val">'+p.size+' מ"ר</div></div>'+
+          '<div class="stat"><div class="stat-label">מחיר למ"ר</div><div class="stat-val green">₪'+p.price+'</div></div>'+
+          '<div class="stat"><div class="stat-label">דמי ניהול</div><div class="stat-val">₪'+p.mgmt+'</div></div>'+
+          '<div class="stat"><div class="stat-label">חודשי משוער</div><div class="stat-val">₪'+monthly.toLocaleString()+'</div></div>'+
+        '</div>'+
+        '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">'+
+          '<span class="tag">'+p.type+'</span>'+
+          '<span class="tag '+(p.avail==='מיידית'?'green':'')+'">'+p.avail+'</span>'+
+        '</div>'+
+        (p.floorPlan?'<a href="'+p.floorPlan+'" target="_blank" class="floor-link">📐 צפה בתשריט</a>':'') +
+        (p.notes?'<div class="card-notes">'+p.notes+'</div>':'')+
+        '<button onclick="toggleCompare('+p.id+')" style="background:'+(isCmp?'var(--green)':'var(--bg)')+';color:'+(isCmp?'#fff':'var(--muted)')+';border:1.5px solid '+(isCmp?'var(--green)':'var(--border)')+';border-radius:8px;padding:8px 14px;font-size:12px;font-weight:600;font-family:Heebo,sans-serif;cursor:pointer;transition:all .15s;width:100%">'+
+          (isCmp?'✓ בהשוואה':'+ הוסף להשוואה')+
+        '</button>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+}
+
+function changeImg(e,galId,dir){
+  e.stopPropagation();
+  var gal=document.getElementById(galId);
+  var imgs=gal.querySelectorAll('.gallery-img');
+  var dots=gal.querySelectorAll('.gallery-dot');
+  var cur=0;imgs.forEach(function(img,i){if(img.classList.contains('active'))cur=i});
+  var next=(cur-dir+imgs.length)%imgs.length;
+  imgs[cur].classList.remove('active');imgs[next].classList.add('active');
+  if(dots.length){dots[cur].classList.remove('active');dots[next].classList.add('active')}
+}
+function goImg(e,galId,idx){
+  e.stopPropagation();
+  var gal=document.getElementById(galId);
+  var imgs=gal.querySelectorAll('.gallery-img');
+  var dots=gal.querySelectorAll('.gallery-dot');
+  imgs.forEach(function(img,i){img.classList.toggle('active',i===idx)});
+  dots.forEach(function(d,i){d.classList.toggle('active',i===idx)});
+}
+function openLB(url){var lb=document.getElementById('lightbox');document.getElementById('lb-img').src=url;lb.classList.add('open')}
+function closeLB(){document.getElementById('lightbox').classList.remove('open')}
+
+function toggleFav(id,e){
+  e.stopPropagation();
+  var i=favs.indexOf(id);if(i>=0)favs.splice(i,1);else favs.push(id);
+  applyFilters();
+}
+function toggleCompare(id){
+  var i=compareList.indexOf(id);
+  if(i>=0){compareList.splice(i,1)}
+  else{if(compareList.length>=4){alert('אפשר להשוות עד 4 נכסים');return}compareList.push(id)}
+  updateCompareBar();applyFilters();
+}
+function updateCompareBar(){
+  var bar=document.getElementById('compare-bar'),items=document.getElementById('compare-items');
+  if(!compareList.length){bar.style.display='none';return}
+  bar.style.display='flex';
+  items.innerHTML=compareList.map(function(id){var p=clientProps.find(function(x){return x.id===id});return p?'<span class="compare-chip">'+p.name+'</span>':''}).join('');
+}
+function clearCompare(){compareList=[];updateCompareBar();applyFilters()}
+function openCompare(){
+  var list=compareList.map(function(id){return clientProps.find(function(x){return x.id===id})}).filter(Boolean);
+  if(!list.length)return;
+  var minP=Math.min.apply(null,list.map(function(p){return p.price}));
+  var maxS=Math.max.apply(null,list.map(function(p){return p.size}));
+  var rows=[
+    ['שטח מ"ר',function(p){return '<span class="'+(p.size===maxS?'best':'')+'">'+p.size+'</span>'}],
+    ['מחיר למ"ר',function(p){return '<span class="'+(p.price===minP?'best':'')+'">₪'+p.price+'</span>'}],
+    ['דמי ניהול',function(p){return '₪'+p.mgmt}],
+    ['עלות חודשית',function(p){var m=Math.round(p.size*(p.price+p.mgmt)),best=Math.min.apply(null,list.map(function(x){return x.size*(x.price+x.mgmt)}));return '<span class="'+(p.size*(p.price+p.mgmt)===best?'best':'')+'">₪'+m.toLocaleString()+'</span>'}],
+    ['קומה',function(p){return p.floor||'—'}],
+    ['זמינות',function(p){return p.avail||'—'}],
+    ['סגנון',function(p){return p.type||'—'}],
+    ['תשריט',function(p){return p.floorPlan?'<a href="'+p.floorPlan+'" target="_blank" style="color:var(--green);font-weight:600">צפה 📐</a>':'—'}],
+  ];
+  var html='<table class="cmp-table"><thead><tr><th></th>'+
+    list.map(function(p){return '<th><div class="cmp-name">'+p.name+'</div><div class="cmp-addr">'+p.addr+'</div></th>'}).join('')+
+    '</tr></thead><tbody>'+
+    rows.map(function(r){return '<tr><td>'+r[0]+'</td>'+list.map(function(p){return '<td>'+r[1](p)+'</td>'}).join('')+'</tr>'}).join('')+
+    '</tbody></table>';
+  document.getElementById('modal-body').innerHTML=html;
+  document.getElementById('modal').style.display='block';
+}
+function closeModal(){document.getElementById('modal').style.display='none'}
+
+// INIT
+(function(){
+  var params=new URLSearchParams(location.search),data=params.get('data');
+  if(data){
+    try{
+      var payload=JSON.parse(decodeURIComponent(atob(data)));
+      props=payload.props||[];clientProps=payload.props||[];
+      var t=document.getElementById('cv-title'),s=document.getElementById('cv-sub');
+      if(payload.name)t.textContent='שלום '+(payload.name)+' 👋 — הנכסים שנבחרו עבורך';
+      var sub=[];
+      if(payload.company)sub.push(payload.company);
+      if(payload.note)sub.push(payload.note);
+      sub.push(clientProps.length+' נכסים');
+      s.textContent=sub.join(' · ');
+      setMode('client');
+      document.getElementById('btn-admin').style.display='none';
+    }catch(e){console.error(e)}
+  }
+})();
+</script>
+</body>
+</html>
