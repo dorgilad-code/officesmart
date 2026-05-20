@@ -459,7 +459,7 @@ textarea { min-height: 72px; resize: vertical; }
     <button type="button" class="nav-btn" data-panel="pool">מאגר נכסים</button>
     <button type="button" class="nav-btn" data-panel="tour">יצירת סיור</button>
     <div class="sidebar-footer">
-      נתונים ב-JSONBin.io. <a href="office-tour-template.html" target="_blank" rel="noopener">לאפליקציית לקוח</a>
+      נתונים ב-JSONBin.io. <a href="office-tour-TEMPLATE.html" target="_blank" rel="noopener">לאפליקציית לקוח</a>
     </div>
   </aside>
   <main class="main">
@@ -521,7 +521,7 @@ textarea { min-height: 72px; resize: vertical; }
       <div class="card">
         <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px;align-items:center;">
           <button type="button" class="btn btn-outline btn-sm" id="btn-pool-quick-add">+ הוסף נכס</button>
-          <button type="button" class="btn btn-outline btn-sm" id="btn-load-template-props">טען מתבנית (office-tour-template.html)</button>
+          <button type="button" class="btn btn-outline btn-sm" id="btn-load-template-props">טען מתבנית (office-tour-TEMPLATE.html)</button>
           <button type="button" class="btn btn-outline btn-sm" id="btn-export-props-json">ייצוא JSON מאגר</button>
         </div>
         <h3 style="font-size:15px;font-weight:800;margin-bottom:10px;">ייבוא קובץ</h3>
@@ -701,28 +701,29 @@ textarea { min-height: 72px; resize: vertical; }
     }, extra || {});
   }
 
+  // Map bin IDs to store names for the Netlify Function
+  var JSONBIN_BIN_TO_STORE = {};
+  JSONBIN_BIN_TO_STORE[JSONBIN_BINS.clients] = 'clients';
+  JSONBIN_BIN_TO_STORE[JSONBIN_BINS.properties] = 'properties';
+  JSONBIN_BIN_TO_STORE[JSONBIN_BINS.tours] = 'tours';
+
   function readJSONBin(binId, def) {
-    return fetch('https://api.jsonbin.io/v3/b/' + binId + '/latest', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Master-Key': '$2a$10$HW.QVbOQ4z990.l/tM2d/OVSj3TFfSD4c9KuKw/WTz/n17oPpXHxm'
-      }
+    var store = JSONBIN_BIN_TO_STORE[binId] || binId;
+    return fetch('/.netlify/functions/jsonbin?store=' + store, {
+      method: 'GET'
     }).then(function (r) {
       if (!r.ok) throw new Error('JSONBin read failed: HTTP ' + r.status);
       return r.json();
-    }).then(function (payload) {
-      return payload && payload.record != null ? payload.record : cloneJSON(def);
+    }).then(function (record) {
+      return record != null ? record : cloneJSON(def);
     });
   }
 
   function writeJSONBin(binId, val) {
-    return fetch('https://api.jsonbin.io/v3/b/' + binId, {
+    var store = JSONBIN_BIN_TO_STORE[binId] || binId;
+    return fetch('/.netlify/functions/jsonbin?store=' + store, {
       method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Master-Key': '$2a$10$HW.QVbOQ4z990.l/tM2d/OVSj3TFfSD4c9KuKw/WTz/n17oPpXHxm'
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(val)
     }).then(function (r) {
       if (!r.ok) throw new Error('JSONBin write failed: HTTP ' + r.status);
@@ -890,7 +891,7 @@ textarea { min-height: 72px; resize: vertical; }
   function tourLinkForClientId(cid) {
     // Same origin link; client page will load assigned properties by cid.
     var base = location.origin + location.pathname.replace(/\/[^\/]*$/, '');
-    return base + '/office-tour-template.html?client=' + encodeURIComponent(cid);
+    return base + '/office-tour-TEMPLATE.html?client=' + encodeURIComponent(cid);
   }
 
   function normalizePhone(p) {
@@ -1161,7 +1162,7 @@ textarea { min-height: 72px; resize: vertical; }
 
   function getTemplatePropsCached() {
     if (pqaTemplatePropsCache) return Promise.resolve(pqaTemplatePropsCache);
-    return fetch('office-tour-template.html', { cache: 'no-store' })
+    return fetch('office-tour-TEMPLATE.html', { cache: 'no-store' })
       .then(function (r) { return r.text(); })
       .then(function (html) {
         var arr = extractPropertiesFromTourHtml(html);
@@ -2918,7 +2919,7 @@ textarea { min-height: 72px; resize: vertical; }
   }
 
   document.getElementById('btn-load-template-props').addEventListener('click', function () {
-    fetch('office-tour-template.html', { cache: 'no-store' })
+    fetch('office-tour-TEMPLATE.html', { cache: 'no-store' })
       .then(function (r) { return r.text(); })
       .then(function (html) {
         var arr = extractPropertiesFromTourHtml(html);
@@ -3052,24 +3053,16 @@ textarea { min-height: 72px; resize: vertical; }
     var c = mergeDashboardClients().find(function(x){ return x.id===_tourClientId; });
     var password = document.getElementById('tm-password').value.trim();
     var notes = document.getElementById('tm-notes').value.trim();
-
-    // Build the permanent URL (no payload in URL)
     var base = location.origin + location.pathname.replace(/\/[^\/]*$/,'');
     var url = base+'/office-tour-template.html?client='+encodeURIComponent(_tourClientId);
 
-    // Show loading state
     var btn = document.querySelector('#modal-tour .btn-primary');
     if (btn) { btn.disabled = true; btn.textContent = 'שומר...'; }
 
-    // Save to JSONBin tours bin
     readJSONBin(JSONBIN_BINS.tours, { byClient: {}, meta: {} }).then(function(toursData) {
       if (!toursData.byClient) toursData.byClient = {};
       if (!toursData.meta) toursData.meta = {};
-
-      // Save props under client ID
       toursData.byClient[_tourClientId] = _tourProps;
-
-      // Save meta (password, notes)
       toursData.meta[_tourClientId] = {
         clientId: _tourClientId,
         clientName: c ? (c.name || c.email) : '',
@@ -3077,21 +3070,11 @@ textarea { min-height: 72px; resize: vertical; }
         notes: notes,
         updatedAt: Date.now()
       };
-
       return writeJSONBin(JSONBIN_BINS.tours, toursData);
     }).then(function() {
-      // Also update client password if set
-      if (password && c) {
-        c.password = password;
-        var clients = mergeDashboardClients();
-        var idx = clients.findIndex(function(x){ return x.id === c.id; });
-        if (idx >= 0) { clients[idx] = c; saveClients(clients); }
-      }
-
       document.getElementById('tm-link-out').value = url;
       var a = document.getElementById('tm-link-open'); if(a) a.href = url;
       document.getElementById('tm-link-wrap').style.display = 'block';
-
       if (btn) { btn.disabled = false; btn.textContent = '🔗 צור קישור ללקוח'; }
     }).catch(function(err) {
       alert('שגיאה בשמירה: ' + err.message);
