@@ -4519,24 +4519,29 @@ function omJsonbinHeaders(extra) {
   }, extra || {});
 }
 
+var OM_BIN_TO_STORE = {};
+OM_BIN_TO_STORE[JSONBIN_BINS.clients] = 'clients';
+OM_BIN_TO_STORE[JSONBIN_BINS.properties] = 'properties';
+OM_BIN_TO_STORE[JSONBIN_BINS.tours] = 'tours';
+
 function omReadJSONBin(binId, def) {
-  return fetch('/.netlify/functions/jsonbin', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ binId: binId, method: 'GET' })
+  var store = OM_BIN_TO_STORE[binId] || binId;
+  return fetch('/.netlify/functions/jsonbin?store=' + store, {
+    method: 'GET'
   }).then(function (r) {
     if (!r.ok) throw new Error('JSONBin read failed: HTTP ' + r.status);
     return r.json();
-  }).then(function (payload) {
-    return payload && payload.record != null ? payload.record : def;
+  }).then(function (record) {
+    return record != null ? record : def;
   });
 }
 
 function omWriteJSONBin(binId, val) {
-  return fetch('/.netlify/functions/jsonbin', {
-    method: 'POST',
+  var store = OM_BIN_TO_STORE[binId] || binId;
+  return fetch('/.netlify/functions/jsonbin?store=' + store, {
+    method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ binId: binId, method: 'PUT', body: val })
+    body: JSON.stringify(val)
   }).then(function (r) {
     if (!r.ok) throw new Error('JSONBin write failed: HTTP ' + r.status);
     return true;
