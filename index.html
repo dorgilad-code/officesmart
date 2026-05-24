@@ -151,7 +151,49 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);min-h
 .empty-title{font-size:18px;font-weight:700;margin-bottom:6px;color:var(--text)}
 @media(max-width:600px){.form-grid,.client-form{grid-template-columns:1fr}.cards-grid{grid-template-columns:1fr}.filters{flex-direction:column}.imgs-grid{grid-template-columns:1fr}}
 
-/* ── FAVORITES ── */
+/* ── FAV SUMMARY & LIST ── */
+.fav-summary{background:var(--white);border-radius:16px;border:1.5px solid var(--border);padding:0;margin-bottom:20px;display:grid;grid-template-columns:repeat(3,1fr);overflow:hidden;box-shadow:var(--shadow)}
+.fav-stat{text-align:center;padding:16px 12px;border-left:1px solid var(--border)}
+.fav-stat:last-child{border-left:none}
+.fav-stat-val{font-size:24px;font-weight:800;color:var(--green);letter-spacing:-1px}
+.fav-stat-label{font-size:10px;color:var(--muted);margin-top:4px;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.fav-list{display:flex;flex-direction:column;gap:8px}
+.fav-row{background:var(--white);border-radius:12px;border:1.5px solid var(--border);display:grid;grid-template-columns:52px 2fr 1fr 1fr 1fr 1fr;align-items:center;padding:10px 14px;gap:10px;transition:all .18s}
+.fav-row:hover{border-color:#c7d2fe;box-shadow:var(--shadow)}
+.fav-row-thumb{width:44px;height:44px;border-radius:8px;object-fit:cover;background:var(--border);flex-shrink:0}
+.fav-row-name{font-size:13px;font-weight:700;color:var(--text)}
+.fav-row-addr{font-size:11px;color:var(--muted);margin-top:1px}
+.fav-cell{font-size:12px;color:var(--muted);font-weight:500}
+.fav-cell.price{color:var(--green);font-weight:800;font-size:13px}
+.fav-avail-pill{display:inline-block;padding:2px 9px;border-radius:20px;font-size:10px;font-weight:700}
+/* Cost table */
+.cost-table-wrap{background:var(--white);border-radius:16px;border:1.5px solid var(--border);overflow:hidden;box-shadow:var(--shadow);margin-bottom:20px}
+.cost-table-header{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.cost-table-title{font-size:14px;font-weight:800;color:var(--text)}
+.cost-table-sub{font-size:11px;color:var(--muted)}
+.cost-table-inputs{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;gap:10px;flex-wrap:wrap;background:var(--bg)}
+.cost-mini-field{display:flex;flex-direction:column;gap:3px}
+.cost-mini-label{font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.5px;text-transform:uppercase}
+.cost-mini-input{padding:6px 10px;border:1.5px solid var(--border);border-radius:8px;background:var(--white);color:var(--text);font-family:'Heebo',sans-serif;font-size:13px;font-weight:600;width:90px;outline:none;transition:border .15s;direction:ltr;text-align:center}
+.cost-mini-input:focus{border-color:var(--green)}
+table.cost-tbl{width:100%;border-collapse:collapse}
+table.cost-tbl thead th{padding:10px 14px;text-align:right;font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;background:var(--bg);border-bottom:1px solid var(--border)}
+table.cost-tbl tbody td{padding:11px 14px;border-bottom:1px solid var(--border);font-size:13px;color:var(--muted);vertical-align:middle}
+table.cost-tbl tbody tr:last-child td{border-bottom:none}
+.cost-tbl-name{font-size:13px;font-weight:700;color:var(--text)}
+.cost-tbl-addr{font-size:11px;color:var(--muted)}
+.cost-tbl-total{font-size:14px;font-weight:800;color:var(--green)}
+.cost-tbl-persqm{font-size:11px;color:var(--muted)}
+.cost-bar-cell{display:flex;align-items:center;gap:8px}
+.cost-bar-bg{flex:1;height:5px;background:var(--border);border-radius:3px;overflow:hidden;min-width:50px}
+.cost-bar-fill{height:100%;border-radius:3px;background:var(--green);transition:width .4s}
+.cost-best{color:var(--green)!important}
+.cost-best-row td{background:#f0fdf4!important}
+.coco-inputs{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-bottom:4px}
+.coco-field label{font-size:10px;font-weight:700;color:var(--muted);display:block;margin-bottom:3px}
+.coco-field input{width:100%;padding:8px 10px;border-radius:10px;border:1px solid var(--border);font-family:'Heebo',sans-serif;font-size:13px;outline:none;transition:border-color .2s}
+.coco-field input:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(16,185,129,.12)}
+@media(max-width:600px){.fav-row{grid-template-columns:40px 1fr 1fr;}.fav-row>div:nth-child(4),.fav-row>div:nth-child(5),.fav-row>div:nth-child(6){display:none}}
 .fav-btn{background:var(--white);border:1.5px solid var(--border);border-radius:8px;padding:7px 14px;font-size:13px;font-weight:600;font-family:'Heebo',sans-serif;cursor:pointer;color:var(--muted);transition:all .15s;display:flex;align-items:center;gap:5px}
 .fav-btn:hover{border-color:#f97316;color:#f97316}
 .fav-btn .fav-count-badge{background:#f97316;color:#fff;border-radius:99px;padding:1px 7px;font-size:11px;font-weight:800;display:none}
@@ -893,6 +935,9 @@ function openFav(){
   renderFavModal();
 }
 function closeFav(){document.getElementById('fav-overlay').classList.remove('open')}
+var favCompareIds=[];
+var _favCurrOffice={size:'',price:'',mgmt:'',addr:''};
+
 function renderFavModal(){
   var el=document.getElementById('fav-modal-body');
   var list=clientProps.filter(function(p){return favs.indexOf(p.id)>=0});
@@ -900,138 +945,106 @@ function renderFavModal(){
     el.innerHTML='<div class="fav-empty-state"><div class="empty-icon">🤍</div><div class="empty-title">אין מועדפים עדיין</div><p style="font-size:13px;color:var(--muted)">לחץ על הלב על הכרטיס כדי להוסיף</p></div>';
     return;
   }
-
-  // Step 1 — cards with checkboxes for compare
-  var cardsHtml=
-    '<div class="fav-section-title" style="margin-bottom:10px">סמן נכסים להשוואה 👇</div>'+
-    '<div class="fav-cards-grid">'+
+  var avgPrice=Math.round(list.reduce(function(s,p){return s+p.price},0)/list.length);
+  var avgSize=Math.round(list.reduce(function(s,p){return s+p.size},0)/list.length);
+  var statsHtml=
+    '<div class="fav-summary">'+
+      '<div class="fav-stat"><div class="fav-stat-val">'+list.length+'</div><div class="fav-stat-label">נכסים</div></div>'+
+      '<div class="fav-stat"><div class="fav-stat-val">\u20aa'+avgPrice+'</div><div class="fav-stat-label">מחיר ממוצע למ"ר</div></div>'+
+      '<div class="fav-stat"><div class="fav-stat-val">'+avgSize+'</div><div class="fav-stat-label">שטח ממוצע מ"ר</div></div>'+
+    '</div>';
+  var listHtml=
+    '<div class="fav-section-title">הנכסים שלי</div>'+
+    '<div class="fav-list" style="margin-bottom:28px">'+
     list.map(function(p){
-      var isSel=favCompareIds.indexOf(p.id)>=0;
       var imgs=p.imgs||[];
-      var monthly=Math.round(p.size*(p.price+p.mgmt));
-      return '<div class="prop-card'+(isSel?' fav':'')+'" style="cursor:pointer;outline:'+(isSel?'2.5px solid var(--green)':'none')+'" onclick="toggleFavSel('+p.id+')">'+
-        '<div class="card-gallery" style="height:130px">'+
-          (imgs.length?'<img class="gallery-img active" src="'+imgs[0]+'" style="display:block">':'<div class="gallery-placeholder">🏢</div>')+
-          (isSel?'<div style="position:absolute;top:8px;left:8px;background:var(--green);color:#fff;border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;z-index:2">✓</div>':'')+
-          '<button class="card-fav" onclick="event.stopPropagation();toggleFav('+p.id+',event);renderFavModal()">❤️</button>'+
-        '</div>'+
-        '<div class="card-body" style="padding:12px">'+
-          '<div class="card-name" style="font-size:13px">'+p.name+'</div>'+
-          '<div class="card-addr" style="margin-bottom:6px;font-size:11px">📍 '+p.addr+(p.floor?' · ק\''+p.floor:'')+'</div>'+
-          '<div style="display:flex;gap:4px;flex-wrap:wrap;font-size:11px;font-weight:700">'+
-            '<span style="background:var(--gl);color:var(--green-d);padding:2px 7px;border-radius:6px">'+p.size+' מ"ר</span>'+
-            '<span style="background:#eff6ff;color:#1d4ed8;padding:2px 7px;border-radius:6px">₪'+p.price+'/מ"ר</span>'+
-          '</div>'+
-          '<div style="margin-top:6px;font-size:11px;color:var(--muted)">חודשי: <strong style="color:var(--text)">₪'+monthly.toLocaleString()+'</strong></div>'+
-        '</div>'+
+      var thumb=imgs.length?imgs[0]:'';
+      var availStyle=p.avail==='\u05de\u05d9\u05d9\u05d3\u05d9\u05ea'?'background:#dcfce7;color:#166534':'background:#ffedd5;color:#c2410c';
+      return '<div class="fav-row">'+
+        (thumb?'<img class="fav-row-thumb" src="'+thumb+'" onerror="this.style.display=\'none\'">':'<div class="fav-row-thumb" style="background:var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px">\ud83c\udfe2</div>')+
+        '<div><div class="fav-row-name">'+p.name+'</div><div class="fav-row-addr">\ud83d\udccd '+p.addr+'</div></div>'+
+        '<div class="fav-cell price">\u20aa'+p.price+'<span style="font-size:10px;font-weight:500;color:var(--muted)">/\u05de"\u05e8</span></div>'+
+        '<div class="fav-cell">'+p.size+' \u05de"\u05e8</div>'+
+        '<div class="fav-cell">'+(p.floor?'\u05e7\u05d5\u05de\u05d4 '+p.floor:'\u2014')+'</div>'+
+        '<div><span class="fav-avail-pill" style="'+availStyle+'">'+p.avail+'</span></div>'+
       '</div>';
     }).join('')+
     '</div>';
-
-  // Step 2 — compare section (shown only if selections made)
-  var selList=list.filter(function(p){return favCompareIds.indexOf(p.id)>=0});
-  var calcHtml='';
-  if(selList.length>0){
-    calcHtml=
-      '<div style="border-top:1px solid var(--border);margin-top:20px;padding-top:20px">'+
-      '<div class="fav-section-title" style="margin-bottom:12px">🏠 המשרד הנוכחי שלי (אופציונלי)</div>'+
-      '<div class="curr-office-block">'+
-        '<div class="curr-office-grid">'+
-          '<div><div class="cost-mini-label">שטח (מ"ר)</div><input class="cost-mini-input" id="fco-size" type="number" min="0" placeholder="0" value="'+(_favCurrOffice.size||'')+'"></div>'+
-          '<div><div class="cost-mini-label">מחיר למ"ר ₪</div><input class="cost-mini-input" id="fco-price" type="number" min="0" placeholder="0" value="'+(_favCurrOffice.price||'')+'"></div>'+
-          '<div><div class="cost-mini-label">ניהול למ"ר ₪</div><input class="cost-mini-input" id="fco-mgmt" type="number" min="0" placeholder="0" value="'+(_favCurrOffice.mgmt||'')+'"></div>'+
-          '<div><div class="cost-mini-label">כתובת</div><input class="cost-mini-input" id="fco-addr" type="text" placeholder="רחוב ועיר" value="'+(_favCurrOffice.addr||'')+'"></div>'+
+  var calcHtml=
+    '<div class="cost-table-wrap">'+
+      '<div class="cost-table-header"><div><div class="cost-table-title">\ud83e\uddee \u05d4\u05e9\u05d5\u05d5\u05d0\u05ea \u05e2\u05dc\u05d5\u05ea \u05d7\u05d5\u05d3\u05e9\u05d9\u05ea</div><div class="cost-table-sub">\u05db\u05d5\u05dc\u05dc \u05e9\u05db\u05d9\u05e8\u05d5\u05ea, \u05e0\u05d9\u05d4\u05d5\u05dc, \u05d7\u05e9\u05de\u05dc, \u05e0\u05d9\u05e7\u05d9\u05d5\u05df, \u05d0\u05e8\u05e0\u05d5\u05e0\u05d4 \u05d5\u05d7\u05e0\u05d9\u05d5\u05ea</div></div></div>'+
+      '<div class="cost-table-inputs">'+
+        '<div class="cost-mini-field"><div class="cost-mini-label">\u26a1 \u05d7\u05e9\u05de\u05dc+\u05de\u05d9\u05dd+\u05d0\u05d9\u05e0\u05d8\u05e8\u05e0\u05d8</div><input class="cost-mini-input" id="fci-util" type="number" value="12" min="0"></div>'+
+        '<div class="cost-mini-field"><div class="cost-mini-label">\ud83e\uddf9 \u05e0\u05d9\u05e7\u05d9\u05d5\u05df</div><input class="cost-mini-input" id="fci-clean" type="number" value="12" min="0"></div>'+
+        '<div class="cost-mini-field"><div class="cost-mini-label">\ud83c\udfdb\ufe0f \u05d0\u05e8\u05e0\u05d5\u05e0\u05d4 \u20aa/\u05de"\u05e8</div><input class="cost-mini-input" id="fci-arnona" type="number" value="15" min="0" step="0.5"></div>'+
+        '<div class="cost-mini-field"><div class="cost-mini-label">\ud83d\ude97 \u05de\u05e1\' \u05d7\u05e0\u05d9\u05d5\u05ea</div><input class="cost-mini-input" id="fci-park-n" type="number" value="0" min="0"></div>'+
+        '<div class="cost-mini-field"><div class="cost-mini-label">\ud83d\udcb0 \u05e2\u05dc\u05d5\u05ea \u05dc\u05d7\u05e0\u05d9\u05d4 \u20aa</div><input class="cost-mini-input" id="fci-park-p" type="number" value="0" min="0"></div>'+
+      '</div>'+
+      '<div style="padding:14px 20px;border-bottom:1px solid var(--border);background:var(--gl)">'+
+        '<div style="font-size:13px;font-weight:800;color:var(--green-d);margin-bottom:10px">\ud83d\udccd \u05d4\u05e9\u05d5\u05d5\u05d0\u05d4 \u05dc\u05de\u05e9\u05e8\u05d3 \u05d4\u05e0\u05d5\u05db\u05d7\u05d9 \u05e9\u05dc\u05d9 (\u05d0\u05d5\u05e4\u05e6\u05d9\u05d5\u05e0\u05dc\u05d9)</div>'+
+        '<div class="coco-inputs">'+
+          '<div class="coco-field"><label>\u05e9\u05d8\u05d7 \u05e0\u05d5\u05db\u05d7\u05d9 (\u05de"\u05e8)</label><input id="fco-size" type="number" min="0" placeholder="0"></div>'+
+          '<div class="coco-field"><label>\u05de\u05d7\u05d9\u05e8 \u05dc\u05de"\u05e8 (\u20aa)</label><input id="fco-price" type="number" min="0" placeholder="0"></div>'+
+          '<div class="coco-field"><label>\u05d3\u05de\u05d9 \u05e0\u05d9\u05d4\u05d5\u05dc \u05dc\u05de"\u05e8 (\u20aa)</label><input id="fco-mgmt" type="number" min="0" placeholder="0"></div>'+
+          '<div class="coco-field" style="grid-column:span 2"><label>\u05db\u05ea\u05d5\u05d1\u05ea \u05e0\u05d5\u05db\u05d7\u05d9\u05ea</label><input id="fco-addr" type="text" placeholder="\u05e8\u05d7\u05d5\u05d1 \u05d5\u05e2\u05d9\u05e8"></div>'+
         '</div>'+
       '</div>'+
-
-      '<div class="fav-section-title" style="margin-bottom:10px">עלויות נוספות</div>'+
-      '<div class="cost-inputs-strip">'+
-        '<div class="cost-mini-field"><div class="cost-mini-label">⚡ חשמל+מים+אינטרנט</div><input class="cost-mini-input" id="fci-util" type="number" value="12" min="0" placeholder="₪/מ\"ר"></div>'+
-        '<div class="cost-mini-field"><div class="cost-mini-label">🧹 ניקיון</div><input class="cost-mini-input" id="fci-clean" type="number" value="12" min="0" placeholder="₪/מ\"ר"></div>'+
-        '<div class="cost-mini-field"><div class="cost-mini-label">🏛️ ארנונה ₪/מ"ר</div><input class="cost-mini-input" id="fci-arnona" type="number" value="15" min="0" step="0.5"></div>'+
-        '<div class="cost-mini-field"><div class="cost-mini-label">🚗 חניות</div><input class="cost-mini-input" id="fci-park-n" type="number" value="0" min="0"></div>'+
-        '<div class="cost-mini-field"><div class="cost-mini-label">💰 עלות לחניה ₪</div><input class="cost-mini-input" id="fci-park-p" type="number" value="0" min="0"></div>'+
+      '<div style="display:flex;justify-content:center;padding:16px">'+
+        '<button class="fav-run-btn" onclick="runFavCalc()">\u05d7\u05e9\u05d1 \u2190</button>'+
       '</div>'+
-
-      '<div style="display:flex;justify-content:center;margin:14px 0">'+
-        '<button class="fav-run-btn" onclick="runFavCalc()">חשב והשווה ←</button>'+
-      '</div>'+
-      '<div id="fav-compare-result"></div>'+
-      '</div>';
-  }
-
-  el.innerHTML=cardsHtml+calcHtml;
-}
-
-var favCompareIds=[];
-var _favCurrOffice={};
-
-function toggleFavSel(id){
-  var i=favCompareIds.indexOf(id);
-  if(i>=0)favCompareIds.splice(i,1);
-  else favCompareIds.push(id);
-  renderFavModal();
+      '<div id="fav-compare-result" style="padding:0 4px 20px"></div>'+
+    '</div>';
+  el.innerHTML=statsHtml+listHtml+calcHtml;
 }
 
 function runFavCalc(){
-  // save current office inputs
-  _favCurrOffice={
-    size:parseFloat(document.getElementById('fco-size').value)||0,
-    price:parseFloat(document.getElementById('fco-price').value)||0,
-    mgmt:parseFloat(document.getElementById('fco-mgmt').value)||0,
-    addr:document.getElementById('fco-addr').value||''
-  };
+  var sz0=parseFloat(document.getElementById('fco-size').value)||0;
+  var pr0=parseFloat(document.getElementById('fco-price').value)||0;
+  var mg0=parseFloat(document.getElementById('fco-mgmt').value)||0;
+  var addr0=document.getElementById('fco-addr').value||'';
   var util=parseFloat(document.getElementById('fci-util').value)||12;
   var clean=parseFloat(document.getElementById('fci-clean').value)||12;
   var arnona=parseFloat(document.getElementById('fci-arnona').value)||0;
   var parkN=parseFloat(document.getElementById('fci-park-n').value)||0;
   var parkP=parseFloat(document.getElementById('fci-park-p').value)||0;
-
-  var list=clientProps.filter(function(p){return favCompareIds.indexOf(p.id)>=0});
-
-  function total(sz,pr,mg){return sz*(pr+mg+util+clean+arnona)+parkN*parkP}
-
+  var list=clientProps.filter(function(p){return favs.indexOf(p.id)>=0});
+  function ttl(sz,pr,mg){return sz*(pr+mg+util+clean+arnona)+parkN*parkP}
   var rows=list.map(function(p){
-    return{p:p,sz:p.size||0,pr:p.price||0,mg:p.mgmt||0,total:total(p.size||0,p.price||0,p.mgmt||0)};
+    return{p:p,sz:p.size||0,pr:p.price||0,mg:p.mgmt||0,total:ttl(p.size||0,p.price||0,p.mgmt||0)};
   }).sort(function(a,b){return a.total-b.total});
-
-  var hasCurr=_favCurrOffice.size>0;
-  var curTotal=hasCurr?total(_favCurrOffice.size,_favCurrOffice.price,_favCurrOffice.mgmt):0;
-
-  var html='<div style="overflow-x:auto"><table class="fav-cmp-table">'+
-    '<thead><tr><th>נכס</th><th>שטח</th><th>שכירות</th><th>ניהול</th><th>נלוות</th><th>סה"כ חודשי</th></tr></thead>'+
-    '<tbody>';
-
+  var hasCurr=sz0>0;
+  var curTotal=hasCurr?ttl(sz0,pr0,mg0):0;
+  var minT=rows.length?rows[0].total:0,maxT=rows.length?rows[rows.length-1].total:0;
+  var html='<div style="overflow-x:auto"><table class="cost-tbl" style="min-width:480px"><thead><tr>'+
+    '<th>\u05e0\u05db\u05e1</th><th>\u05e9\u05d8\u05d7</th><th>\u05de\u05d7\u05d9\u05e8 \u05dc\u05de"\u05e8</th><th>\u05e0\u05d9\u05d4\u05d5\u05dc</th><th>\u05e2\u05dc\u05d5\u05ea \u05d7\u05d5\u05d3\u05e9\u05d9\u05ea</th><th>\u05dc\u05de"\u05e8</th>'+
+    '</tr></thead><tbody>';
   if(hasCurr){
-    html+='<tr class="fav-cmp-curr">'+
-      '<td><div class="fav-cmp-name">🏠 המשרד הנוכחי</div>'+(_favCurrOffice.addr?'<div class="fav-cmp-addr">'+_favCurrOffice.addr+'</div>':'')+' </td>'+
-      '<td>'+_favCurrOffice.size+' מ"ר</td>'+
-      '<td>'+fmtN(_favCurrOffice.size*_favCurrOffice.price)+'</td>'+
-      '<td>'+fmtN(_favCurrOffice.size*_favCurrOffice.mgmt)+'</td>'+
-      '<td>'+fmtN(_favCurrOffice.size*(util+clean+arnona)+parkN*parkP)+'</td>'+
-      '<td><span class="fav-cmp-total">'+fmtN(curTotal)+'</span></td>'+
+    html+='<tr style="background:#f0fdf4">'+
+      '<td><div class="cost-tbl-name">\ud83c\udfe0 \u05d4\u05de\u05e9\u05e8\u05d3 \u05d4\u05e0\u05d5\u05db\u05d7\u05d9</div>'+(addr0?'<div class="cost-tbl-addr">'+addr0+'</div>':'')+' </td>'+
+      '<td>'+sz0+' \u05de"\u05e8</td><td>\u20aa'+pr0+'</td><td>\u20aa'+mg0+'</td>'+
+      '<td><span class="cost-tbl-total">\u20aa'+Math.round(curTotal).toLocaleString('he-IL')+'</span></td>'+
+      '<td class="cost-tbl-persqm">\u20aa'+Math.round(curTotal/(sz0||1)).toLocaleString('he-IL')+'</td>'+
     '</tr>';
   }
-
   rows.forEach(function(r,i){
     var isBest=i===0;
+    var barPct=maxT>minT?Math.round((r.total-minT)/(maxT-minT)*100):0;
     var diff=hasCurr&&curTotal>0?r.total-curTotal:null;
-    html+='<tr class="'+(isBest?'fav-cmp-best':'')+'">'+
-      '<td><div class="fav-cmp-name">'+(isBest?'👑 ':'')+r.p.name+'</div><div class="fav-cmp-addr">'+r.p.addr+(r.p.floor?' · ק\''+r.p.floor:'')+'</div></td>'+
-      '<td>'+r.sz+' מ"ר</td>'+
-      '<td>'+fmtN(r.sz*r.pr)+'</td>'+
-      '<td>'+fmtN(r.sz*r.mg)+'</td>'+
-      '<td>'+fmtN(r.sz*(util+clean+arnona)+parkN*parkP)+'</td>'+
+    html+='<tr class="'+(isBest?'cost-best-row':'')+'">'+
+      '<td><div class="cost-tbl-name '+(isBest?'cost-best':'')+'">'+(isBest?'\ud83d\udc51 ':'')+r.p.name+'</div><div class="cost-tbl-addr">'+r.p.addr+(r.p.floor?' \u00b7 \u05e7\u05d5\u05de\u05d4 '+r.p.floor:'')+'</div></td>'+
+      '<td>'+r.sz+' \u05de"\u05e8</td><td>\u20aa'+r.pr+'</td><td>\u20aa'+r.mg+'</td>'+
       '<td>'+
-        '<span class="fav-cmp-total">'+fmtN(r.total)+'</span>'+
-        (diff!==null?'<div style="font-size:10px;margin-top:2px;color:'+(diff<0?'var(--green)':'#e53e3e')+'">'+(diff<0?'▼ חוסך '+fmtN(Math.abs(diff)):'▲ יקר ב-'+fmtN(diff))+'</div>':'')+
+        '<div class="cost-bar-cell"><span class="cost-tbl-total '+(isBest?'cost-best':'')+'">\u20aa'+Math.round(r.total).toLocaleString('he-IL')+'</span>'+
+        '<div class="cost-bar-bg"><div class="cost-bar-fill" style="width:'+barPct+'%"></div></div></div>'+
+        (diff!==null?'<div style="font-size:11px;margin-top:2px;color:'+(diff<0?'#059669':'#c2410c')+'">'+(diff<0?'\u25bc \u05d7\u05d5\u05e1\u05da \u20aa'+Math.round(Math.abs(diff)).toLocaleString('he-IL'):'\u25b2 \u05d9\u05e7\u05e8 \u05d1\u002d\u20aa'+Math.round(diff).toLocaleString('he-IL'))+'</div>':'')+
       '</td>'+
+      '<td class="cost-tbl-persqm">\u20aa'+Math.round(r.total/(r.sz||1)).toLocaleString('he-IL')+'</td>'+
     '</tr>';
   });
-
   html+='</tbody></table></div>';
   document.getElementById('fav-compare-result').innerHTML=html;
 }
+
 function updateFavBadge(){
   var badge=document.getElementById('fav-badge');
   if(!badge)return;
