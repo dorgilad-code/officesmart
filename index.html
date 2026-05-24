@@ -31,6 +31,16 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);min-h
 .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--green);background:var(--white)}
 .field textarea{min-height:70px;resize:vertical}
 .imgs-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.upload-zone{border:2px dashed var(--border);border-radius:12px;padding:24px 16px;text-align:center;cursor:pointer;transition:all .2s;background:var(--bg);margin-bottom:10px}
+.upload-zone:hover,.upload-zone.drag-over{border-color:var(--green);background:var(--gl)}
+.upload-zone-icon{font-size:28px;margin-bottom:6px}
+.upload-zone-text{font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px}
+.upload-zone-sub{font-size:12px;color:var(--muted)}
+.img-preview-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:10px}
+.img-preview-thumb{position:relative;aspect-ratio:1;border-radius:8px;overflow:hidden;border:1.5px solid var(--border)}
+.img-preview-thumb img{width:100%;height:100%;object-fit:cover}
+.img-preview-thumb .thumb-remove{position:absolute;top:3px;right:3px;background:rgba(0,0,0,.55);color:#fff;border:none;border-radius:50%;width:20px;height:20px;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1}
+.img-preview-thumb .thumb-spinner{position:absolute;inset:0;background:rgba(255,255,255,.7);display:flex;align-items:center;justify-content:center;font-size:18px}
 .img-field-wrap{display:flex;flex-direction:column;gap:4px}
 .img-label{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.3px;text-transform:uppercase}
 .img-row{display:flex;align-items:center;gap:6px}
@@ -68,9 +78,10 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);min-h
 .copy-btn{background:var(--green);color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:600;font-family:'Heebo',sans-serif;cursor:pointer;margin-top:8px;display:none}
 .sel-count{font-size:13px;color:var(--green-d);font-weight:600;margin-bottom:12px;display:none}
 #client-view{display:none;max-width:1200px;margin:0 auto;padding:28px 20px}
-.cv-header{margin-bottom:28px}
-.cv-title{font-size:26px;font-weight:900;margin-bottom:4px}
-.cv-sub{font-size:14px;color:var(--muted)}
+.cv-header{margin-bottom:28px;display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.cv-header-text .cv-title{font-size:26px;font-weight:900;margin-bottom:4px}
+.cv-header-text .cv-sub{font-size:14px;color:var(--muted)}
+.cv-header-actions{display:flex;gap:8px;flex-shrink:0}
 .filters{background:var(--white);border-radius:16px;padding:18px 20px;box-shadow:var(--shadow);border:1px solid var(--border);margin-bottom:24px;display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end}
 .fg{display:flex;flex-direction:column;gap:4px;min-width:130px}
 .fg label{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.5px;text-transform:uppercase}
@@ -139,6 +150,69 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);min-h
 .empty-icon{font-size:48px;margin-bottom:12px}
 .empty-title{font-size:18px;font-weight:700;margin-bottom:6px;color:var(--text)}
 @media(max-width:600px){.form-grid,.client-form{grid-template-columns:1fr}.cards-grid{grid-template-columns:1fr}.filters{flex-direction:column}.imgs-grid{grid-template-columns:1fr}}
+
+/* ── FAVORITES ── */
+.fav-btn{background:var(--white);border:1.5px solid var(--border);border-radius:8px;padding:7px 14px;font-size:13px;font-weight:600;font-family:'Heebo',sans-serif;cursor:pointer;color:var(--muted);transition:all .15s;display:flex;align-items:center;gap:5px}
+.fav-btn:hover{border-color:#f97316;color:#f97316}
+.fav-btn .fav-count-badge{background:#f97316;color:#fff;border-radius:99px;padding:1px 7px;font-size:11px;font-weight:800;display:none}
+.fav-btn .fav-count-badge.show{display:inline}
+.fav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:300;padding:20px;overflow-y:auto}
+.fav-overlay.open{display:block}
+.fav-modal{background:var(--white);border-radius:24px;padding:28px;max-width:960px;margin:0 auto;animation:up .25s ease}
+.fav-modal-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.fav-modal-title{font-size:20px;font-weight:800}
+.fav-empty-state{text-align:center;padding:60px 20px;color:var(--muted)}
+.fav-empty-state .empty-icon{font-size:48px;margin-bottom:12px}
+.fav-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+
+/* ── CALCULATOR ── */
+.calc-overlay{display:none;position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);align-items:center;justify-content:center}
+.calc-overlay.open{display:flex}
+.calc-modal{background:var(--white);border-radius:20px;width:min(96vw,760px);max-height:92vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,.18);animation:up .22s ease}
+.calc-hdr{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.calc-title{font-size:16px;font-weight:800}
+.calc-sub{font-size:12px;color:var(--muted);margin-top:2px}
+.calc-x{width:32px;height:32px;border-radius:50%;background:var(--bg);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;font-size:14px;color:var(--muted)}
+.calc-x:hover{background:#fee2e2;color:#e53e3e;border-color:#fecaca}
+.calc-body{overflow-y:auto;padding:20px 22px;display:flex;flex-direction:column;gap:18px}
+.calc-section-label{font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px}
+.calc-prop-selector{display:flex;gap:6px;flex-wrap:wrap}
+.calc-prop-btn{padding:5px 13px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--border);background:var(--white);color:var(--muted);cursor:pointer;transition:all .15s;font-family:'Heebo',sans-serif}
+.calc-prop-btn:hover{border-color:var(--green);color:var(--green)}
+.calc-prop-btn.selp{background:var(--green);border-color:var(--green);color:#fff}
+.calc-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.calc-field{display:flex;flex-direction:column;gap:5px}
+.calc-field-label{font-size:11px;font-weight:700;color:var(--muted)}
+.calc-field-hint{font-size:10px;color:var(--muted);margin-top:-3px}
+.calc-input-wrap{position:relative}
+.calc-input{width:100%;padding:9px 36px 9px 10px;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-family:'Heebo',sans-serif;font-size:14px;font-weight:600;outline:none;transition:border .18s;text-align:left;direction:ltr}
+.calc-input:focus{border-color:var(--green);background:var(--white)}
+.calc-input-suffix{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:11px;color:var(--muted);pointer-events:none}
+.calc-run-btn{padding:11px 28px;border-radius:50px;border:none;background:var(--green);color:#fff;font-family:'Heebo',sans-serif;font-size:14px;font-weight:800;cursor:pointer;box-shadow:0 6px 20px rgba(16,185,129,.35);transition:transform .15s}
+.calc-run-btn:hover{transform:translateY(-1px)}
+.calc-results{background:var(--bg);border-radius:10px;border:1px solid var(--border);padding:16px}
+.calc-results-title{font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.8px;text-transform:uppercase;margin-bottom:14px}
+.result-prop-name{font-size:15px;font-weight:800;color:var(--text);margin-bottom:2px}
+.result-prop-addr{font-size:11px;color:var(--muted);margin-bottom:14px}
+.result-breakdown{display:flex;flex-direction:column;gap:5px;margin-bottom:14px}
+.result-row{display:flex;align-items:center;padding:8px 12px;border-radius:8px;font-size:13px}
+.result-row-label{color:var(--muted);display:flex;align-items:center;gap:6px;flex:1}
+.result-row-val{font-weight:700;color:var(--text)}
+.rr-base{background:#eff6ff}.rr-mgmt{background:#fffbeb}.rr-util{background:#ecfdf5}.rr-arnona{background:#fef3c7}.rr-park{background:#fef2f2}
+.rr-total{background:var(--green);margin-top:4px}
+.rr-total .result-row-label{color:rgba(255,255,255,.85);font-weight:700}
+.rr-total .result-row-val{color:#fff;font-size:16px}
+.result-per-seat{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--white);border-radius:8px;border:1px solid var(--border);font-size:12px;color:var(--muted)}
+.result-per-seat strong{color:var(--green);font-size:15px}
+.compare-table{width:100%;border-collapse:collapse;font-size:12px}
+.compare-table th{padding:8px 12px;text-align:right;font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;border-bottom:1.5px solid var(--border)}
+.compare-table td{padding:10px 12px;border-bottom:1px solid var(--border);color:var(--muted)}
+.compare-table tr:last-child td{border-bottom:none}
+.compare-table tr:hover td{background:var(--bg)}
+.best-total{color:var(--green)!important;font-weight:800!important}
+.price-bar-wrap{flex:1;background:var(--border);border-radius:4px;height:5px;margin:0 8px;overflow:hidden}
+.price-bar{height:100%;border-radius:4px;background:var(--green);transition:width .4s}
+@media(max-width:600px){.calc-grid{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
@@ -163,20 +237,43 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);min-h
       <div class="field"><label>מחיר למ"ר (₪)</label><input id="p-price" type="number" placeholder="175"></div>
       <div class="field"><label>דמי ניהול (₪)</label><input id="p-mgmt" type="number" placeholder="20"></div>
       <div class="field"><label>קומה</label><input id="p-floor" placeholder="12"></div>
-      <div class="field"><label>זמינות</label><input id="p-avail" placeholder="מיידית"></div>
+      <div class="field"><label>זמינות</label>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div style="display:flex;gap:10px;align-items:center">
+            <label style="display:flex;align-items:center;gap:5px;font-size:13px;font-weight:600;cursor:pointer;text-transform:none;letter-spacing:0;color:var(--text)">
+              <input type="radio" name="avail-type" value="immediate" id="avail-immediate" checked onchange="toggleAvailType()" style="accent-color:var(--green)"> מיידית
+            </label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:13px;font-weight:600;cursor:pointer;text-transform:none;letter-spacing:0;color:var(--text)">
+              <input type="radio" name="avail-type" value="date" id="avail-date" onchange="toggleAvailType()" style="accent-color:var(--green)"> תאריך
+            </label>
+          </div>
+          <input type="date" id="p-avail-date" style="display:none;padding:8px 10px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:'Heebo',sans-serif;outline:none" oninput="this.style.borderColor='var(--green)'">
+          <input type="hidden" id="p-avail">
+        </div>
+      </div>
       <div class="field"><label>סגנון</label>
         <select id="p-type"><option>Plug&Play</option><option>גלם</option><option>משופץ</option><option>Open Space</option><option>חדרים</option><option>משולב</option></select>
       </div>
       <div class="field"><label>הערות</label><input id="p-notes" placeholder="מה מיוחד בנכס..."></div>
     </div>
-    <div style="font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px">תמונות (עד 5) — העלה מהמחשב או הכנס קישור</div>
-    <div class="imgs-grid" id="imgs-grid-wrap">
-      <div class="img-field-wrap" id="wrap-1"><label class="img-label">תמונה 1</label><div class="img-row"><input id="img-1" placeholder="https://..." class="img-url-input"><button class="btn-upload-img" onclick="triggerUpload(1)" title="העלה מהמחשב">📁</button><span class="upload-status" id="status-1"></span></div><input type="file" id="file-1" accept="image/*" style="display:none" onchange="uploadToCloudinary(1)"><div class="img-preview-wrap" id="preview-1"></div></div>
-      <div class="img-field-wrap" id="wrap-2"><label class="img-label">תמונה 2</label><div class="img-row"><input id="img-2" placeholder="https://..." class="img-url-input"><button class="btn-upload-img" onclick="triggerUpload(2)" title="העלה מהמחשב">📁</button><span class="upload-status" id="status-2"></span></div><input type="file" id="file-2" accept="image/*" style="display:none" onchange="uploadToCloudinary(2)"><div class="img-preview-wrap" id="preview-2"></div></div>
-      <div class="img-field-wrap" id="wrap-3"><label class="img-label">תמונה 3</label><div class="img-row"><input id="img-3" placeholder="https://..." class="img-url-input"><button class="btn-upload-img" onclick="triggerUpload(3)" title="העלה מהמחשב">📁</button><span class="upload-status" id="status-3"></span></div><input type="file" id="file-3" accept="image/*" style="display:none" onchange="uploadToCloudinary(3)"><div class="img-preview-wrap" id="preview-3"></div></div>
-      <div class="img-field-wrap" id="wrap-4"><label class="img-label">תמונה 4</label><div class="img-row"><input id="img-4" placeholder="https://..." class="img-url-input"><button class="btn-upload-img" onclick="triggerUpload(4)" title="העלה מהמחשב">📁</button><span class="upload-status" id="status-4"></span></div><input type="file" id="file-4" accept="image/*" style="display:none" onchange="uploadToCloudinary(4)"><div class="img-preview-wrap" id="preview-4"></div></div>
-      <div class="img-field-wrap" id="wrap-5"><label class="img-label">תמונה 5</label><div class="img-row"><input id="img-5" placeholder="https://..." class="img-url-input"><button class="btn-upload-img" onclick="triggerUpload(5)" title="העלה מהמחשב">📁</button><span class="upload-status" id="status-5"></span></div><input type="file" id="file-5" accept="image/*" style="display:none" onchange="uploadToCloudinary(5)"><div class="img-preview-wrap" id="preview-5"></div></div>
-      <div class="img-field-wrap" id="wrap-floor"><label class="img-label">תשריט</label><div class="img-row"><input id="img-floor" placeholder="https://... (קישור לתשריט)" class="img-url-input"><button class="btn-upload-img" onclick="triggerUpload('floor')" title="העלה מהמחשב">📁</button><span class="upload-status" id="status-floor"></span></div><input type="file" id="file-floor" accept="image/*,application/pdf" style="display:none" onchange="uploadToCloudinary('floor')"><div class="img-preview-wrap" id="preview-floor"></div></div>
+    <div style="font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px">תמונות (עד 5) + תשריט</div>
+    <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-multi').click()" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="handleDrop(event)">
+      <input type="file" id="file-multi" accept="image/*" multiple style="display:none" onchange="handleMultiUpload(this.files)">
+      <div class="upload-zone-icon">📁</div>
+      <div class="upload-zone-text">לחץ או גרור תמונות לכאן (עד 5)</div>
+      <div class="upload-zone-sub" id="upload-zone-sub">תמונות יעלו ל-Cloudinary אוטומטית</div>
+    </div>
+    <div id="img-preview-grid" class="img-preview-grid"></div>
+    <input type="hidden" id="img-1"><input type="hidden" id="img-2"><input type="hidden" id="img-3"><input type="hidden" id="img-4"><input type="hidden" id="img-5">
+    <div style="margin-top:10px" class="img-field-wrap" id="wrap-floor">
+      <label class="img-label">תשריט</label>
+      <div class="img-row">
+        <input id="img-floor" placeholder="https://... (קישור לתשריט)" class="img-url-input">
+        <button class="btn-upload-img" onclick="triggerUpload('floor')" title="העלה מהמחשב">📁</button>
+        <span class="upload-status" id="status-floor"></span>
+      </div>
+      <input type="file" id="file-floor" accept="image/*,application/pdf" style="display:none" onchange="uploadToCloudinary('floor')">
+      <div class="img-preview-wrap" id="preview-floor"></div>
     </div>
     <button class="btn-add" onclick="addProp()">+ הוסף נכס</button>
   </div>
@@ -210,8 +307,14 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);min-h
 <!-- CLIENT VIEW -->
 <div id="client-view">
   <div class="cv-header">
-    <div class="cv-title" id="cv-title">הנכסים שנבחרו עבורך</div>
-    <div class="cv-sub" id="cv-sub"></div>
+    <div class="cv-header-text">
+      <div class="cv-title" id="cv-title">הנכסים שנבחרו עבורך</div>
+      <div class="cv-sub" id="cv-sub"></div>
+    </div>
+    <div class="cv-header-actions">
+      <button class="fav-btn" onclick="openFav()">❤️ מועדפים <span class="fav-count-badge" id="fav-badge">0</span></button>
+      <button class="fav-btn" onclick="openCalc()" style="border-color:var(--green);color:var(--green-d)">🧮 מחשבון</button>
+    </div>
   </div>
   <div class="filters">
     <div class="fg"><label>שטח מינימלי (מ"ר)</label><input type="number" id="f-size" placeholder="0" oninput="applyFilters()"></div>
@@ -222,7 +325,7 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);min-h
       </select>
     </div>
     <div class="fg"><label>זמינות</label>
-      <select id="f-avail" onchange="applyFilters()"><option value="">הכל</option><option>מיידית</option></select>
+      <select id="f-avail" onchange="applyFilters()"><option value="">הכל</option><option value="מיידית">מיידית</option><option value="future">תאריך עתידי</option></select>
     </div>
     <div class="fg"><label>מיון</label>
       <select id="f-sort" onchange="applyFilters()">
@@ -261,10 +364,152 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);min-h
   <img id="lb-img" src="" alt="">
 </div>
 
+<!-- FAVORITES MODAL -->
+<div class="fav-overlay" id="fav-overlay" onclick="if(event.target===this)closeFav()">
+  <div class="fav-modal">
+    <div class="fav-modal-hdr">
+      <div class="fav-modal-title">❤️ נכסים מועדפים</div>
+      <button class="modal-close" onclick="closeFav()">✕</button>
+    </div>
+    <div id="fav-modal-body"></div>
+  </div>
+</div>
+
+<!-- CALCULATOR MODAL -->
+<div class="calc-overlay" id="calc-overlay" onclick="calcOverlayClick(event)">
+  <div class="calc-modal">
+    <div class="calc-hdr">
+      <div>
+        <div class="calc-title">🧮 מחשבון עלות חודשית</div>
+        <div class="calc-sub">שכירות + ניהול + חשמל/מים + חניות</div>
+      </div>
+      <button class="calc-x" onclick="closeCalc()">✕</button>
+    </div>
+    <div class="calc-body">
+      <div>
+        <div class="calc-section-label">בחר נכס לחישוב</div>
+        <div class="calc-prop-selector" id="calc-prop-selector"></div>
+      </div>
+      <div>
+        <div class="calc-section-label">פרמטרי חישוב</div>
+        <div class="calc-grid">
+          <div class="calc-field">
+            <div class="calc-field-label">שטח משרד</div>
+            <div class="calc-field-hint">מ"ר — בסיס לחישוב</div>
+            <div class="calc-input-wrap">
+              <input class="calc-input" id="ci-size" type="number" value="500" min="50">
+              <span class="calc-input-suffix">מ"ר</span>
+            </div>
+          </div>
+          <div class="calc-field">
+            <div class="calc-field-label">מחיר שכירות</div>
+            <div class="calc-field-hint">נטען אוטומטי מהנכס</div>
+            <div class="calc-input-wrap">
+              <input class="calc-input" id="ci-price" type="number" value="175" min="0">
+              <span class="calc-input-suffix">₪/מ"ר</span>
+            </div>
+          </div>
+          <div class="calc-field">
+            <div class="calc-field-label">דמי ניהול</div>
+            <div class="calc-field-hint">נטען אוטומטי מהנכס</div>
+            <div class="calc-input-wrap">
+              <input class="calc-input" id="ci-mgmt" type="number" value="20" min="0">
+              <span class="calc-input-suffix">₪/מ"ר</span>
+            </div>
+          </div>
+          <div class="calc-field">
+            <div class="calc-field-label">⚡ חשמל + מים + אינטרנט</div>
+            <div class="calc-field-hint">ברירת מחדל: 12 ₪/מ"ר</div>
+            <div class="calc-input-wrap">
+              <input class="calc-input" id="ci-util" type="number" value="12" min="0">
+              <span class="calc-input-suffix">₪/מ"ר</span>
+            </div>
+          </div>
+          <div class="calc-field">
+            <div class="calc-field-label">🧹 ניקיון</div>
+            <div class="calc-field-hint">ברירת מחדל: 12 ₪/מ"ר</div>
+            <div class="calc-input-wrap">
+              <input class="calc-input" id="ci-clean" type="number" value="12" min="0">
+              <span class="calc-input-suffix">₪/מ"ר</span>
+            </div>
+          </div>
+          <div class="calc-field">
+            <div class="calc-field-label">🏛️ ארנונה</div>
+            <div class="calc-field-hint">₪/מ"ר לחודש</div>
+            <div class="calc-input-wrap">
+              <input class="calc-input" id="ci-arnona" type="number" value="15" min="0" step="0.5">
+              <span class="calc-input-suffix">₪/מ"ר</span>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:14px">
+          <div class="calc-section-label">🚗 חניות (אופציונלי)</div>
+          <div style="display:flex;gap:12px;align-items:flex-end">
+            <div class="calc-field" style="flex:1">
+              <div class="calc-field-label">מספר חניות</div>
+              <div class="calc-input-wrap">
+                <input class="calc-input" id="ci-park-n" type="number" value="0" min="0">
+                <span class="calc-input-suffix">חנ'</span>
+              </div>
+            </div>
+            <div class="calc-field" style="flex:1">
+              <div class="calc-field-label">עלות לחניה</div>
+              <div class="calc-input-wrap">
+                <input class="calc-input" id="ci-park-p" type="number" value="" min="0" placeholder="₪/חודש">
+                <span class="calc-input-suffix">₪</span>
+              </div>
+            </div>
+            <div style="padding-bottom:2px;font-size:11px;color:var(--muted);white-space:nowrap">
+              סה"כ חניות:<br><strong id="park-total-label" style="color:var(--text)">₪0</strong>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;justify-content:center;margin-top:14px">
+          <button type="button" class="calc-run-btn" onclick="recalc()">חשב ←</button>
+        </div>
+      </div>
+      <div class="calc-results" id="calc-result-single">
+        <div class="calc-results-title">📊 פירוט עלות חודשית</div>
+        <div id="calc-result-body" style="color:var(--muted);font-size:13px;text-align:center;padding:20px">👆 בחר נכס מהרשימה למעלה</div>
+      </div>
+      <div>
+        <div class="calc-section-label">השוואת עלות בין כל הנכסים</div>
+        <div style="overflow-x:auto">
+          <table class="compare-table" id="compare-table">
+            <thead>
+              <tr>
+                <th>נכס</th><th>שכירות</th><th>ניהול</th><th>חשמל+ניקיון</th><th>ארנונה</th><th>חניות</th><th>סה"כ חודשי</th><th>למ"ר</th>
+              </tr>
+            </thead>
+            <tbody id="compare-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
 var props=[],favs=[],compareList=[],clientProps=[],generatedLink='';
 
 function v(id){var el=document.getElementById(id);return el?el.value.trim():''}
+
+function toggleAvailType(){
+  var isDate=document.getElementById('avail-date').checked;
+  document.getElementById('p-avail-date').style.display=isDate?'block':'none';
+}
+
+function getAvailValue(){
+  var isDate=document.getElementById('avail-date')&&document.getElementById('avail-date').checked;
+  if(isDate){
+    var d=document.getElementById('p-avail-date').value;
+    if(!d)return'מיידית';
+    // format dd/mm/yyyy
+    var parts=d.split('-');
+    return parts[2]+'/'+parts[1]+'/'+parts[0];
+  }
+  return'מיידית';
+}
 
 function addProp(){
   var name=v('p-name'),addr=v('p-addr'),size=parseFloat(v('p-size')),price=parseFloat(v('p-price'));
@@ -272,14 +517,19 @@ function addProp(){
   var imgs=[];
   for(var i=1;i<=5;i++){var u=v('img-'+i);if(u)imgs.push(u)}
   var prop={id:Date.now(),name:name,addr:addr,size:size,price:price,
-    mgmt:parseFloat(v('p-mgmt'))||0,floor:v('p-floor'),avail:v('p-avail')||'מיידית',
+    mgmt:parseFloat(v('p-mgmt'))||0,floor:v('p-floor'),avail:getAvailValue(),
     type:v('p-type'),notes:v('p-notes'),imgs:imgs,floorPlan:v('img-floor')};
   props.push(prop);
   clearForm();renderAdminList();
 }
 
 function clearForm(){
-  ['p-name','p-addr','p-size','p-price','p-mgmt','p-floor','p-avail','p-notes','img-1','img-2','img-3','img-4','img-5','img-floor'].forEach(function(id){var el=document.getElementById(id);if(el)el.value=''});
+  ['p-name','p-addr','p-size','p-price','p-mgmt','p-floor','p-notes','img-floor'].forEach(function(id){var el=document.getElementById(id);if(el)el.value=''});
+  var imm=document.getElementById('avail-immediate');if(imm)imm.checked=true;
+  var pd=document.getElementById('p-avail-date');if(pd){pd.value='';pd.style.display='none';}
+  resetImgUploads();
+  var pw=document.getElementById('preview-floor');if(pw){pw.innerHTML='';pw.classList.remove('has-img');}
+  var st=document.getElementById('status-floor');if(st){st.textContent='';st.className='upload-status';}
 }
 
 function renderAdminList(){
@@ -351,7 +601,10 @@ function applyFilters(){
   var minSize=parseFloat(v('f-size'))||0,maxPrice=parseFloat(v('f-price'))||Infinity;
   var type=v('f-type'),avail=v('f-avail'),sort=v('f-sort');
   var list=clientProps.filter(function(p){
-    return p.size>=minSize&&p.price<=maxPrice&&(!type||p.type===type)&&(!avail||p.avail===avail);
+    var availOk=true;
+    if(avail==='מיידית')availOk=p.avail==='מיידית';
+    else if(avail==='future')availOk=p.avail&&p.avail!=='מיידית';
+    return p.size>=minSize&&p.price<=maxPrice&&(!type||p.type===type)&&availOk;
   });
   if(sort==='price-asc')list.sort(function(a,b){return a.price-b.price});
   if(sort==='price-desc')list.sort(function(a,b){return b.price-a.price});
@@ -436,6 +689,7 @@ function closeLB(){document.getElementById('lightbox').classList.remove('open')}
 function toggleFav(id,e){
   e.stopPropagation();
   var i=favs.indexOf(id);if(i>=0)favs.splice(i,1);else favs.push(id);
+  updateFavBadge();
   applyFilters();
 }
 function toggleCompare(id){
@@ -479,9 +733,90 @@ function closeModal(){document.getElementById('modal').style.display='none'}
 // CLOUDINARY UPLOAD
 var CLOUDINARY_CLOUD = 'duqictgcv';
 var CLOUDINARY_UPLOAD_PRESET = 'officematch_unsigned';
+var uploadedImgs = []; // [{slot:1, url:'...'}]
 
 function triggerUpload(slot){
   document.getElementById('file-'+slot).click();
+}
+
+function handleDrop(e){
+  e.preventDefault();
+  document.getElementById('upload-zone').classList.remove('drag-over');
+  handleMultiUpload(e.dataTransfer.files);
+}
+
+function handleMultiUpload(files){
+  var arr=Array.from(files);
+  if(!arr.length)return;
+  var remaining=5-uploadedImgs.length;
+  if(remaining<=0){alert('כבר הועלו 5 תמונות. מחק תמונה כדי להוסיף.');return}
+  arr=arr.slice(0,remaining);
+  arr.forEach(function(file){uploadImgFile(file)});
+}
+
+function uploadImgFile(file){
+  var slot=uploadedImgs.length+1;
+  if(slot>5){return}
+  // Add placeholder
+  var thumbId='thumb-'+Date.now()+'-'+Math.random().toString(36).slice(2);
+  uploadedImgs.push({slot:slot,url:null,thumbId:thumbId});
+  renderImgPreviews();
+  var fd=new FormData();
+  fd.append('file',file);
+  fd.append('upload_preset',CLOUDINARY_UPLOAD_PRESET);
+  fetch('https://api.cloudinary.com/v1_1/'+CLOUDINARY_CLOUD+'/image/upload',{method:'POST',body:fd})
+    .then(function(r){return r.json()})
+    .then(function(data){
+      if(data.secure_url){
+        var entry=uploadedImgs.find(function(x){return x.thumbId===thumbId});
+        if(entry){entry.url=data.secure_url;syncImgInputs();renderImgPreviews();}
+      } else {
+        uploadedImgs=uploadedImgs.filter(function(x){return x.thumbId!==thumbId});
+        renderImgPreviews();
+        alert('שגיאה בהעלאה');
+      }
+    })
+    .catch(function(){
+      uploadedImgs=uploadedImgs.filter(function(x){return x.thumbId!==thumbId});
+      renderImgPreviews();
+    });
+}
+
+function removeImg(thumbId){
+  uploadedImgs=uploadedImgs.filter(function(x){return x.thumbId!==thumbId});
+  uploadedImgs.forEach(function(x,i){x.slot=i+1});
+  syncImgInputs();
+  renderImgPreviews();
+}
+
+function renderImgPreviews(){
+  var grid=document.getElementById('img-preview-grid');
+  if(!grid)return;
+  var sub=document.getElementById('upload-zone-sub');
+  if(sub)sub.textContent=uploadedImgs.length?uploadedImgs.length+'/5 תמונות':'תמונות יעלו ל-Cloudinary אוטומטית';
+  grid.innerHTML=uploadedImgs.map(function(x){
+    return '<div class="img-preview-thumb" id="'+x.thumbId+'">'+
+      (x.url
+        ?'<img src="'+x.url+'" alt=""><button class="thumb-remove" onclick="removeImg(\''+x.thumbId+'\')">✕</button>'
+        :'<div class="thumb-spinner">⏳</div>')+
+    '</div>';
+  }).join('');
+}
+
+function syncImgInputs(){
+  for(var i=1;i<=5;i++){
+    var el=document.getElementById('img-'+i);
+    var entry=uploadedImgs.find(function(x){return x.slot===i});
+    if(el)el.value=(entry&&entry.url)?entry.url:'';
+  }
+}
+
+function resetImgUploads(){
+  uploadedImgs=[];
+  syncImgInputs();
+  renderImgPreviews();
+  var sub=document.getElementById('upload-zone-sub');
+  if(sub)sub.textContent='תמונות יעלו ל-Cloudinary אוטומטית';
 }
 
 function uploadToCloudinary(slot){
@@ -490,10 +825,8 @@ function uploadToCloudinary(slot){
   if(!file)return;
   var btn=document.querySelector('#wrap-'+slot+' .btn-upload-img');
   var status=document.getElementById('status-'+slot);
-  btn.classList.add('loading');
-  btn.textContent='⏳';
-  status.textContent='';
-  status.className='upload-status';
+  if(btn){btn.classList.add('loading');btn.textContent='⏳';}
+  if(status){status.textContent='';status.className='upload-status';}
   var fd=new FormData();
   fd.append('file',file);
   fd.append('upload_preset',CLOUDINARY_UPLOAD_PRESET);
@@ -502,31 +835,166 @@ function uploadToCloudinary(slot){
     .then(function(data){
       if(data.secure_url){
         document.getElementById('img-'+slot).value=data.secure_url;
-        btn.classList.remove('loading');
-        btn.textContent='📁';
-        status.textContent='✓';
-        status.className='upload-status ok';
-        // show preview
+        if(btn){btn.classList.remove('loading');btn.textContent='📁';}
+        if(status){status.textContent='✓';status.className='upload-status ok';}
         var pw=document.getElementById('preview-'+slot);
-        pw.innerHTML='<img src="'+data.secure_url+'" alt="תצוגה מקדימה">';
-        pw.classList.add('has-img');
-      } else {
-        throw new Error(data.error&&data.error.message||'שגיאה');
-      }
+        if(pw){pw.innerHTML='<img src="'+data.secure_url+'" alt="">';pw.classList.add('has-img');}
+      } else throw new Error(data.error&&data.error.message||'שגיאה');
     })
     .catch(function(err){
-      btn.classList.remove('loading');
-      btn.textContent='📁';
-      status.textContent='✗';
-      status.className='upload-status err';
-      console.error('Cloudinary error:',err);
-      if(err.message&&err.message.indexOf('preset')>=0){
-        alert('⚠️ צריך להגדיר Upload Preset ב-Cloudinary.\n\nכנס ל:\nCloudinary Dashboard → Settings → Upload → Upload presets\nצור preset בשם: officematch_unsigned\nסוג: Unsigned');
-      } else {
-        alert('שגיאה בהעלאה: '+err.message);
-      }
+      if(btn){btn.classList.remove('loading');btn.textContent='📁';}
+      if(status){status.textContent='✗';status.className='upload-status err';}
+      alert('שגיאה בהעלאה: '+err.message);
     });
   fileInput.value='';
+}
+
+// ── FAVORITES ──
+function openFav(){
+  var el=document.getElementById('fav-overlay');
+  el.classList.add('open');
+  renderFavModal();
+}
+function closeFav(){document.getElementById('fav-overlay').classList.remove('open')}
+function renderFavModal(){
+  var el=document.getElementById('fav-modal-body');
+  var list=clientProps.filter(function(p){return favs.indexOf(p.id)>=0});
+  if(!list.length){
+    el.innerHTML='<div class="fav-empty-state"><div class="empty-icon">🤍</div><div class="empty-title">אין מועדפים עדיין</div><p style="font-size:13px;color:var(--muted)">לחץ על הלב על הכרטיס כדי להוסיף</p></div>';
+    return;
+  }
+  el.innerHTML='<div class="fav-grid">'+list.map(function(p){
+    var monthly=Math.round(p.size*(p.price+p.mgmt));
+    var isCmp=compareList.indexOf(p.id)>=0;
+    var imgs=p.imgs||[];
+    return '<div class="prop-card fav" id="fav-card-'+p.id+'">'+
+      '<div class="card-gallery" style="height:150px">'+
+        (imgs.length?'<img class="gallery-img active" src="'+imgs[0]+'" style="display:block" onclick="openLB(\''+imgs[0]+'\')">':'<div class="gallery-placeholder">🏢</div>')+
+        '<button class="card-fav" onclick="toggleFav('+p.id+',event);renderFavModal()">❤️</button>'+
+      '</div>'+
+      '<div class="card-body">'+
+        '<div class="card-name">'+p.name+'</div>'+
+        '<div class="card-addr">📍 '+p.addr+(p.floor?' · קומה '+p.floor:'')+'</div>'+
+        '<div class="card-stats">'+
+          '<div class="stat"><div class="stat-label">שטח</div><div class="stat-val">'+p.size+' מ"ר</div></div>'+
+          '<div class="stat"><div class="stat-label">מחיר למ"ר</div><div class="stat-val green">₪'+p.price+'</div></div>'+
+          '<div class="stat"><div class="stat-label">דמי ניהול</div><div class="stat-val">₪'+p.mgmt+'</div></div>'+
+          '<div class="stat"><div class="stat-label">חודשי משוער</div><div class="stat-val">₪'+monthly.toLocaleString()+'</div></div>'+
+        '</div>'+
+        (p.floorPlan?'<a href="'+p.floorPlan+'" target="_blank" class="floor-link">📐 צפה בתשריט</a>':'')+
+        (p.notes?'<div class="card-notes">'+p.notes+'</div>':'')+
+        '<button onclick="toggleFavCompare('+p.id+')" style="background:'+(isCmp?'var(--green)':'var(--bg)')+';color:'+(isCmp?'#fff':'var(--muted)')+';border:1.5px solid '+(isCmp?'var(--green)':'var(--border)')+';border-radius:8px;padding:8px 14px;font-size:12px;font-weight:600;font-family:Heebo,sans-serif;cursor:pointer;transition:all .15s;width:100%;margin-top:8px">'+
+          (isCmp?'✓ בהשוואה':'+ הוסף להשוואה')+
+        '</button>'+
+      '</div>'+
+    '</div>';
+  }).join('')+'</div>';
+}
+
+function toggleFavCompare(id){
+  var i=compareList.indexOf(id);
+  if(i>=0){compareList.splice(i,1)}
+  else{if(compareList.length>=4){alert('אפשר להשוות עד 4 נכסים');return}compareList.push(id)}
+  updateCompareBar();
+  renderFavModal();
+  applyFilters();
+}
+function updateFavBadge(){
+  var badge=document.getElementById('fav-badge');
+  if(!badge)return;
+  badge.textContent=favs.length;
+  badge.classList.toggle('show',favs.length>0);
+}
+
+// ── CALCULATOR ──
+var calcPropId=null;
+function openCalc(){
+  var sel=document.getElementById('calc-prop-selector');
+  sel.innerHTML=clientProps.map(function(p){
+    return '<button type="button" class="calc-prop-btn'+(calcPropId===p.id?' selp':'')+'" data-pid="'+p.id+'" onclick="selectCalcProp('+p.id+')">'+p.name+'</button>';
+  }).join('');
+  document.getElementById('calc-overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+  recalc();
+}
+function closeCalc(){
+  document.getElementById('calc-overlay').classList.remove('open');
+  document.body.style.overflow='';
+}
+function calcOverlayClick(e){if(e.target===document.getElementById('calc-overlay'))closeCalc()}
+function selectCalcProp(id){
+  calcPropId=id;
+  var p=clientProps.find(function(x){return x.id===id});
+  if(!p)return;
+  document.getElementById('ci-size').value=p.size||500;
+  document.getElementById('ci-price').value=p.price||175;
+  document.getElementById('ci-mgmt').value=p.mgmt||20;
+  document.querySelectorAll('.calc-prop-btn').forEach(function(b){
+    b.classList.toggle('selp',parseInt(b.getAttribute('data-pid'),10)===id);
+  });
+  recalc();
+}
+function calcTotal(size,price,mgmt,util,clean,arnona,parkN,parkP){
+  var rent=size*price,mgmtAmt=size*mgmt,utilAmt=size*util,cleanAmt=size*clean,arnonaAmt=size*arnona,parkAmt=parkN*parkP;
+  var total=rent+mgmtAmt+utilAmt+cleanAmt+arnonaAmt+parkAmt;
+  return{rent:rent,mgmtAmt:mgmtAmt,utilAmt:utilAmt,cleanAmt:cleanAmt,arnonaAmt:arnonaAmt,parkAmt:parkAmt,total:total};
+}
+function fmtN(n){return'₪'+Math.round(n).toLocaleString('he-IL')}
+function recalc(){
+  var size=parseFloat(document.getElementById('ci-size').value)||0;
+  var price=parseFloat(document.getElementById('ci-price').value)||0;
+  var mgmt=parseFloat(document.getElementById('ci-mgmt').value)||0;
+  var util=parseFloat(document.getElementById('ci-util').value)||12;
+  var clean=parseFloat(document.getElementById('ci-clean').value)||12;
+  var arnona=parseFloat(document.getElementById('ci-arnona').value)||0;
+  var parkN=parseFloat(document.getElementById('ci-park-n').value)||0;
+  var parkP=parseFloat(document.getElementById('ci-park-p').value)||0;
+  var parkLabel=document.getElementById('park-total-label');
+  if(parkLabel)parkLabel.textContent=fmtN(parkN*parkP);
+  // Single result
+  var resultBody=document.getElementById('calc-result-body');
+  if(!calcPropId){
+    resultBody.innerHTML='<div style="color:var(--muted);font-size:13px;text-align:center;padding:20px">👆 בחר נכס מהרשימה למעלה</div>';
+  } else {
+    var p=clientProps.find(function(x){return x.id===calcPropId});
+    if(p){
+      var r=calcTotal(size,price,mgmt,util,clean,arnona,parkN,parkP);
+      var perSqm=r.total/(size||1);
+      resultBody.innerHTML=
+        '<div class="result-prop-name">'+p.name+'</div>'+
+        '<div class="result-prop-addr">📍 '+p.addr+(p.floor?' · קומה '+p.floor:'')+' · '+size+' מ"ר</div>'+
+        '<div class="result-breakdown">'+
+          '<div class="result-row rr-base"><span class="result-row-label">🏢 שכירות בסיס</span><span style="font-size:11px;color:var(--muted);margin-right:auto;padding:0 8px">'+size+' × ₪'+price+'</span><span class="result-row-val">'+fmtN(r.rent)+'</span></div>'+
+          '<div class="result-row rr-mgmt"><span class="result-row-label">🔧 דמי ניהול</span><span style="font-size:11px;color:var(--muted);margin-right:auto;padding:0 8px">'+size+' × ₪'+mgmt+'</span><span class="result-row-val">'+fmtN(r.mgmtAmt)+'</span></div>'+
+          '<div class="result-row rr-util"><span class="result-row-label">⚡ חשמל + מים + אינטרנט</span><span style="font-size:11px;color:var(--muted);margin-right:auto;padding:0 8px">'+size+' × ₪'+util+'</span><span class="result-row-val">'+fmtN(r.utilAmt)+'</span></div>'+
+          '<div class="result-row rr-util" style="background:rgba(16,185,129,.05)"><span class="result-row-label">🧹 ניקיון</span><span style="font-size:11px;color:var(--muted);margin-right:auto;padding:0 8px">'+size+' × ₪'+clean+'</span><span class="result-row-val">'+fmtN(r.cleanAmt)+'</span></div>'+
+          (r.arnonaAmt>0?'<div class="result-row rr-arnona"><span class="result-row-label">🏛️ ארנונה</span><span style="font-size:11px;color:var(--muted);margin-right:auto;padding:0 8px">'+size+' × ₪'+arnona+'/מ"ר</span><span class="result-row-val">'+fmtN(r.arnonaAmt)+'</span></div>':'')+
+          (r.parkAmt>0?'<div class="result-row rr-park"><span class="result-row-label">🚗 חניות</span><span style="font-size:11px;color:var(--muted);margin-right:auto;padding:0 8px">'+parkN+' × ₪'+parkP+'</span><span class="result-row-val">'+fmtN(r.parkAmt)+'</span></div>':'')+
+          '<div class="result-row rr-total"><span class="result-row-label">💳 סה"כ עלות חודשית</span><span class="result-row-val">'+fmtN(r.total)+'</span></div>'+
+        '</div>'+
+        '<div class="result-per-seat"><span>עלות ל-מ"ר חודשי (כולל הכל)</span><strong>'+fmtN(perSqm)+'/מ"ר</strong></div>';
+    }
+  }
+  // Compare table
+  var tbody=document.getElementById('compare-body');
+  if(tbody&&clientProps.length){
+    var rows=clientProps.map(function(p){
+      var sz=p.size||500,pr=p.price||175,mg=p.mgmt||20;
+      var res=calcTotal(sz,pr,mg,util,clean,arnona,parkN,parkP);
+      return{p:p,sz:sz,total:res.total,rent:res.rent,mgmtAmt:res.mgmtAmt,utilClean:res.utilAmt+res.cleanAmt,arnonaAmt:res.arnonaAmt,parkAmt:res.parkAmt,perSqm:res.total/(sz||1)};
+    }).sort(function(a,b){return a.total-b.total});
+    var minT=rows[0].total,maxT=rows[rows.length-1].total;
+    tbody.innerHTML=rows.map(function(r,i){
+      var isBest=i===0;
+      var barPct=Math.round(((r.total-minT)/(maxT-minT||1))*100);
+      return '<tr>'+'<td><div style="font-weight:700;color:var(--text);font-size:12px">'+(isBest?'👑 ':'')+r.p.name+'</div><div style="font-size:10px;color:var(--muted)">'+r.p.addr+' · '+r.sz+' מ"ר</div></td>'+
+        '<td>'+fmtN(r.rent)+'</td><td>'+fmtN(r.mgmtAmt)+'</td><td>'+fmtN(r.utilClean)+'</td>'+
+        '<td>'+(r.arnonaAmt>0?fmtN(r.arnonaAmt):'—')+'</td>'+
+        '<td>'+(r.parkAmt>0?fmtN(r.parkAmt):'—')+'</td>'+
+        '<td><div style="display:flex;align-items:center;gap:6px"><span class="'+(isBest?'best-total':'')+'" style="white-space:nowrap;font-weight:700">'+fmtN(r.total)+'</span><div class="price-bar-wrap"><div class="price-bar" style="width:'+barPct+'%"></div></div></div></td>'+
+        '<td style="font-weight:700;color:var(--green-d)">'+fmtN(r.perSqm)+'</td></tr>';
+    }).join('');
+  }
 }
 
 // INIT
