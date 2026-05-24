@@ -306,11 +306,15 @@ table.cost-tbl tbody tr:last-child td{border-bottom:none}
 .edit-modal{background:var(--white);border-radius:20px;padding:28px;max-width:780px;margin:0 auto;animation:up .2s ease}
 .edit-modal-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
 .edit-modal-title{font-size:18px;font-weight:800}
-.client-row{background:var(--bg);border:1.5px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:8px;display:flex;align-items:flex-start;gap:12px}
+.client-row{background:var(--white);border:1.5px solid var(--border);border-radius:12px;padding:14px 18px;margin-bottom:8px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .18s}
+.client-row:hover{border-color:var(--green);box-shadow:var(--shadow)}
+.client-row-avatar{width:40px;height:40px;border-radius:50%;background:var(--gl);color:var(--green-d);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;flex-shrink:0}
 .client-row-info{flex:1;min-width:0}
-.client-row-name{font-size:14px;font-weight:700}
+.client-row-name{font-size:14px;font-weight:800;color:var(--text)}
 .client-row-meta{font-size:12px;color:var(--muted);margin-top:2px}
 .client-row-link{font-size:11px;color:var(--green-d);font-family:monospace;word-break:break-all;margin-top:4px}
+.client-prop-tag{display:inline-block;background:var(--bg);border:1px solid var(--border);border-radius:20px;padding:3px 10px;font-size:12px;font-weight:600;color:var(--muted);margin:3px 3px 0 0}
+.btn-copy-small{background:var(--gl);border:1px solid rgba(16,185,129,.3);border-radius:6px;padding:5px 10px;font-size:12px;font-weight:600;font-family:'Heebo',sans-serif;cursor:pointer;color:var(--green-d);white-space:nowrap}
 .btn-copy-small{background:var(--gl);border:1px solid rgba(16,185,129,.3);border-radius:6px;padding:5px 10px;font-size:12px;font-weight:600;font-family:'Heebo',sans-serif;cursor:pointer;color:var(--green-d);white-space:nowrap;flex-shrink:0}
 </style>
 </head>
@@ -410,6 +414,17 @@ table.cost-tbl tbody tr:last-child td{border-bottom:none}
   <div class="add-card" id="clients-card" style="display:none">
     <h3><span class="ico">👥</span> לקוחות וקישורים</h3>
     <div id="clients-list"></div>
+  </div>
+</div>
+
+<!-- CLIENT DETAIL MODAL -->
+<div class="edit-overlay" id="client-detail-overlay" onclick="if(event.target===this)closeClientDetail()">
+  <div class="edit-modal" style="max-width:640px">
+    <div class="edit-modal-hdr">
+      <div class="edit-modal-title" id="client-detail-title"></div>
+      <button class="modal-close" onclick="closeClientDetail()">✕</button>
+    </div>
+    <div id="client-detail-body"></div>
   </div>
 </div>
 <div id="client-view">
@@ -668,17 +683,61 @@ function renderClientsList(){
   if(!clients.length){card.style.display='none';return}
   card.style.display='block';
   list.innerHTML=clients.map(function(c){
-    return '<div class="client-row">'+
+    var initials=(c.name||'?').charAt(0).toUpperCase();
+    return '<div class="client-row" onclick="openClientDetail('+c.id+')">'+
+      '<div class="client-row-avatar">'+initials+'</div>'+
       '<div class="client-row-info">'+
-        '<div class="client-row-name">'+c.name+(c.company?' — '+c.company:'')+'</div>'+
-        '<div class="client-row-meta">'+c.date+' · '+c.propNames.join(', ')+(c.note?' · '+c.note:'')+'</div>'+
-        '<div class="client-row-link">'+c.link+'</div>'+
+        '<div class="client-row-name">'+c.name+(c.company?' <span style="font-weight:400;color:var(--muted)">— '+c.company+'</span>':'')+' </div>'+
+        '<div class="client-row-meta">'+c.date+' · '+c.propNames.length+' נכסים'+(c.note?' · '+c.note:'')+'</div>'+
       '</div>'+
-      '<button class="btn-copy-small" onclick="navigator.clipboard.writeText(\''+c.link.replace(/'/g,"\\'")+'\'). then(function(){alert(\'הועתק!\')})">📋 העתק</button>'+
-      '<button class="btn-danger" onclick="deleteClient('+c.id+')">מחק</button>'+
+      '<div style="font-size:20px;color:var(--muted)">›</div>'+
     '</div>';
   }).join('');
 }
+
+function openClientDetail(id){
+  var c=clients.find(function(x){return x.id===id});
+  if(!c)return;
+  document.getElementById('client-detail-title').textContent=c.name+(c.company?' — '+c.company:'');
+  var linkToUse=c.shortLink||c.link;
+  var body=
+    '<div style="margin-bottom:16px">'+
+      '<div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">נכסים ששלחתי</div>'+
+      '<div>'+c.propNames.map(function(n){return '<span class="client-prop-tag">🏢 '+n+'</span>';}).join('')+'</div>'+
+    '</div>'+
+    (c.note?'<div style="margin-bottom:16px;font-size:13px;color:var(--muted);padding:10px 14px;background:var(--bg);border-radius:8px">💬 '+c.note+'</div>':'')+
+    '<div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">קישור ללקוח</div>'+
+    '<div style="background:var(--gl);border:1.5px solid rgba(16,185,129,.3);border-radius:10px;padding:12px 14px;font-size:12px;font-family:monospace;word-break:break-all;color:var(--green-d);margin-bottom:10px">'+linkToUse+'</div>'+
+    '<div style="display:flex;gap:8px;flex-wrap:wrap">'+
+      '<button class="btn-copy-small" style="padding:8px 16px;font-size:13px" onclick="navigator.clipboard.writeText(\''+linkToUse.replace(/'/g,"\\'")+'\'). then(function(){alert(\'הועתק!\')})">📋 העתק קישור</button>'+
+      (c.shortLink?'':'<button class="btn-copy-small" style="padding:8px 16px;font-size:13px;background:var(--white);border-color:#6366f1;color:#6366f1" onclick="shortenAndSave('+c.id+')">✂️ קצר קישור</button>')+
+      '<button class="btn-danger" onclick="deleteClient('+c.id+');closeClientDetail()" style="margin-right:auto">מחק לקוח</button>'+
+    '</div>';
+  document.getElementById('client-detail-body').innerHTML=body;
+  document.getElementById('client-detail-overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+function closeClientDetail(){
+  document.getElementById('client-detail-overlay').classList.remove('open');
+  document.body.style.overflow='';
+}
+
+function shortenAndSave(id){
+  var c=clients.find(function(x){return x.id===id});
+  if(!c)return;
+  var btn=event.target;
+  btn.textContent='⏳ מקצר...';btn.disabled=true;
+  fetch('https://tinyurl.com/api-create.php?url='+encodeURIComponent(c.link))
+    .then(function(r){return r.text()})
+    .then(function(url){
+      c.shortLink=url.trim();
+      saveToLS();
+      openClientDetail(id);
+    })
+    .catch(function(){alert('שגיאה — נסה שוב');btn.textContent='✂️ קצר קישור';btn.disabled=false;});
+}
+
 function deleteClient(id){clients=clients.filter(function(c){return c.id!==id});renderClientsList();saveToLS()}
 
 // ── LOCALSTORAGE ──
