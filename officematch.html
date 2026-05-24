@@ -974,27 +974,28 @@ function renderFavModal(){
     '<div class="cost-table-wrap">'+
       '<div class="cost-table-header"><div><div class="cost-table-title">\ud83e\uddee \u05d4\u05e9\u05d5\u05d5\u05d0\u05ea \u05e2\u05dc\u05d5\u05ea \u05d7\u05d5\u05d3\u05e9\u05d9\u05ea</div><div class="cost-table-sub">\u05db\u05d5\u05dc\u05dc \u05e9\u05db\u05d9\u05e8\u05d5\u05ea, \u05e0\u05d9\u05d4\u05d5\u05dc, \u05d7\u05e9\u05de\u05dc, \u05e0\u05d9\u05e7\u05d9\u05d5\u05df, \u05d0\u05e8\u05e0\u05d5\u05e0\u05d4 \u05d5\u05d7\u05e0\u05d9\u05d5\u05ea</div></div></div>'+
       '<div class="cost-table-inputs">'+
-        '<div class="cost-mini-field"><div class="cost-mini-label">\u26a1 \u05d7\u05e9\u05de\u05dc+\u05de\u05d9\u05dd+\u05d0\u05d9\u05e0\u05d8\u05e8\u05e0\u05d8</div><input class="cost-mini-input" id="fci-util" type="number" value="12" min="0"></div>'+
-        '<div class="cost-mini-field"><div class="cost-mini-label">\ud83e\uddf9 \u05e0\u05d9\u05e7\u05d9\u05d5\u05df</div><input class="cost-mini-input" id="fci-clean" type="number" value="12" min="0"></div>'+
-        '<div class="cost-mini-field"><div class="cost-mini-label">\ud83c\udfdb\ufe0f \u05d0\u05e8\u05e0\u05d5\u05e0\u05d4 \u20aa/\u05de"\u05e8</div><input class="cost-mini-input" id="fci-arnona" type="number" value="15" min="0" step="0.5"></div>'+
-        '<div class="cost-mini-field"><div class="cost-mini-label">\ud83d\ude97 \u05de\u05e1\' \u05d7\u05e0\u05d9\u05d5\u05ea</div><input class="cost-mini-input" id="fci-park-n" type="number" value="0" min="0"></div>'+
-        '<div class="cost-mini-field"><div class="cost-mini-label">\ud83d\udcb0 \u05e2\u05dc\u05d5\u05ea \u05dc\u05d7\u05e0\u05d9\u05d4 \u20aa</div><input class="cost-mini-input" id="fci-park-p" type="number" value="0" min="0"></div>'+
+        '<div class="cost-mini-field"><div class="cost-mini-label">\u26a1 \u05d7\u05e9\u05de\u05dc+\u05de\u05d9\u05dd+\u05d0\u05d9\u05e0\u05d8\u05e8\u05e0\u05d8</div><input class="cost-mini-input" id="fci-util" type="number" value="12" min="0" oninput="runFavCalc()"></div>'+
+        '<div class="cost-mini-field"><div class="cost-mini-label">\ud83e\uddf9 \u05e0\u05d9\u05e7\u05d9\u05d5\u05df</div><input class="cost-mini-input" id="fci-clean" type="number" value="12" min="0" oninput="runFavCalc()"></div>'+
+        '<div class="cost-mini-field"><div class="cost-mini-label">\ud83c\udfdb\ufe0f \u05d0\u05e8\u05e0\u05d5\u05e0\u05d4 \u20aa/\u05de"\u05e8</div><input class="cost-mini-input" id="fci-arnona" type="number" value="15" min="0" step="0.5" oninput="runFavCalc()"></div>'+
+        '<div class="cost-mini-field"><div class="cost-mini-label">\ud83d\ude97 \u05de\u05e1\' \u05d7\u05e0\u05d9\u05d5\u05ea</div><input class="cost-mini-input" id="fci-park-n" type="number" value="0" min="0" oninput="runFavCalc()"></div>'+
+        '<div class="cost-mini-field"><div class="cost-mini-label">\ud83d\udcb0 \u05e2\u05dc\u05d5\u05ea \u05dc\u05d7\u05e0\u05d9\u05d4 \u20aa</div><input class="cost-mini-input" id="fci-park-p" type="number" value="0" min="0" oninput="runFavCalc()"></div>'+
       '</div>'+
       '<div style="padding:14px 20px;border-bottom:1px solid var(--border);background:var(--gl)">'+
         '<div style="font-size:13px;font-weight:800;color:var(--green-d);margin-bottom:10px">\ud83d\udccd \u05d4\u05e9\u05d5\u05d5\u05d0\u05d4 \u05dc\u05de\u05e9\u05e8\u05d3 \u05d4\u05e0\u05d5\u05db\u05d7\u05d9 \u05e9\u05dc\u05d9 (\u05d0\u05d5\u05e4\u05e6\u05d9\u05d5\u05e0\u05dc\u05d9)</div>'+
         '<div class="coco-inputs">'+
-          '<div class="coco-field"><label>\u05e9\u05d8\u05d7 \u05e0\u05d5\u05db\u05d7\u05d9 (\u05de"\u05e8)</label><input id="fco-size" type="number" min="0" placeholder="0"></div>'+
-          '<div class="coco-field"><label>\u05de\u05d7\u05d9\u05e8 \u05dc\u05de"\u05e8 (\u20aa)</label><input id="fco-price" type="number" min="0" placeholder="0"></div>'+
-          '<div class="coco-field"><label>\u05d3\u05de\u05d9 \u05e0\u05d9\u05d4\u05d5\u05dc \u05dc\u05de"\u05e8 (\u20aa)</label><input id="fco-mgmt" type="number" min="0" placeholder="0"></div>'+
-          '<div class="coco-field" style="grid-column:span 2"><label>\u05db\u05ea\u05d5\u05d1\u05ea \u05e0\u05d5\u05db\u05d7\u05d9\u05ea</label><input id="fco-addr" type="text" placeholder="\u05e8\u05d7\u05d5\u05d1 \u05d5\u05e2\u05d9\u05e8"></div>'+
+          '<div class="coco-field"><label>\u05e9\u05d8\u05d7 \u05e0\u05d5\u05db\u05d7\u05d9 (\u05de"\u05e8)</label><input id="fco-size" type="number" min="0" placeholder="0" oninput="runFavCalc()"></div>'+
+          '<div class="coco-field"><label>\u05de\u05d7\u05d9\u05e8 \u05dc\u05de"\u05e8 (\u20aa)</label><input id="fco-price" type="number" min="0" placeholder="0" oninput="runFavCalc()"></div>'+
+          '<div class="coco-field"><label>\u05d3\u05de\u05d9 \u05e0\u05d9\u05d4\u05d5\u05dc \u05dc\u05de"\u05e8 (\u20aa)</label><input id="fco-mgmt" type="number" min="0" placeholder="0" oninput="runFavCalc()"></div>'+
+          '<div class="coco-field" style="grid-column:span 2"><label>\u05db\u05ea\u05d5\u05d1\u05ea \u05e0\u05d5\u05db\u05d7\u05d9\u05ea</label><input id="fco-addr" type="text" placeholder="\u05e8\u05d7\u05d5\u05d1 \u05d5\u05e2\u05d9\u05e8" oninput="runFavCalc()"></div>'+
         '</div>'+
       '</div>'+
-      '<div style="display:flex;justify-content:center;padding:16px">'+
-        '<button class="fav-run-btn" onclick="runFavCalc()">\u05d7\u05e9\u05d1 \u2190</button>'+
+      '<div style="padding:10px 20px 4px;font-size:11px;color:var(--muted);text-align:center">'+
+        '\u05e2\u05dc\u05d5\u05ea \u05d7\u05d5\u05d3\u05e9\u05d9\u05ea = \u05e9\u05db\u05d9\u05e8\u05d5\u05ea + \u05e0\u05d9\u05d4\u05d5\u05dc + \u05d7\u05e9\u05de\u05dc/\u05de\u05d9\u05dd + \u05e0\u05d9\u05e7\u05d9\u05d5\u05df + \u05d0\u05e8\u05e0\u05d5\u05e0\u05d4 + \u05d7\u05e0\u05d9\u05d5\u05ea \u2014 \u05d4\u05d8\u05d1\u05dc\u05d4 \u05de\u05ea\u05e2\u05d3\u05db\u05e0\u05ea \u05d0\u05d5\u05d8\u05d5\u05de\u05d8\u05d9\u05ea'+
       '</div>'+
       '<div id="fav-compare-result" style="padding:0 4px 20px"></div>'+
     '</div>';
   el.innerHTML=statsHtml+listHtml+calcHtml;
+  runFavCalc();
 }
 
 function runFavCalc(){
