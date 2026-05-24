@@ -395,11 +395,11 @@ table.cost-tbl tbody tr:last-child td{border-bottom:none}
     </div>
     <div style="font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px">תמונות (עד 5) + תשריט</div>
     <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-multi').click()" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="handleDrop(event)">
-      <input type="file" id="file-multi" accept="image/*" multiple style="display:none" onchange="handleMultiUpload(this.files)">
       <div class="upload-zone-icon">📁</div>
       <div class="upload-zone-text">לחץ או גרור תמונות לכאן (עד 5)</div>
       <div class="upload-zone-sub" id="upload-zone-sub">תמונות יעלו ל-Cloudinary אוטומטית</div>
     </div>
+    <input type="file" id="file-multi" accept="image/*" multiple style="display:none" onchange="handleMultiUpload(this.files)">
     <div id="img-preview-grid" class="img-preview-grid"></div>
     <input type="hidden" id="img-1"><input type="hidden" id="img-2"><input type="hidden" id="img-3"><input type="hidden" id="img-4"><input type="hidden" id="img-5">
     <div style="margin-top:10px" class="img-field-wrap" id="wrap-floor">
@@ -571,12 +571,12 @@ table.cost-tbl tbody tr:last-child td{border-bottom:none}
     </div>
     <div style="font-size:11px;font-weight:700;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px">תמונות קיימות</div>
     <div id="e-imgs-preview" style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:10px"></div>
-    <div class="upload-zone" style="margin-bottom:14px" onclick="document.getElementById('e-file-multi').click()" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="handleEditDrop(event)">
-      <input type="file" id="e-file-multi" accept="image/*" multiple style="display:none" onchange="handleEditUpload(this.files)">
+    <div class="upload-zone" style="margin-bottom:10px" onclick="document.getElementById('e-file-multi').click()" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="handleEditDrop(event)">
       <div class="upload-zone-icon">📁</div>
       <div class="upload-zone-text" style="font-size:13px">לחץ או גרור להוספת תמונות</div>
       <div class="upload-zone-sub" id="e-upload-status">עד 5 תמונות סה"כ</div>
     </div>
+    <input type="file" id="e-file-multi" accept="image/*" multiple style="display:none" onchange="handleEditUpload(this.files)">
     <div style="display:flex;gap:10px">
       <button class="btn-add" onclick="saveEdit()">שמור שינויים</button>
       <button class="btn-secondary" onclick="closeEdit()">ביטול</button>
