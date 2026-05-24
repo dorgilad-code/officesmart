@@ -900,41 +900,137 @@ function renderFavModal(){
     el.innerHTML='<div class="fav-empty-state"><div class="empty-icon">🤍</div><div class="empty-title">אין מועדפים עדיין</div><p style="font-size:13px;color:var(--muted)">לחץ על הלב על הכרטיס כדי להוסיף</p></div>';
     return;
   }
-  el.innerHTML='<div class="fav-grid">'+list.map(function(p){
-    var monthly=Math.round(p.size*(p.price+p.mgmt));
-    var isCmp=compareList.indexOf(p.id)>=0;
-    var imgs=p.imgs||[];
-    return '<div class="prop-card fav" id="fav-card-'+p.id+'">'+
-      '<div class="card-gallery" style="height:150px">'+
-        (imgs.length?'<img class="gallery-img active" src="'+imgs[0]+'" style="display:block" onclick="openLB(\''+imgs[0]+'\')">':'<div class="gallery-placeholder">🏢</div>')+
-        '<button class="card-fav" onclick="toggleFav('+p.id+',event);renderFavModal()">❤️</button>'+
-      '</div>'+
-      '<div class="card-body">'+
-        '<div class="card-name">'+p.name+'</div>'+
-        '<div class="card-addr">📍 '+p.addr+(p.floor?' · קומה '+p.floor:'')+'</div>'+
-        '<div class="card-stats">'+
-          '<div class="stat"><div class="stat-label">שטח</div><div class="stat-val">'+p.size+' מ"ר</div></div>'+
-          '<div class="stat"><div class="stat-label">מחיר למ"ר</div><div class="stat-val green">₪'+p.price+'</div></div>'+
-          '<div class="stat"><div class="stat-label">דמי ניהול</div><div class="stat-val">₪'+p.mgmt+'</div></div>'+
-          '<div class="stat"><div class="stat-label">חודשי משוער</div><div class="stat-val">₪'+monthly.toLocaleString()+'</div></div>'+
+
+  // Step 1 — cards with checkboxes for compare
+  var cardsHtml=
+    '<div class="fav-section-title" style="margin-bottom:10px">סמן נכסים להשוואה 👇</div>'+
+    '<div class="fav-cards-grid">'+
+    list.map(function(p){
+      var isSel=favCompareIds.indexOf(p.id)>=0;
+      var imgs=p.imgs||[];
+      var monthly=Math.round(p.size*(p.price+p.mgmt));
+      return '<div class="prop-card'+(isSel?' fav':'')+'" style="cursor:pointer;outline:'+(isSel?'2.5px solid var(--green)':'none')+'" onclick="toggleFavSel('+p.id+')">'+
+        '<div class="card-gallery" style="height:130px">'+
+          (imgs.length?'<img class="gallery-img active" src="'+imgs[0]+'" style="display:block">':'<div class="gallery-placeholder">🏢</div>')+
+          (isSel?'<div style="position:absolute;top:8px;left:8px;background:var(--green);color:#fff;border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;z-index:2">✓</div>':'')+
+          '<button class="card-fav" onclick="event.stopPropagation();toggleFav('+p.id+',event);renderFavModal()">❤️</button>'+
         '</div>'+
-        (p.floorPlan?'<a href="'+p.floorPlan+'" target="_blank" class="floor-link">📐 צפה בתשריט</a>':'')+
-        (p.notes?'<div class="card-notes">'+p.notes+'</div>':'')+
-        '<button onclick="toggleFavCompare('+p.id+')" style="background:'+(isCmp?'var(--green)':'var(--bg)')+';color:'+(isCmp?'#fff':'var(--muted)')+';border:1.5px solid '+(isCmp?'var(--green)':'var(--border)')+';border-radius:8px;padding:8px 14px;font-size:12px;font-weight:600;font-family:Heebo,sans-serif;cursor:pointer;transition:all .15s;width:100%;margin-top:8px">'+
-          (isCmp?'✓ בהשוואה':'+ הוסף להשוואה')+
-        '</button>'+
-      '</div>'+
+        '<div class="card-body" style="padding:12px">'+
+          '<div class="card-name" style="font-size:13px">'+p.name+'</div>'+
+          '<div class="card-addr" style="margin-bottom:6px;font-size:11px">📍 '+p.addr+(p.floor?' · ק\''+p.floor:'')+'</div>'+
+          '<div style="display:flex;gap:4px;flex-wrap:wrap;font-size:11px;font-weight:700">'+
+            '<span style="background:var(--gl);color:var(--green-d);padding:2px 7px;border-radius:6px">'+p.size+' מ"ר</span>'+
+            '<span style="background:#eff6ff;color:#1d4ed8;padding:2px 7px;border-radius:6px">₪'+p.price+'/מ"ר</span>'+
+          '</div>'+
+          '<div style="margin-top:6px;font-size:11px;color:var(--muted)">חודשי: <strong style="color:var(--text)">₪'+monthly.toLocaleString()+'</strong></div>'+
+        '</div>'+
+      '</div>';
+    }).join('')+
     '</div>';
-  }).join('')+'</div>';
+
+  // Step 2 — compare section (shown only if selections made)
+  var selList=list.filter(function(p){return favCompareIds.indexOf(p.id)>=0});
+  var calcHtml='';
+  if(selList.length>0){
+    calcHtml=
+      '<div style="border-top:1px solid var(--border);margin-top:20px;padding-top:20px">'+
+      '<div class="fav-section-title" style="margin-bottom:12px">🏠 המשרד הנוכחי שלי (אופציונלי)</div>'+
+      '<div class="curr-office-block">'+
+        '<div class="curr-office-grid">'+
+          '<div><div class="cost-mini-label">שטח (מ"ר)</div><input class="cost-mini-input" id="fco-size" type="number" min="0" placeholder="0" value="'+(_favCurrOffice.size||'')+'"></div>'+
+          '<div><div class="cost-mini-label">מחיר למ"ר ₪</div><input class="cost-mini-input" id="fco-price" type="number" min="0" placeholder="0" value="'+(_favCurrOffice.price||'')+'"></div>'+
+          '<div><div class="cost-mini-label">ניהול למ"ר ₪</div><input class="cost-mini-input" id="fco-mgmt" type="number" min="0" placeholder="0" value="'+(_favCurrOffice.mgmt||'')+'"></div>'+
+          '<div><div class="cost-mini-label">כתובת</div><input class="cost-mini-input" id="fco-addr" type="text" placeholder="רחוב ועיר" value="'+(_favCurrOffice.addr||'')+'"></div>'+
+        '</div>'+
+      '</div>'+
+
+      '<div class="fav-section-title" style="margin-bottom:10px">עלויות נוספות</div>'+
+      '<div class="cost-inputs-strip">'+
+        '<div class="cost-mini-field"><div class="cost-mini-label">⚡ חשמל+מים+אינטרנט</div><input class="cost-mini-input" id="fci-util" type="number" value="12" min="0" placeholder="₪/מ\"ר"></div>'+
+        '<div class="cost-mini-field"><div class="cost-mini-label">🧹 ניקיון</div><input class="cost-mini-input" id="fci-clean" type="number" value="12" min="0" placeholder="₪/מ\"ר"></div>'+
+        '<div class="cost-mini-field"><div class="cost-mini-label">🏛️ ארנונה ₪/מ"ר</div><input class="cost-mini-input" id="fci-arnona" type="number" value="15" min="0" step="0.5"></div>'+
+        '<div class="cost-mini-field"><div class="cost-mini-label">🚗 חניות</div><input class="cost-mini-input" id="fci-park-n" type="number" value="0" min="0"></div>'+
+        '<div class="cost-mini-field"><div class="cost-mini-label">💰 עלות לחניה ₪</div><input class="cost-mini-input" id="fci-park-p" type="number" value="0" min="0"></div>'+
+      '</div>'+
+
+      '<div style="display:flex;justify-content:center;margin:14px 0">'+
+        '<button class="fav-run-btn" onclick="runFavCalc()">חשב והשווה ←</button>'+
+      '</div>'+
+      '<div id="fav-compare-result"></div>'+
+      '</div>';
+  }
+
+  el.innerHTML=cardsHtml+calcHtml;
 }
 
-function toggleFavCompare(id){
-  var i=compareList.indexOf(id);
-  if(i>=0){compareList.splice(i,1)}
-  else{if(compareList.length>=4){alert('אפשר להשוות עד 4 נכסים');return}compareList.push(id)}
-  updateCompareBar();
+var favCompareIds=[];
+var _favCurrOffice={};
+
+function toggleFavSel(id){
+  var i=favCompareIds.indexOf(id);
+  if(i>=0)favCompareIds.splice(i,1);
+  else favCompareIds.push(id);
   renderFavModal();
-  applyFilters();
+}
+
+function runFavCalc(){
+  // save current office inputs
+  _favCurrOffice={
+    size:parseFloat(document.getElementById('fco-size').value)||0,
+    price:parseFloat(document.getElementById('fco-price').value)||0,
+    mgmt:parseFloat(document.getElementById('fco-mgmt').value)||0,
+    addr:document.getElementById('fco-addr').value||''
+  };
+  var util=parseFloat(document.getElementById('fci-util').value)||12;
+  var clean=parseFloat(document.getElementById('fci-clean').value)||12;
+  var arnona=parseFloat(document.getElementById('fci-arnona').value)||0;
+  var parkN=parseFloat(document.getElementById('fci-park-n').value)||0;
+  var parkP=parseFloat(document.getElementById('fci-park-p').value)||0;
+
+  var list=clientProps.filter(function(p){return favCompareIds.indexOf(p.id)>=0});
+
+  function total(sz,pr,mg){return sz*(pr+mg+util+clean+arnona)+parkN*parkP}
+
+  var rows=list.map(function(p){
+    return{p:p,sz:p.size||0,pr:p.price||0,mg:p.mgmt||0,total:total(p.size||0,p.price||0,p.mgmt||0)};
+  }).sort(function(a,b){return a.total-b.total});
+
+  var hasCurr=_favCurrOffice.size>0;
+  var curTotal=hasCurr?total(_favCurrOffice.size,_favCurrOffice.price,_favCurrOffice.mgmt):0;
+
+  var html='<div style="overflow-x:auto"><table class="fav-cmp-table">'+
+    '<thead><tr><th>נכס</th><th>שטח</th><th>שכירות</th><th>ניהול</th><th>נלוות</th><th>סה"כ חודשי</th></tr></thead>'+
+    '<tbody>';
+
+  if(hasCurr){
+    html+='<tr class="fav-cmp-curr">'+
+      '<td><div class="fav-cmp-name">🏠 המשרד הנוכחי</div>'+(_favCurrOffice.addr?'<div class="fav-cmp-addr">'+_favCurrOffice.addr+'</div>':'')+' </td>'+
+      '<td>'+_favCurrOffice.size+' מ"ר</td>'+
+      '<td>'+fmtN(_favCurrOffice.size*_favCurrOffice.price)+'</td>'+
+      '<td>'+fmtN(_favCurrOffice.size*_favCurrOffice.mgmt)+'</td>'+
+      '<td>'+fmtN(_favCurrOffice.size*(util+clean+arnona)+parkN*parkP)+'</td>'+
+      '<td><span class="fav-cmp-total">'+fmtN(curTotal)+'</span></td>'+
+    '</tr>';
+  }
+
+  rows.forEach(function(r,i){
+    var isBest=i===0;
+    var diff=hasCurr&&curTotal>0?r.total-curTotal:null;
+    html+='<tr class="'+(isBest?'fav-cmp-best':'')+'">'+
+      '<td><div class="fav-cmp-name">'+(isBest?'👑 ':'')+r.p.name+'</div><div class="fav-cmp-addr">'+r.p.addr+(r.p.floor?' · ק\''+r.p.floor:'')+'</div></td>'+
+      '<td>'+r.sz+' מ"ר</td>'+
+      '<td>'+fmtN(r.sz*r.pr)+'</td>'+
+      '<td>'+fmtN(r.sz*r.mg)+'</td>'+
+      '<td>'+fmtN(r.sz*(util+clean+arnona)+parkN*parkP)+'</td>'+
+      '<td>'+
+        '<span class="fav-cmp-total">'+fmtN(r.total)+'</span>'+
+        (diff!==null?'<div style="font-size:10px;margin-top:2px;color:'+(diff<0?'var(--green)':'#e53e3e')+'">'+(diff<0?'▼ חוסך '+fmtN(Math.abs(diff)):'▲ יקר ב-'+fmtN(diff))+'</div>':'')+
+      '</td>'+
+    '</tr>';
+  });
+
+  html+='</tbody></table></div>';
+  document.getElementById('fav-compare-result').innerHTML=html;
 }
 function updateFavBadge(){
   var badge=document.getElementById('fav-badge');
