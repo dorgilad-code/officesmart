@@ -320,7 +320,10 @@ table.cost-tbl tbody tr:last-child td{border-bottom:none}
 </head>
 <body>
 <div class="hdr">
-  <div class="logo">Office<span>Match</span></div>
+  <div style="display:flex;align-items:center;gap:12px">
+    <img id="hdr-logo" src="" alt="" style="display:none;height:36px;object-fit:contain;border-radius:6px">
+    <div class="logo" id="hdr-text">Office<span>Match</span></div>
+  </div>
   <div class="hdr-btns">
     <button class="btn-mode active" id="btn-admin" onclick="setMode('admin')">ניהול</button>
     <button class="btn-mode" id="btn-client" onclick="setMode('client')">תצוגת לקוח</button>
@@ -331,6 +334,37 @@ table.cost-tbl tbody tr:last-child td{border-bottom:none}
 <div id="admin-panel">
   <div class="panel-title">לוח ניהול</div>
   <div class="panel-sub">הוסף נכסים ושלח ללקוח</div>
+
+  <!-- SETTINGS CARD -->
+  <div class="add-card" style="margin-bottom:24px">
+    <h3><span class="ico">⚙️</span> הגדרות</h3>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start">
+      <!-- Logo -->
+      <div>
+        <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">לוגו החברה</div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div id="logo-preview" style="width:60px;height:60px;border:1.5px solid var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;background:var(--bg);overflow:hidden">
+            <span style="font-size:24px">🏢</span>
+          </div>
+          <div>
+            <button class="btn-secondary" style="font-size:12px;padding:7px 12px" onclick="document.getElementById('logo-file').click()">📁 העלה לוגו</button>
+            <input type="file" id="logo-file" accept="image/*" style="display:none" onchange="uploadLogo(this)">
+            <button id="logo-remove-btn" onclick="removeLogo()" style="display:none;margin-top:6px;background:none;border:none;font-size:12px;color:var(--muted);cursor:pointer;font-family:'Heebo',sans-serif">הסר</button>
+          </div>
+        </div>
+      </div>
+      <!-- Google Sheets -->
+      <div>
+        <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Google Sheets גיבוי ל</div>
+        <div class="field" style="margin-bottom:8px"><input id="gs-url" placeholder="הכנס Google Sheets URL" style="font-size:12px"></div>
+        <div style="display:flex;gap:8px">
+          <button class="btn-secondary" style="font-size:12px;padding:7px 12px" onclick="saveGSUrl()">שמור URL</button>
+          <button class="btn-secondary" style="font-size:12px;padding:7px 12px" onclick="exportToSheets()">📤 ייצא עכשיו</button>
+        </div>
+        <div id="gs-status" style="font-size:11px;color:var(--muted);margin-top:6px"></div>
+      </div>
+    </div>
+  </div>
   <div class="add-card">
     <h3><span class="ico">+</span> הוספת נכס</h3>
     <div class="form-grid">
@@ -406,6 +440,7 @@ table.cost-tbl tbody tr:last-child td{border-bottom:none}
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
       <button class="copy-btn" id="copy-btn" onclick="copyLink()" style="margin-top:0">העתק קישור</button>
       <button class="copy-btn" id="shorten-btn" onclick="shortenLink()" style="margin-top:0;display:none;background:#6366f1">✂️ קצר קישור</button>
+      <button class="copy-btn" id="wa-btn" onclick="sendWhatsApp()" style="margin-top:0;display:none;background:#25d366">💬 שלח ב-WhatsApp</button>
     </div>
     <div class="link-box" id="short-link-box" style="display:none;margin-top:8px"></div>
     <button class="copy-btn" id="copy-short-btn" onclick="copyShortLink()" style="margin-top:8px;display:none;background:#6366f1">העתק קישור קצר</button>
@@ -646,6 +681,7 @@ function genLink(){
   lb.style.display='block';lb.textContent=generatedLink;
   document.getElementById('copy-btn').style.display='inline-block';
   document.getElementById('shorten-btn').style.display='inline-block';
+  document.getElementById('wa-btn').style.display='inline-block';
   document.getElementById('short-link-box').style.display='none';
   document.getElementById('copy-short-btn').style.display='none';
 }
@@ -831,6 +867,7 @@ function renderCards(list){
         '</div>'+
         (p.floorPlan?'<a href="'+p.floorPlan+'" target="_blank" class="floor-link">📐 צפה בתשריט</a>':'') +
         (p.notes?'<div class="card-notes">'+p.notes+'</div>':'')+
+        '<button onclick="openClientNote('+p.id+')" style="background:none;border:none;font-size:12px;color:var(--muted);cursor:pointer;font-family:Heebo,sans-serif;padding:4px 0;display:flex;align-items:center;gap:4px;margin-bottom:6px">'+(p._clientNote?'📝 '+p._clientNote.substring(0,40)+(p._clientNote.length>40?'...':''):'✏️ הוסף הערה אישית')+'</button>'+
         '<button onclick="toggleCompare('+p.id+')" style="background:'+(isCmp?'var(--green)':'var(--bg)')+';color:'+(isCmp?'#fff':'var(--muted)')+';border:1.5px solid '+(isCmp?'var(--green)':'var(--border)')+';border-radius:8px;padding:8px 14px;font-size:12px;font-weight:600;font-family:Heebo,sans-serif;cursor:pointer;transition:all .15s;width:100%">'+
           (isCmp?'✓ בהשוואה':'+ הוסף להשוואה')+
         '</button>'+
@@ -1410,6 +1447,97 @@ function exportFavPDF(){
   w.document.close();
 }
 
+// ── WHATSAPP ──
+function sendWhatsApp(){
+  var link=shortLink||generatedLink;
+  var name=document.getElementById('c-name').value.trim()||'';
+  var msg='שלום'+( name?' '+name:'')+' 😊\n\nהכנתי עבורך רשימת נכסים מומלצים לצפייה:\n'+link+'\n\nאשמח לשמוע מה דעתך!';
+  window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
+}
+
+// ── LOGO ──
+var logoUrl='';
+function uploadLogo(input){
+  var file=input.files[0];
+  if(!file)return;
+  var fd=new FormData();
+  fd.append('file',file);
+  fd.append('upload_preset','officematch_unsigned');
+  fetch('https://api.cloudinary.com/v1_1/duqictgcv/image/upload',{method:'POST',body:fd})
+    .then(function(r){return r.json()})
+    .then(function(d){
+      if(d.secure_url){
+        logoUrl=d.secure_url;
+        localStorage.setItem('om_logo',logoUrl);
+        applyLogo();
+      }
+    });
+}
+function applyLogo(){
+  var img=document.getElementById('hdr-logo');
+  var prev=document.getElementById('logo-preview');
+  var rmBtn=document.getElementById('logo-remove-btn');
+  if(logoUrl){
+    img.src=logoUrl;img.style.display='block';
+    prev.innerHTML='<img src="'+logoUrl+'" style="width:100%;height:100%;object-fit:contain">';
+    if(rmBtn)rmBtn.style.display='block';
+  } else {
+    img.style.display='none';
+    prev.innerHTML='<span style="font-size:24px">🏢</span>';
+    if(rmBtn)rmBtn.style.display='none';
+  }
+}
+function removeLogo(){
+  logoUrl='';localStorage.removeItem('om_logo');applyLogo();
+}
+
+// ── CLIENT NOTES ON PROPS ──
+var clientNotes={};
+function openClientNote(propId){
+  var current=clientNotes[propId]||'';
+  var note=prompt('הערה אישית על הנכס הזה (תישמר אצלך בלבד):',current);
+  if(note===null)return;
+  if(note.trim()){clientNotes[propId]=note.trim();}
+  else{delete clientNotes[propId];}
+  // inject into clientProps temporarily
+  var p=clientProps.find(function(x){return x.id===propId});
+  if(p)p._clientNote=clientNotes[propId]||'';
+  localStorage.setItem('om_client_notes',JSON.stringify(clientNotes));
+  applyFilters();
+}
+function loadClientNotes(){
+  try{var n=localStorage.getItem('om_client_notes');if(n)clientNotes=JSON.parse(n);}catch(e){}
+}
+
+// ── GOOGLE SHEETS ──
+function saveGSUrl(){
+  var url=document.getElementById('gs-url').value.trim();
+  if(!url){alert('נא להכניס URL');return}
+  localStorage.setItem('om_gs_url',url);
+  document.getElementById('gs-status').textContent='✓ URL נשמר';
+  setTimeout(function(){document.getElementById('gs-status').textContent=''},2000);
+}
+function exportToSheets(){
+  var url=localStorage.getItem('om_gs_url');
+  if(!url){alert('נא להכניס Google Sheets URL תחילה');return}
+  // Build CSV
+  var rows=[['שם נכס','כתובת','שטח','מחיר למ"ר','ניהול','קומה','זמינות','סגנון','הערות','תמונות']];
+  props.forEach(function(p){
+    rows.push([p.name,p.addr,p.size,p.price,p.mgmt,p.floor,p.avail,p.type,p.notes,(p.imgs||[]).length]);
+  });
+  var csv=rows.map(function(r){return r.map(function(c){return'"'+(c||'')+'"';}).join(',');}).join('\n');
+  var blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='officematch_export_'+new Date().toLocaleDateString('he-IL').replace(/\//g,'-')+'.csv';
+  a.click();
+  document.getElementById('gs-status').textContent='✓ קובץ CSV הורד — ייבא אותו ל-Google Sheets';
+}
+function loadGSUrl(){
+  var url=localStorage.getItem('om_gs_url');
+  if(url){var el=document.getElementById('gs-url');if(el)el.value=url;}
+}
+
 // INIT
 (function(){
   var params=new URLSearchParams(location.search),data=params.get('data');
@@ -1417,6 +1545,8 @@ function exportFavPDF(){
     try{
       var payload=JSON.parse(decodeURIComponent(atob(data)));
       props=payload.props||[];clientProps=payload.props||[];
+      loadClientNotes();
+      clientProps.forEach(function(p){p._clientNote=clientNotes[p.id]||''});
       var t=document.getElementById('cv-title'),s=document.getElementById('cv-sub');
       if(payload.name)t.textContent='שלום '+(payload.name)+' 👋 — הנכסים שנבחרו עבורך';
       var sub=[];
@@ -1430,6 +1560,10 @@ function exportFavPDF(){
   } else {
     // Admin mode — load from localStorage
     loadFromLS();
+    loadClientNotes();
+    logoUrl=localStorage.getItem('om_logo')||'';
+    applyLogo();
+    loadGSUrl();
     renderAdminList();
     renderClientsList();
   }
