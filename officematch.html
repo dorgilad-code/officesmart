@@ -237,7 +237,20 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);min-h
       <div class="field"><label>מחיר למ"ר (₪)</label><input id="p-price" type="number" placeholder="175"></div>
       <div class="field"><label>דמי ניהול (₪)</label><input id="p-mgmt" type="number" placeholder="20"></div>
       <div class="field"><label>קומה</label><input id="p-floor" placeholder="12"></div>
-      <div class="field"><label>זמינות</label><input id="p-avail" placeholder="מיידית"></div>
+      <div class="field"><label>זמינות</label>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div style="display:flex;gap:10px;align-items:center">
+            <label style="display:flex;align-items:center;gap:5px;font-size:13px;font-weight:600;cursor:pointer;text-transform:none;letter-spacing:0;color:var(--text)">
+              <input type="radio" name="avail-type" value="immediate" id="avail-immediate" checked onchange="toggleAvailType()" style="accent-color:var(--green)"> מיידית
+            </label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:13px;font-weight:600;cursor:pointer;text-transform:none;letter-spacing:0;color:var(--text)">
+              <input type="radio" name="avail-type" value="date" id="avail-date" onchange="toggleAvailType()" style="accent-color:var(--green)"> תאריך
+            </label>
+          </div>
+          <input type="date" id="p-avail-date" style="display:none;padding:8px 10px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:'Heebo',sans-serif;outline:none" oninput="this.style.borderColor='var(--green)'">
+          <input type="hidden" id="p-avail">
+        </div>
+      </div>
       <div class="field"><label>סגנון</label>
         <select id="p-type"><option>Plug&Play</option><option>גלם</option><option>משופץ</option><option>Open Space</option><option>חדרים</option><option>משולב</option></select>
       </div>
@@ -312,7 +325,7 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);min-h
       </select>
     </div>
     <div class="fg"><label>זמינות</label>
-      <select id="f-avail" onchange="applyFilters()"><option value="">הכל</option><option>מיידית</option></select>
+      <select id="f-avail" onchange="applyFilters()"><option value="">הכל</option><option value="מיידית">מיידית</option><option value="future">תאריך עתידי</option></select>
     </div>
     <div class="fg"><label>מיון</label>
       <select id="f-sort" onchange="applyFilters()">
@@ -481,20 +494,39 @@ var props=[],favs=[],compareList=[],clientProps=[],generatedLink='';
 
 function v(id){var el=document.getElementById(id);return el?el.value.trim():''}
 
+function toggleAvailType(){
+  var isDate=document.getElementById('avail-date').checked;
+  document.getElementById('p-avail-date').style.display=isDate?'block':'none';
+}
+
+function getAvailValue(){
+  var isDate=document.getElementById('avail-date')&&document.getElementById('avail-date').checked;
+  if(isDate){
+    var d=document.getElementById('p-avail-date').value;
+    if(!d)return'מיידית';
+    // format dd/mm/yyyy
+    var parts=d.split('-');
+    return parts[2]+'/'+parts[1]+'/'+parts[0];
+  }
+  return'מיידית';
+}
+
 function addProp(){
   var name=v('p-name'),addr=v('p-addr'),size=parseFloat(v('p-size')),price=parseFloat(v('p-price'));
   if(!name||!addr||!size||!price){alert('נא למלא שם, כתובת, שטח ומחיר');return}
   var imgs=[];
   for(var i=1;i<=5;i++){var u=v('img-'+i);if(u)imgs.push(u)}
   var prop={id:Date.now(),name:name,addr:addr,size:size,price:price,
-    mgmt:parseFloat(v('p-mgmt'))||0,floor:v('p-floor'),avail:v('p-avail')||'מיידית',
+    mgmt:parseFloat(v('p-mgmt'))||0,floor:v('p-floor'),avail:getAvailValue(),
     type:v('p-type'),notes:v('p-notes'),imgs:imgs,floorPlan:v('img-floor')};
   props.push(prop);
   clearForm();renderAdminList();
 }
 
 function clearForm(){
-  ['p-name','p-addr','p-size','p-price','p-mgmt','p-floor','p-avail','p-notes','img-floor'].forEach(function(id){var el=document.getElementById(id);if(el)el.value=''});
+  ['p-name','p-addr','p-size','p-price','p-mgmt','p-floor','p-notes','img-floor'].forEach(function(id){var el=document.getElementById(id);if(el)el.value=''});
+  var imm=document.getElementById('avail-immediate');if(imm)imm.checked=true;
+  var pd=document.getElementById('p-avail-date');if(pd){pd.value='';pd.style.display='none';}
   resetImgUploads();
   var pw=document.getElementById('preview-floor');if(pw){pw.innerHTML='';pw.classList.remove('has-img');}
   var st=document.getElementById('status-floor');if(st){st.textContent='';st.className='upload-status';}
@@ -569,7 +601,10 @@ function applyFilters(){
   var minSize=parseFloat(v('f-size'))||0,maxPrice=parseFloat(v('f-price'))||Infinity;
   var type=v('f-type'),avail=v('f-avail'),sort=v('f-sort');
   var list=clientProps.filter(function(p){
-    return p.size>=minSize&&p.price<=maxPrice&&(!type||p.type===type)&&(!avail||p.avail===avail);
+    var availOk=true;
+    if(avail==='מיידית')availOk=p.avail==='מיידית';
+    else if(avail==='future')availOk=p.avail&&p.avail!=='מיידית';
+    return p.size>=minSize&&p.price<=maxPrice&&(!type||p.type===type)&&availOk;
   });
   if(sort==='price-asc')list.sort(function(a,b){return a.price-b.price});
   if(sort==='price-desc')list.sort(function(a,b){return b.price-a.price});
