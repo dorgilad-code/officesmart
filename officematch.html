@@ -30,11 +30,22 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);min-h
 .field input,.field select,.field textarea{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:'Heebo',sans-serif;color:var(--text);background:var(--bg);transition:border-color .2s;outline:none}
 .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--green);background:var(--white)}
 .field textarea{min-height:70px;resize:vertical}
-.imgs-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
-.img-field{display:flex;align-items:center;gap:6px}
-.img-field label{font-size:11px;font-weight:700;color:var(--muted);width:60px;flex-shrink:0}
-.img-field input{flex:1;padding:8px 10px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:'Heebo',sans-serif;color:var(--text);background:var(--bg);outline:none;transition:border-color .2s}
-.img-field input:focus{border-color:var(--green)}
+.imgs-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.img-field-wrap{display:flex;flex-direction:column;gap:4px}
+.img-label{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.3px;text-transform:uppercase}
+.img-row{display:flex;align-items:center;gap:6px}
+.img-url-input{flex:1;padding:8px 10px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:'Heebo',sans-serif;color:var(--text);background:var(--bg);outline:none;transition:border-color .2s}
+.img-url-input:focus{border-color:var(--green)}
+.btn-upload-img{background:var(--gl);border:1.5px solid rgba(16,185,129,.3);border-radius:8px;padding:7px 10px;font-size:14px;cursor:pointer;color:var(--green-d);transition:all .15s;flex-shrink:0;line-height:1}
+.btn-upload-img:hover{background:var(--green);color:#fff;border-color:var(--green)}
+.btn-upload-img.loading{opacity:.6;cursor:not-allowed;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.upload-status{font-size:11px;font-weight:600;flex-shrink:0;min-width:14px}
+.upload-status.ok{color:var(--green)}
+.upload-status.err{color:#e53e3e}
+.img-preview-wrap{display:none}
+.img-preview-wrap.has-img{display:block}
+.img-preview-wrap img{width:100%;height:70px;object-fit:cover;border-radius:6px;border:1px solid var(--border);margin-top:4px}
 .btn-add{background:var(--green);color:#fff;border:none;border-radius:10px;padding:11px 24px;font-size:14px;font-weight:700;font-family:'Heebo',sans-serif;cursor:pointer;transition:all .15s}
 .btn-add:hover{background:var(--green-d)}
 .btn-secondary{background:var(--white);color:var(--text);border:1.5px solid var(--border);border-radius:10px;padding:10px 20px;font-size:14px;font-weight:600;font-family:'Heebo',sans-serif;cursor:pointer;transition:all .15s}
@@ -158,14 +169,14 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);min-h
       </div>
       <div class="field"><label>הערות</label><input id="p-notes" placeholder="מה מיוחד בנכס..."></div>
     </div>
-    <div style="font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px">תמונות (קישורי URL — עד 5)</div>
-    <div class="imgs-grid">
-      <div class="img-field"><label>תמונה 1</label><input id="img-1" placeholder="https://..."></div>
-      <div class="img-field"><label>תמונה 2</label><input id="img-2" placeholder="https://..."></div>
-      <div class="img-field"><label>תמונה 3</label><input id="img-3" placeholder="https://..."></div>
-      <div class="img-field"><label>תמונה 4</label><input id="img-4" placeholder="https://..."></div>
-      <div class="img-field"><label>תמונה 5</label><input id="img-5" placeholder="https://..."></div>
-      <div class="img-field"><label>תשריט</label><input id="img-floor" placeholder="https://... (קישור לתשריט)"></div>
+    <div style="font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px">תמונות (עד 5) — העלה מהמחשב או הכנס קישור</div>
+    <div class="imgs-grid" id="imgs-grid-wrap">
+      <div class="img-field-wrap" id="wrap-1"><label class="img-label">תמונה 1</label><div class="img-row"><input id="img-1" placeholder="https://..." class="img-url-input"><button class="btn-upload-img" onclick="triggerUpload(1)" title="העלה מהמחשב">📁</button><span class="upload-status" id="status-1"></span></div><input type="file" id="file-1" accept="image/*" style="display:none" onchange="uploadToCloudinary(1)"><div class="img-preview-wrap" id="preview-1"></div></div>
+      <div class="img-field-wrap" id="wrap-2"><label class="img-label">תמונה 2</label><div class="img-row"><input id="img-2" placeholder="https://..." class="img-url-input"><button class="btn-upload-img" onclick="triggerUpload(2)" title="העלה מהמחשב">📁</button><span class="upload-status" id="status-2"></span></div><input type="file" id="file-2" accept="image/*" style="display:none" onchange="uploadToCloudinary(2)"><div class="img-preview-wrap" id="preview-2"></div></div>
+      <div class="img-field-wrap" id="wrap-3"><label class="img-label">תמונה 3</label><div class="img-row"><input id="img-3" placeholder="https://..." class="img-url-input"><button class="btn-upload-img" onclick="triggerUpload(3)" title="העלה מהמחשב">📁</button><span class="upload-status" id="status-3"></span></div><input type="file" id="file-3" accept="image/*" style="display:none" onchange="uploadToCloudinary(3)"><div class="img-preview-wrap" id="preview-3"></div></div>
+      <div class="img-field-wrap" id="wrap-4"><label class="img-label">תמונה 4</label><div class="img-row"><input id="img-4" placeholder="https://..." class="img-url-input"><button class="btn-upload-img" onclick="triggerUpload(4)" title="העלה מהמחשב">📁</button><span class="upload-status" id="status-4"></span></div><input type="file" id="file-4" accept="image/*" style="display:none" onchange="uploadToCloudinary(4)"><div class="img-preview-wrap" id="preview-4"></div></div>
+      <div class="img-field-wrap" id="wrap-5"><label class="img-label">תמונה 5</label><div class="img-row"><input id="img-5" placeholder="https://..." class="img-url-input"><button class="btn-upload-img" onclick="triggerUpload(5)" title="העלה מהמחשב">📁</button><span class="upload-status" id="status-5"></span></div><input type="file" id="file-5" accept="image/*" style="display:none" onchange="uploadToCloudinary(5)"><div class="img-preview-wrap" id="preview-5"></div></div>
+      <div class="img-field-wrap" id="wrap-floor"><label class="img-label">תשריט</label><div class="img-row"><input id="img-floor" placeholder="https://... (קישור לתשריט)" class="img-url-input"><button class="btn-upload-img" onclick="triggerUpload('floor')" title="העלה מהמחשב">📁</button><span class="upload-status" id="status-floor"></span></div><input type="file" id="file-floor" accept="image/*,application/pdf" style="display:none" onchange="uploadToCloudinary('floor')"><div class="img-preview-wrap" id="preview-floor"></div></div>
     </div>
     <button class="btn-add" onclick="addProp()">+ הוסף נכס</button>
   </div>
@@ -464,6 +475,59 @@ function openCompare(){
   document.getElementById('modal').style.display='block';
 }
 function closeModal(){document.getElementById('modal').style.display='none'}
+
+// CLOUDINARY UPLOAD
+var CLOUDINARY_CLOUD = 'duqictgcv';
+var CLOUDINARY_UPLOAD_PRESET = 'officematch_unsigned';
+
+function triggerUpload(slot){
+  document.getElementById('file-'+slot).click();
+}
+
+function uploadToCloudinary(slot){
+  var fileInput=document.getElementById('file-'+slot);
+  var file=fileInput.files[0];
+  if(!file)return;
+  var btn=document.querySelector('#wrap-'+slot+' .btn-upload-img');
+  var status=document.getElementById('status-'+slot);
+  btn.classList.add('loading');
+  btn.textContent='⏳';
+  status.textContent='';
+  status.className='upload-status';
+  var fd=new FormData();
+  fd.append('file',file);
+  fd.append('upload_preset',CLOUDINARY_UPLOAD_PRESET);
+  fetch('https://api.cloudinary.com/v1_1/'+CLOUDINARY_CLOUD+'/image/upload',{method:'POST',body:fd})
+    .then(function(r){return r.json()})
+    .then(function(data){
+      if(data.secure_url){
+        document.getElementById('img-'+slot).value=data.secure_url;
+        btn.classList.remove('loading');
+        btn.textContent='📁';
+        status.textContent='✓';
+        status.className='upload-status ok';
+        // show preview
+        var pw=document.getElementById('preview-'+slot);
+        pw.innerHTML='<img src="'+data.secure_url+'" alt="תצוגה מקדימה">';
+        pw.classList.add('has-img');
+      } else {
+        throw new Error(data.error&&data.error.message||'שגיאה');
+      }
+    })
+    .catch(function(err){
+      btn.classList.remove('loading');
+      btn.textContent='📁';
+      status.textContent='✗';
+      status.className='upload-status err';
+      console.error('Cloudinary error:',err);
+      if(err.message&&err.message.indexOf('preset')>=0){
+        alert('⚠️ צריך להגדיר Upload Preset ב-Cloudinary.\n\nכנס ל:\nCloudinary Dashboard → Settings → Upload → Upload presets\nצור preset בשם: officematch_unsigned\nסוג: Unsigned');
+      } else {
+        alert('שגיאה בהעלאה: '+err.message);
+      }
+    });
+  fileInput.value='';
+}
 
 // INIT
 (function(){
