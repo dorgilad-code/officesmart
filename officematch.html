@@ -471,7 +471,10 @@ table.cost-tbl tbody tr:last-child td{border-bottom:none}
   <div class="fav-modal">
     <div class="fav-modal-hdr">
       <div class="fav-modal-title">❤️ נכסים מועדפים</div>
-      <button class="modal-close" onclick="closeFav()">✕</button>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button onclick="exportFavPDF()" style="background:var(--bg);border:1.5px solid var(--border);border-radius:8px;padding:7px 14px;font-size:13px;font-weight:600;font-family:'Heebo',sans-serif;cursor:pointer;color:var(--muted);transition:all .15s" onmouseover="this.style.borderColor='#6366f1';this.style.color='#6366f1'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">📄 ייצא PDF</button>
+        <button class="modal-close" onclick="closeFav()">✕</button>
+      </div>
     </div>
     <div id="fav-modal-body"></div>
   </div>
@@ -1246,6 +1249,73 @@ function saveEdit(){
   p.notes=document.getElementById('e-notes').value.trim();
   p.floorPlan=document.getElementById('e-floor-plan').value.trim();
   closeEdit();renderAdminList();saveToLS();
+}
+
+// ── PDF EXPORT ──
+function exportFavPDF(){
+  var list=clientProps.filter(function(p){return favs.indexOf(p.id)>=0});
+  if(!list.length){alert('אין נכסים מועדפים לייצוא');return}
+
+  // Get current calc values if available
+  function gv(id,def){var el=document.getElementById(id);return el?parseFloat(el.value)||def:def}
+  var util=gv('fci-util',12),clean=gv('fci-clean',12),arnona=gv('fci-arnona',15);
+  var parkN=gv('fci-park-n',0),parkP=gv('fci-park-p',0);
+  var sz0=gv('fco-size',0),pr0=gv('fco-price',0),mg0=gv('fco-mgmt',0);
+  var addr0=(document.getElementById('fco-addr')||{}).value||'';
+  function ttl(sz,pr,mg){return sz*(pr+mg+util+clean+arnona)+parkN*parkP}
+  var rows=list.map(function(p){return{p:p,total:ttl(p.size,p.price,p.mgmt)};}).sort(function(a,b){return a.total-b.total});
+  var hasCurr=sz0>0;
+  var curTotal=hasCurr?ttl(sz0,pr0,mg0):0;
+  var fmt=function(n){return '₪'+Math.round(n).toLocaleString('he-IL')};
+
+  var propRows=rows.map(function(r,i){
+    var isBest=i===0;
+    var diff=hasCurr&&curTotal>0?r.total-curTotal:null;
+    return '<tr style="'+(isBest?'background:#f0fdf4':i%2?'background:#fafafa':'')+'">'+
+      '<td style="padding:10px 14px;border-bottom:1px solid #e2e8f0;font-weight:700;color:#0f172a">'+(isBest?'👑 ':'')+r.p.name+'<div style="font-size:11px;font-weight:400;color:#64748b">'+r.p.addr+(r.p.floor?' · קומה '+r.p.floor:'')+'</div></td>'+
+      '<td style="padding:10px 14px;border-bottom:1px solid #e2e8f0;text-align:center">'+r.p.size+' מ"ר</td>'+
+      '<td style="padding:10px 14px;border-bottom:1px solid #e2e8f0;text-align:center">'+fmt(r.p.price)+'/מ"ר</td>'+
+      '<td style="padding:10px 14px;border-bottom:1px solid #e2e8f0;text-align:center">'+fmt(r.p.mgmt)+'/מ"ר</td>'+
+      '<td style="padding:10px 14px;border-bottom:1px solid #e2e8f0;text-align:center;font-weight:800;color:'+(isBest?'#059669':'#0f172a')+'">'+fmt(r.total)+
+        (diff!==null?'<div style="font-size:10px;color:'+(diff<0?'#059669':'#c2410c')+'">'+(diff<0?'▼ חוסך '+fmt(Math.abs(diff)):'▲ יקר ב-'+fmt(diff))+'</div>':'')+
+      '</td>'+
+    '</tr>';
+  }).join('');
+
+  var currRow=hasCurr?
+    '<tr style="background:#ecfdf5"><td style="padding:10px 14px;border-bottom:1px solid #e2e8f0;font-weight:700;color:#059669">🏠 המשרד הנוכחי'+(addr0?'<div style="font-size:11px;font-weight:400">'+addr0+'</div>':'')+' </td>'+
+    '<td style="padding:10px 14px;border-bottom:1px solid #e2e8f0;text-align:center">'+sz0+' מ"ר</td>'+
+    '<td style="padding:10px 14px;border-bottom:1px solid #e2e8f0;text-align:center">'+fmt(pr0)+'/מ"ר</td>'+
+    '<td style="padding:10px 14px;border-bottom:1px solid #e2e8f0;text-align:center">'+fmt(mg0)+'/מ"ר</td>'+
+    '<td style="padding:10px 14px;border-bottom:1px solid #e2e8f0;text-align:center;font-weight:800;color:#059669">'+fmt(curTotal)+'</td></tr>':'';
+
+  var clientName=document.getElementById('cv-title')?document.getElementById('cv-title').textContent:'';
+
+  var html='<!DOCTYPE html><html dir="rtl" lang="he"><head>'+
+    '<meta charset="UTF-8"><title>OfficeMatch — נכסים מועדפים</title>'+
+    '<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;600;700;800;900&display=swap" rel="stylesheet">'+
+    '<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Heebo,sans-serif;background:#fff;color:#0f172a;direction:rtl;padding:40px}'+
+    'h1{font-size:28px;font-weight:900;color:#0f172a;margin-bottom:6px}'+
+    '.sub{font-size:14px;color:#64748b;margin-bottom:32px}'+
+    'table{width:100%;border-collapse:collapse;border-radius:12px;overflow:hidden;border:1px solid #e2e8f0}'+
+    'thead th{padding:12px 14px;background:#f8fafc;font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.5px;text-align:center;border-bottom:2px solid #e2e8f0}'+
+    'thead th:first-child{text-align:right}'+
+    '.note{font-size:11px;color:#94a3b8;margin-top:24px;text-align:center}'+
+    '@media print{body{padding:20px}.no-print{display:none}}'+
+    '</style></head><body>'+
+    '<h1>❤️ הנכסים המועדפים שלי</h1>'+
+    '<div class="sub">'+new Date().toLocaleDateString('he-IL')+' · עלות חודשית כוללת שכירות, ניהול, חשמל/מים ('+util+'₪), ניקיון ('+clean+'₪), ארנונה ('+arnona+'₪/מ"ר)</div>'+
+    '<table>'+
+      '<thead><tr><th style="text-align:right">נכס</th><th>שטח</th><th>מחיר למ"ר</th><th>ניהול</th><th>עלות חודשית</th></tr></thead>'+
+      '<tbody>'+currRow+propRows+'</tbody>'+
+    '</table>'+
+    '<div class="note">הופק באמצעות OfficeMatch · officematcht-tlv.netlify.app</div>'+
+    '<script>window.onload=function(){window.print()}<\/script>'+
+    '</body></html>';
+
+  var w=window.open('','_blank','width=900,height=700');
+  w.document.write(html);
+  w.document.close();
 }
 
 // INIT
