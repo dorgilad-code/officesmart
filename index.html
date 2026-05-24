@@ -679,7 +679,8 @@ function genLink(){
     id:Date.now(),name:name,company:company,note:note,
     link:generatedLink,
     date:new Date().toLocaleDateString('he-IL'),
-    propNames:sel.map(function(p){return p.name})
+    propNames:sel.map(function(p){return p.name}),
+    props:sel.map(function(p){return p.id}) // store prop IDs
   });
   renderClientsList();
   saveToLS();
@@ -737,32 +738,133 @@ function renderClientsList(){
   }).join('');
 }
 
+var editingClientId=null;
+
 function openClientDetail(id){
+  editingClientId=id;
   var c=clients.find(function(x){return x.id===id});
   if(!c)return;
+  if(!c.props)c.props=[];
   document.getElementById('client-detail-title').textContent=c.name+(c.company?' — '+c.company:'');
+  renderClientDetailBody(id);
+  document.getElementById('client-detail-overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+function renderClientDetailBody(id){
+  var c=clients.find(function(x){return x.id===id});
+  if(!c)return;
+  if(!c.props)c.props=[];
+
+  // Get full prop objects for this client
+  var clientPropObjs=c.props.map(function(pid){
+    return props.find(function(p){return p.id===pid});
+  }).filter(Boolean);
+
+  // Props not yet in client list
+  var availableProps=props.filter(function(p){
+    return c.props.indexOf(p.id)<0;
+  });
+
   var linkToUse=c.shortLink||c.link;
+
   var body=
     // Editable fields
-    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">'+
       '<div class="field"><label>שם לקוח</label><input id="cd-name" value="'+c.name+'" style="padding:8px 10px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:Heebo,sans-serif;width:100%;outline:none"></div>'+
       '<div class="field"><label>חברה</label><input id="cd-company" value="'+(c.company||'')+'" style="padding:8px 10px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:Heebo,sans-serif;width:100%;outline:none"></div>'+
       '<div class="field" style="grid-column:span 2"><label>הערה אישית</label><input id="cd-note" value="'+(c.note||'')+'" style="padding:8px 10px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:Heebo,sans-serif;width:100%;outline:none"></div>'+
     '</div>'+
-    '<button class="btn-secondary" style="margin-bottom:16px;font-size:12px;padding:6px 14px" onclick="saveClientEdit('+c.id+')">💾 שמור שינויים</button>'+
-    '<hr style="border:none;border-top:1px solid var(--border);margin-bottom:16px">'+
-    '<div style="margin-bottom:16px">'+
-      '<div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">נכסים ששלחתי</div>'+
-      '<div>'+c.propNames.map(function(n){return '<span class="client-prop-tag">🏢 '+n+'</span>';}).join('')+'</div>'+
+    '<button class="btn-secondary" style="margin-bottom:16px;font-size:12px;padding:6px 14px" onclick="saveClientEdit('+c.id+')">💾 שמור פרטים</button>'+
+    '<hr style="border:none;border-top:1px solid var(--border);margin:0 0 16px">'+
+
+    // Current props
+    '<div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">נכסים ברשימה ('+clientPropObjs.length+')</div>'+
+    '<div style="display:flex;flex-direction:column;gap:6px;margin-bottom:16px">'+
+    (clientPropObjs.length?clientPropObjs.map(function(p){
+      var img=p.imgs&&p.imgs.length?p.imgs[0]:'';
+      return '<div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--bg);border-radius:10px;border:1px solid var(--border)">'+
+        (img?'<img src="'+img+'" style="width:36px;height:36px;border-radius:6px;object-fit:cover">':'<div style="width:36px;height:36px;border-radius:6px;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:16px">🏢</div>')+
+        '<div style="flex:1">'+
+          '<div style="font-size:13px;font-weight:700">'+p.name+'</div>'+
+          '<div style="font-size:11px;color:var(--muted)">'+p.size+' מ"ר · ₪'+p.price+'/מ"ר</div>'+
+        '</div>'+
+        '<button onclick="removeClientProp('+c.id+','+p.id+')" style="background:#fee2e2;border:none;border-radius:6px;padding:4px 10px;font-size:12px;color:#e53e3e;cursor:pointer;font-family:Heebo,sans-serif">הסר</button>'+
+      '</div>';
+    }).join(''):'<div style="font-size:13px;color:var(--muted);text-align:center;padding:16px">אין נכסים ברשימה</div>')+
     '</div>'+
-    '<div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">קישור ללקוח</div>'+
-    '<div style="background:var(--gl);border:1.5px solid rgba(16,185,129,.3);border-radius:10px;padding:12px 14px;font-size:12px;font-family:monospace;word-break:break-all;color:var(--green-d);margin-bottom:10px">'+linkToUse+'</div>'+
+
+    // Add props
+    (availableProps.length?
+      '<div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">הוסף נכסים מהמאגר</div>'+
+      '<div style="display:flex;flex-direction:column;gap:6px;margin-bottom:16px">'+
+      availableProps.map(function(p){
+        var img=p.imgs&&p.imgs.length?p.imgs[0]:'';
+        return '<div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--white);border-radius:10px;border:1px solid var(--border)">'+
+          (img?'<img src="'+img+'" style="width:36px;height:36px;border-radius:6px;object-fit:cover">':'<div style="width:36px;height:36px;border-radius:6px;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:16px">🏢</div>')+
+          '<div style="flex:1">'+
+            '<div style="font-size:13px;font-weight:700">'+p.name+'</div>'+
+            '<div style="font-size:11px;color:var(--muted)">'+p.size+' מ"ר · ₪'+p.price+'/מ"ר</div>'+
+          '</div>'+
+          '<button onclick="addClientProp('+c.id+','+p.id+')" style="background:var(--gl);border:1px solid rgba(16,185,129,.3);border-radius:6px;padding:4px 10px;font-size:12px;color:var(--green-d);cursor:pointer;font-family:Heebo,sans-serif">+ הוסף</button>'+
+        '</div>';
+      }).join('')+
+      '</div>':'')+
+
+    // Generate new link
+    '<div style="background:var(--gl);border:1.5px solid rgba(16,185,129,.3);border-radius:10px;padding:12px 14px;margin-bottom:10px">'+
+      '<div style="font-size:11px;font-weight:700;color:var(--green-d);margin-bottom:6px">קישור נוכחי</div>'+
+      '<div style="font-size:11px;font-family:monospace;word-break:break-all;color:var(--green-d)">'+linkToUse+'</div>'+
+    '</div>'+
     '<div style="display:flex;gap:8px;flex-wrap:wrap">'+
-      '<button class="btn-copy-small" style="padding:8px 16px;font-size:13px" onclick="navigator.clipboard.writeText(\''+linkToUse.replace(/'/g,"\\'")+'\'). then(function(){alert(\'הועתק!\')})">📋 העתק קישור</button>'+
+      '<button class="btn-add" style="font-size:13px" onclick="regenerateClientLink('+c.id+')">🔄 עדכן קישור</button>'+
+      '<button class="btn-copy-small" style="padding:8px 16px;font-size:13px" onclick="navigator.clipboard.writeText(\''+linkToUse.replace(/'/g,"\\'")+'\'). then(function(){alert(\'הועתק!\')})">📋 העתק</button>'+
       '<button class="btn-copy-small" style="padding:8px 16px;font-size:13px;background:#dcfce7;border-color:#86efac;color:#166534" onclick="sendWAClient(\''+linkToUse.replace(/'/g,"\\'")+'\',\''+c.name.replace(/'/g,"\\'")+'\')">💬 WhatsApp</button>'+
-      (c.shortLink?'':'<button class="btn-copy-small" style="padding:8px 16px;font-size:13px;background:var(--white);border-color:#6366f1;color:#6366f1" onclick="shortenAndSave('+c.id+')">✂️ קצר קישור</button>')+
       '<button class="btn-danger" onclick="deleteClient('+c.id+');closeClientDetail()" style="margin-right:auto">מחק לקוח</button>'+
     '</div>';
+
+}
+
+function addClientProp(clientId, propId){
+  var c=clients.find(function(x){return x.id===clientId});
+  if(!c)return;
+  if(!c.props)c.props=[];
+  if(c.props.indexOf(propId)<0){
+    c.props.push(propId);
+    var p=props.find(function(x){return x.id===propId});
+    if(p&&c.propNames.indexOf(p.name)<0)c.propNames.push(p.name);
+  }
+  saveToLS();
+  renderClientDetailBody(clientId);
+  renderClientsList();
+}
+
+function removeClientProp(clientId, propId){
+  var c=clients.find(function(x){return x.id===clientId});
+  if(!c)return;
+  c.props=c.props.filter(function(id){return id!==propId});
+  var p=props.find(function(x){return x.id===propId});
+  if(p)c.propNames=c.propNames.filter(function(n){return n!==p.name});
+  saveToLS();
+  renderClientDetailBody(clientId);
+  renderClientsList();
+}
+
+function regenerateClientLink(clientId){
+  var c=clients.find(function(x){return x.id===clientId});
+  if(!c)return;
+  if(!c.props||!c.props.length){alert('אין נכסים ברשימה');return}
+  var sel=c.props.map(function(pid){return props.find(function(p){return p.id===pid});}).filter(Boolean);
+  var payload={name:c.name,company:c.company,note:c.note,props:sel};
+  var encoded=btoa(encodeURIComponent(JSON.stringify(payload)));
+  c.link=window.location.href.split('?')[0]+'?data='+encoded;
+  c.shortLink=''; // reset short link
+  c.date=new Date().toLocaleDateString('he-IL');
+  saveToLS();
+  renderClientDetailBody(clientId);
+  renderClientsList();
+  alert('✅ הקישור עודכן! העתק ושלח ללקוח.');
+}
   document.getElementById('client-detail-body').innerHTML=body;
   document.getElementById('client-detail-overlay').classList.add('open');
   document.body.style.overflow='hidden';
