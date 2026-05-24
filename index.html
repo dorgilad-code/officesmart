@@ -373,7 +373,6 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);min-h
     </div>
     <div class="cv-header-actions">
       <button class="fav-btn" onclick="openFav()">❤️ מועדפים <span class="fav-count-badge" id="fav-badge">0</span></button>
-      <button class="fav-btn" onclick="openCalc()" style="border-color:var(--green);color:var(--green-d)">🧮 מחשבון</button>
       <button class="fav-btn" onclick="openGuide()" style="border-color:#6366f1;color:#6366f1">💡 מדריך מעבר</button>
     </div>
   </div>
@@ -433,120 +432,6 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);min-h
       <button class="modal-close" onclick="closeFav()">✕</button>
     </div>
     <div id="fav-modal-body"></div>
-  </div>
-</div>
-
-<!-- CALCULATOR MODAL -->
-<div class="calc-overlay" id="calc-overlay" onclick="calcOverlayClick(event)">
-  <div class="calc-modal">
-    <div class="calc-hdr">
-      <div>
-        <div class="calc-title">🧮 מחשבון עלות חודשית</div>
-        <div class="calc-sub">שכירות + ניהול + חשמל/מים + חניות</div>
-      </div>
-      <button class="calc-x" onclick="closeCalc()">✕</button>
-    </div>
-    <div class="calc-body">
-      <div>
-        <div class="calc-section-label">בחר נכס לחישוב</div>
-        <div class="calc-prop-selector" id="calc-prop-selector"></div>
-      </div>
-      <div>
-        <div class="calc-section-label">פרמטרי חישוב</div>
-        <div class="calc-grid">
-          <div class="calc-field">
-            <div class="calc-field-label">שטח משרד</div>
-            <div class="calc-field-hint">מ"ר — בסיס לחישוב</div>
-            <div class="calc-input-wrap">
-              <input class="calc-input" id="ci-size" type="number" value="500" min="50">
-              <span class="calc-input-suffix">מ"ר</span>
-            </div>
-          </div>
-          <div class="calc-field">
-            <div class="calc-field-label">מחיר שכירות</div>
-            <div class="calc-field-hint">נטען אוטומטי מהנכס</div>
-            <div class="calc-input-wrap">
-              <input class="calc-input" id="ci-price" type="number" value="175" min="0">
-              <span class="calc-input-suffix">₪/מ"ר</span>
-            </div>
-          </div>
-          <div class="calc-field">
-            <div class="calc-field-label">דמי ניהול</div>
-            <div class="calc-field-hint">נטען אוטומטי מהנכס</div>
-            <div class="calc-input-wrap">
-              <input class="calc-input" id="ci-mgmt" type="number" value="20" min="0">
-              <span class="calc-input-suffix">₪/מ"ר</span>
-            </div>
-          </div>
-          <div class="calc-field">
-            <div class="calc-field-label">⚡ חשמל + מים + אינטרנט</div>
-            <div class="calc-field-hint">ברירת מחדל: 12 ₪/מ"ר</div>
-            <div class="calc-input-wrap">
-              <input class="calc-input" id="ci-util" type="number" value="12" min="0">
-              <span class="calc-input-suffix">₪/מ"ר</span>
-            </div>
-          </div>
-          <div class="calc-field">
-            <div class="calc-field-label">🧹 ניקיון</div>
-            <div class="calc-field-hint">ברירת מחדל: 12 ₪/מ"ר</div>
-            <div class="calc-input-wrap">
-              <input class="calc-input" id="ci-clean" type="number" value="12" min="0">
-              <span class="calc-input-suffix">₪/מ"ר</span>
-            </div>
-          </div>
-          <div class="calc-field">
-            <div class="calc-field-label">🏛️ ארנונה</div>
-            <div class="calc-field-hint">₪/מ"ר לחודש</div>
-            <div class="calc-input-wrap">
-              <input class="calc-input" id="ci-arnona" type="number" value="15" min="0" step="0.5">
-              <span class="calc-input-suffix">₪/מ"ר</span>
-            </div>
-          </div>
-        </div>
-        <div style="margin-top:14px">
-          <div class="calc-section-label">🚗 חניות (אופציונלי)</div>
-          <div style="display:flex;gap:12px;align-items:flex-end">
-            <div class="calc-field" style="flex:1">
-              <div class="calc-field-label">מספר חניות</div>
-              <div class="calc-input-wrap">
-                <input class="calc-input" id="ci-park-n" type="number" value="0" min="0">
-                <span class="calc-input-suffix">חנ'</span>
-              </div>
-            </div>
-            <div class="calc-field" style="flex:1">
-              <div class="calc-field-label">עלות לחניה</div>
-              <div class="calc-input-wrap">
-                <input class="calc-input" id="ci-park-p" type="number" value="" min="0" placeholder="₪/חודש">
-                <span class="calc-input-suffix">₪</span>
-              </div>
-            </div>
-            <div style="padding-bottom:2px;font-size:11px;color:var(--muted);white-space:nowrap">
-              סה"כ חניות:<br><strong id="park-total-label" style="color:var(--text)">₪0</strong>
-            </div>
-          </div>
-        </div>
-        <div style="display:flex;justify-content:center;margin-top:14px">
-          <button type="button" class="calc-run-btn" onclick="recalc()">חשב ←</button>
-        </div>
-      </div>
-      <div class="calc-results" id="calc-result-single">
-        <div class="calc-results-title">📊 פירוט עלות חודשית</div>
-        <div id="calc-result-body" style="color:var(--muted);font-size:13px;text-align:center;padding:20px">👆 בחר נכס מהרשימה למעלה</div>
-      </div>
-      <div>
-        <div class="calc-section-label">השוואת עלות בין כל הנכסים</div>
-        <div style="overflow-x:auto">
-          <table class="compare-table" id="compare-table">
-            <thead>
-              <tr>
-                <th>נכס</th><th>שכירות</th><th>ניהול</th><th>חשמל+ניקיון</th><th>ארנונה</th><th>חניות</th><th>סה"כ חודשי</th><th>למ"ר</th>
-              </tr>
-            </thead>
-            <tbody id="compare-body"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
   </div>
 </div>
 
@@ -1058,96 +943,13 @@ function updateFavBadge(){
   badge.classList.toggle('show',favs.length>0);
 }
 
-// ── CALCULATOR ──
-var calcPropId=null;
-function openCalc(){
-  var sel=document.getElementById('calc-prop-selector');
-  sel.innerHTML=clientProps.map(function(p){
-    return '<button type="button" class="calc-prop-btn'+(calcPropId===p.id?' selp':'')+'" data-pid="'+p.id+'" onclick="selectCalcProp('+p.id+')">'+p.name+'</button>';
-  }).join('');
-  document.getElementById('calc-overlay').classList.add('open');
-  document.body.style.overflow='hidden';
-  recalc();
-}
-function closeCalc(){
-  document.getElementById('calc-overlay').classList.remove('open');
-  document.body.style.overflow='';
-}
-function calcOverlayClick(e){if(e.target===document.getElementById('calc-overlay'))closeCalc()}
-function selectCalcProp(id){
-  calcPropId=id;
-  var p=clientProps.find(function(x){return x.id===id});
-  if(!p)return;
-  document.getElementById('ci-size').value=p.size||500;
-  document.getElementById('ci-price').value=p.price||175;
-  document.getElementById('ci-mgmt').value=p.mgmt||20;
-  document.querySelectorAll('.calc-prop-btn').forEach(function(b){
-    b.classList.toggle('selp',parseInt(b.getAttribute('data-pid'),10)===id);
-  });
-  recalc();
-}
+// ── CALCULATOR (used in favorites) ──
 function calcTotal(size,price,mgmt,util,clean,arnona,parkN,parkP){
   var rent=size*price,mgmtAmt=size*mgmt,utilAmt=size*util,cleanAmt=size*clean,arnonaAmt=size*arnona,parkAmt=parkN*parkP;
   var total=rent+mgmtAmt+utilAmt+cleanAmt+arnonaAmt+parkAmt;
   return{rent:rent,mgmtAmt:mgmtAmt,utilAmt:utilAmt,cleanAmt:cleanAmt,arnonaAmt:arnonaAmt,parkAmt:parkAmt,total:total};
 }
-function fmtN(n){return'₪'+Math.round(n).toLocaleString('he-IL')}
-function recalc(){
-  var size=parseFloat(document.getElementById('ci-size').value)||0;
-  var price=parseFloat(document.getElementById('ci-price').value)||0;
-  var mgmt=parseFloat(document.getElementById('ci-mgmt').value)||0;
-  var util=parseFloat(document.getElementById('ci-util').value)||12;
-  var clean=parseFloat(document.getElementById('ci-clean').value)||12;
-  var arnona=parseFloat(document.getElementById('ci-arnona').value)||0;
-  var parkN=parseFloat(document.getElementById('ci-park-n').value)||0;
-  var parkP=parseFloat(document.getElementById('ci-park-p').value)||0;
-  var parkLabel=document.getElementById('park-total-label');
-  if(parkLabel)parkLabel.textContent=fmtN(parkN*parkP);
-  // Single result
-  var resultBody=document.getElementById('calc-result-body');
-  if(!calcPropId){
-    resultBody.innerHTML='<div style="color:var(--muted);font-size:13px;text-align:center;padding:20px">👆 בחר נכס מהרשימה למעלה</div>';
-  } else {
-    var p=clientProps.find(function(x){return x.id===calcPropId});
-    if(p){
-      var r=calcTotal(size,price,mgmt,util,clean,arnona,parkN,parkP);
-      var perSqm=r.total/(size||1);
-      resultBody.innerHTML=
-        '<div class="result-prop-name">'+p.name+'</div>'+
-        '<div class="result-prop-addr">📍 '+p.addr+(p.floor?' · קומה '+p.floor:'')+' · '+size+' מ"ר</div>'+
-        '<div class="result-breakdown">'+
-          '<div class="result-row rr-base"><span class="result-row-label">🏢 שכירות בסיס</span><span style="font-size:11px;color:var(--muted);margin-right:auto;padding:0 8px">'+size+' × ₪'+price+'</span><span class="result-row-val">'+fmtN(r.rent)+'</span></div>'+
-          '<div class="result-row rr-mgmt"><span class="result-row-label">🔧 דמי ניהול</span><span style="font-size:11px;color:var(--muted);margin-right:auto;padding:0 8px">'+size+' × ₪'+mgmt+'</span><span class="result-row-val">'+fmtN(r.mgmtAmt)+'</span></div>'+
-          '<div class="result-row rr-util"><span class="result-row-label">⚡ חשמל + מים + אינטרנט</span><span style="font-size:11px;color:var(--muted);margin-right:auto;padding:0 8px">'+size+' × ₪'+util+'</span><span class="result-row-val">'+fmtN(r.utilAmt)+'</span></div>'+
-          '<div class="result-row rr-util" style="background:rgba(16,185,129,.05)"><span class="result-row-label">🧹 ניקיון</span><span style="font-size:11px;color:var(--muted);margin-right:auto;padding:0 8px">'+size+' × ₪'+clean+'</span><span class="result-row-val">'+fmtN(r.cleanAmt)+'</span></div>'+
-          (r.arnonaAmt>0?'<div class="result-row rr-arnona"><span class="result-row-label">🏛️ ארנונה</span><span style="font-size:11px;color:var(--muted);margin-right:auto;padding:0 8px">'+size+' × ₪'+arnona+'/מ"ר</span><span class="result-row-val">'+fmtN(r.arnonaAmt)+'</span></div>':'')+
-          (r.parkAmt>0?'<div class="result-row rr-park"><span class="result-row-label">🚗 חניות</span><span style="font-size:11px;color:var(--muted);margin-right:auto;padding:0 8px">'+parkN+' × ₪'+parkP+'</span><span class="result-row-val">'+fmtN(r.parkAmt)+'</span></div>':'')+
-          '<div class="result-row rr-total"><span class="result-row-label">💳 סה"כ עלות חודשית</span><span class="result-row-val">'+fmtN(r.total)+'</span></div>'+
-        '</div>'+
-        '<div class="result-per-seat"><span>עלות ל-מ"ר חודשי (כולל הכל)</span><strong>'+fmtN(perSqm)+'/מ"ר</strong></div>';
-    }
-  }
-  // Compare table
-  var tbody=document.getElementById('compare-body');
-  if(tbody&&clientProps.length){
-    var rows=clientProps.map(function(p){
-      var sz=p.size||500,pr=p.price||175,mg=p.mgmt||20;
-      var res=calcTotal(sz,pr,mg,util,clean,arnona,parkN,parkP);
-      return{p:p,sz:sz,total:res.total,rent:res.rent,mgmtAmt:res.mgmtAmt,utilClean:res.utilAmt+res.cleanAmt,arnonaAmt:res.arnonaAmt,parkAmt:res.parkAmt,perSqm:res.total/(sz||1)};
-    }).sort(function(a,b){return a.total-b.total});
-    var minT=rows[0].total,maxT=rows[rows.length-1].total;
-    tbody.innerHTML=rows.map(function(r,i){
-      var isBest=i===0;
-      var barPct=Math.round(((r.total-minT)/(maxT-minT||1))*100);
-      return '<tr>'+'<td><div style="font-weight:700;color:var(--text);font-size:12px">'+(isBest?'👑 ':'')+r.p.name+'</div><div style="font-size:10px;color:var(--muted)">'+r.p.addr+' · '+r.sz+' מ"ר</div></td>'+
-        '<td>'+fmtN(r.rent)+'</td><td>'+fmtN(r.mgmtAmt)+'</td><td>'+fmtN(r.utilClean)+'</td>'+
-        '<td>'+(r.arnonaAmt>0?fmtN(r.arnonaAmt):'—')+'</td>'+
-        '<td>'+(r.parkAmt>0?fmtN(r.parkAmt):'—')+'</td>'+
-        '<td><div style="display:flex;align-items:center;gap:6px"><span class="'+(isBest?'best-total':'')+'" style="white-space:nowrap;font-weight:700">'+fmtN(r.total)+'</span><div class="price-bar-wrap"><div class="price-bar" style="width:'+barPct+'%"></div></div></div></td>'+
-        '<td style="font-weight:700;color:var(--green-d)">'+fmtN(r.perSqm)+'</td></tr>';
-    }).join('');
-  }
-}
+function fmtN(n){return'\u20aa'+Math.round(n).toLocaleString('he-IL')}
 
 // ── GUIDE ──
 var guideChecks={};
