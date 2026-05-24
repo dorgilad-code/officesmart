@@ -399,7 +399,12 @@ table.cost-tbl tbody tr:last-child td{border-bottom:none}
       <button class="btn-secondary" onclick="setMode('client')">תצוגה מקדימה</button>
     </div>
     <div class="link-box" id="link-box"></div>
-    <button class="copy-btn" id="copy-btn" onclick="copyLink()">העתק קישור</button>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+      <button class="copy-btn" id="copy-btn" onclick="copyLink()" style="margin-top:0">העתק קישור</button>
+      <button class="copy-btn" id="shorten-btn" onclick="shortenLink()" style="margin-top:0;display:none;background:#6366f1">✂️ קצר קישור</button>
+    </div>
+    <div class="link-box" id="short-link-box" style="display:none;margin-top:8px"></div>
+    <button class="copy-btn" id="copy-short-btn" onclick="copyShortLink()" style="margin-top:8px;display:none;background:#6366f1">העתק קישור קצר</button>
   </div>
   <!-- CLIENTS LIST -->
   <div class="add-card" id="clients-card" style="display:none">
@@ -625,8 +630,36 @@ function genLink(){
   var lb=document.getElementById('link-box');
   lb.style.display='block';lb.textContent=generatedLink;
   document.getElementById('copy-btn').style.display='inline-block';
+  document.getElementById('shorten-btn').style.display='inline-block';
+  document.getElementById('short-link-box').style.display='none';
+  document.getElementById('copy-short-btn').style.display='none';
 }
 function copyLink(){navigator.clipboard.writeText(generatedLink).then(function(){alert('הקישור הועתק!')})}
+
+var shortLink='';
+function shortenLink(){
+  var btn=document.getElementById('shorten-btn');
+  btn.textContent='⏳ מקצר...';
+  btn.disabled=true;
+  fetch('https://tinyurl.com/api-create.php?url='+encodeURIComponent(generatedLink))
+    .then(function(r){return r.text()})
+    .then(function(url){
+      shortLink=url.trim();
+      var sb=document.getElementById('short-link-box');
+      sb.style.display='block';sb.textContent=shortLink;
+      document.getElementById('copy-short-btn').style.display='inline-block';
+      btn.textContent='✂️ קצר קישור';
+      btn.disabled=false;
+      // update clients list with short link
+      if(clients.length){clients[clients.length-1].shortLink=shortLink;saveToLS();}
+    })
+    .catch(function(){
+      alert('שגיאה בקיצור הקישור — נסה שוב');
+      btn.textContent='✂️ קצר קישור';
+      btn.disabled=false;
+    });
+}
+function copyShortLink(){navigator.clipboard.writeText(shortLink).then(function(){alert('הקישור הקצר הועתק!')})}
 
 function renderClientsList(){
   var card=document.getElementById('clients-card');
