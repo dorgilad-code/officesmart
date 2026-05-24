@@ -156,40 +156,14 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);min-h
 .fav-btn:hover{border-color:#f97316;color:#f97316}
 .fav-btn .fav-count-badge{background:#f97316;color:#fff;border-radius:99px;padding:1px 7px;font-size:11px;font-weight:800;display:none}
 .fav-btn .fav-count-badge.show{display:inline}
-.fav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:300;padding:16px;overflow-y:auto;backdrop-filter:blur(4px)}
+.fav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:300;padding:20px;overflow-y:auto}
 .fav-overlay.open{display:block}
-.fav-modal{background:var(--white);border-radius:24px;padding:0;max-width:1000px;margin:0 auto;animation:up .25s ease;overflow:hidden}
-.fav-modal-hdr{display:flex;justify-content:space-between;align-items:center;padding:20px 24px;border-bottom:1px solid var(--border);background:var(--white)}
+.fav-modal{background:var(--white);border-radius:24px;padding:28px;max-width:960px;margin:0 auto;animation:up .25s ease}
+.fav-modal-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
 .fav-modal-title{font-size:20px;font-weight:800}
-.fav-modal-body{padding:24px}
 .fav-empty-state{text-align:center;padding:60px 20px;color:var(--muted)}
 .fav-empty-state .empty-icon{font-size:48px;margin-bottom:12px}
-.fav-cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:28px}
-.fav-section-title{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px}
-.cost-inputs-strip{display:flex;flex-wrap:wrap;gap:10px;padding:14px 16px;background:var(--bg);border-radius:12px;border:1px solid var(--border);margin-bottom:14px}
-.cost-mini-field{display:flex;flex-direction:column;gap:3px;min-width:100px;flex:1}
-.cost-mini-label{font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.3px}
-.cost-mini-input{padding:7px 10px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-weight:600;font-family:'Heebo',sans-serif;outline:none;width:100%;transition:border-color .2s}
-.cost-mini-input:focus{border-color:var(--green)}
-.curr-office-block{background:var(--gl);border:1.5px solid rgba(16,185,129,.25);border-radius:12px;padding:14px 16px;margin-bottom:14px}
-.curr-office-title{font-size:12px;font-weight:800;color:var(--green-d);margin-bottom:10px}
-.curr-office-grid{display:grid;grid-template-columns:1fr 1fr 1fr 2fr;gap:8px}
-.curr-office-grid input{padding:7px 10px;border:1.5px solid rgba(16,185,129,.3);border-radius:8px;font-size:13px;font-family:'Heebo',sans-serif;outline:none;background:var(--white);width:100%}
-.curr-office-grid input:focus{border-color:var(--green)}
-.fav-compare-table-wrap{overflow-x:auto}
-.fav-cmp-table{width:100%;border-collapse:collapse;font-size:13px}
-.fav-cmp-table th{padding:9px 12px;text-align:right;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid var(--border);white-space:nowrap}
-.fav-cmp-table td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
-.fav-cmp-table tr:last-child td{border-bottom:none}
-.fav-cmp-table tr:hover td{background:var(--bg)}
-.fav-cmp-curr td{background:var(--gl)!important}
-.fav-cmp-best td{background:#f0fdf4!important}
-.fav-cmp-name{font-weight:700;color:var(--text);font-size:13px}
-.fav-cmp-addr{font-size:11px;color:var(--muted);margin-top:1px}
-.fav-cmp-total{font-weight:800;font-size:14px;color:var(--text)}
-.fav-cmp-best .fav-cmp-total{color:var(--green)}
-.fav-run-btn{padding:10px 24px;border-radius:50px;border:none;background:var(--green);color:#fff;font-family:'Heebo',sans-serif;font-size:14px;font-weight:800;cursor:pointer;box-shadow:0 4px 16px rgba(16,185,129,.3);transition:transform .15s}
-.fav-run-btn:hover{transform:translateY(-1px)}
+.fav-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
 
 /* ── CALCULATOR ── */
 .calc-overlay{display:none;position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);align-items:center;justify-content:center}
@@ -239,6 +213,52 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);min-h
 .price-bar-wrap{flex:1;background:var(--border);border-radius:4px;height:5px;margin:0 8px;overflow:hidden}
 .price-bar{height:100%;border-radius:4px;background:var(--green);transition:width .4s}
 @media(max-width:600px){.calc-grid{grid-template-columns:1fr 1fr}}
+/* ── GUIDE ── */
+.guide-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:350;padding:16px;overflow-y:auto;backdrop-filter:blur(4px)}
+.guide-overlay.open{display:block}
+.guide-modal{background:var(--white);border-radius:24px;max-width:720px;margin:0 auto;overflow:hidden;animation:up .25s ease}
+.guide-modal-hdr{display:flex;justify-content:space-between;align-items:center;padding:20px 24px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--white);z-index:10}
+.guide-modal-title{font-size:18px;font-weight:800}
+.guide-body{padding:24px;display:flex;flex-direction:column;gap:0}
+.guide-hero{text-align:center;padding:20px 0 28px}
+.guide-hero-icon{width:56px;height:56px;border-radius:16px;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 14px;box-shadow:0 8px 24px rgba(16,185,129,.3)}
+.guide-hero-title{font-size:22px;font-weight:900;margin-bottom:8px}
+.guide-hero-sub{font-size:14px;color:var(--muted);line-height:1.6;max-width:460px;margin:0 auto}
+.guide-section{margin-bottom:24px}
+.guide-section-hdr{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.guide-section-icon{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.guide-section-title{font-size:15px;font-weight:800;color:var(--text)}
+.guide-section-sub{font-size:11px;color:var(--muted);margin-top:1px}
+.guide-timeline{display:flex;flex-direction:column;gap:0}
+.guide-step{display:flex;gap:0;position:relative}
+.guide-step-left{display:flex;flex-direction:column;align-items:center;width:40px;flex-shrink:0}
+.guide-step-num{width:26px;height:26px;border-radius:50%;background:var(--green);color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;z-index:1}
+.guide-step-line{flex:1;width:2px;background:var(--border);margin:4px 0}
+.guide-step:last-child .guide-step-line{display:none}
+.guide-step-content{flex:1;padding:0 0 18px 6px}
+.guide-step-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px}
+.guide-step-body{font-size:12px;color:var(--muted);line-height:1.6}
+.guide-warnings{display:flex;flex-direction:column;gap:8px}
+.guide-warning{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;background:#fff8f0;border:1.5px solid #fed7aa;border-radius:12px}
+.guide-warning-icon{font-size:18px;flex-shrink:0;margin-top:1px}
+.guide-warning-title{font-size:13px;font-weight:700;color:#92400e;margin-bottom:2px}
+.guide-warning-body{font-size:12px;color:#b45309;line-height:1.5}
+.guide-tips{display:flex;flex-direction:column;gap:10px}
+.guide-tip{padding:14px 16px;background:var(--white);border:1.5px solid var(--border);border-radius:12px;transition:border-color .18s}
+.guide-tip:hover{border-color:#a7f3d0}
+.guide-tip-head{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.guide-tip-icon{font-size:22px;line-height:1;flex-shrink:0}
+.guide-tip-title{font-size:14px;font-weight:800;color:var(--text);flex:1}
+.guide-tip-body{font-size:12px;color:var(--muted);line-height:1.65}
+.guide-checklist{display:flex;flex-direction:column;gap:6px}
+.guide-check-item{display:flex;gap:10px;align-items:center;padding:10px 13px;background:var(--white);border:1.5px solid var(--border);border-radius:10px;cursor:pointer;transition:all .15s;font-size:13px;color:var(--muted);user-select:none}
+.guide-check-item:hover{border-color:#c7d2fe}
+.guide-check-item.checked{background:var(--gl);border-color:#6ee7b7;color:#065f46;text-decoration:line-through;opacity:.75}
+.guide-check-box{width:20px;height:20px;border-radius:6px;border:2px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;transition:all .15s}
+.guide-check-item.checked .guide-check-box{background:var(--green);border-color:var(--green);color:#fff}
+.guide-check-progress{display:flex;align-items:center;gap:10px;margin-bottom:10px;font-size:12px;color:var(--muted)}
+.guide-check-bar-bg{flex:1;height:5px;background:var(--border);border-radius:3px;overflow:hidden}
+.guide-check-bar-fill{height:100%;background:var(--green);border-radius:3px;transition:width .3s}
 </style>
 </head>
 <body>
@@ -340,6 +360,7 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);min-h
     <div class="cv-header-actions">
       <button class="fav-btn" onclick="openFav()">❤️ מועדפים <span class="fav-count-badge" id="fav-badge">0</span></button>
       <button class="fav-btn" onclick="openCalc()" style="border-color:var(--green);color:var(--green-d)">🧮 מחשבון</button>
+      <button class="fav-btn" onclick="openGuide()" style="border-color:#6366f1;color:#6366f1">💡 מדריך מעבר</button>
     </div>
   </div>
   <div class="filters">
@@ -397,7 +418,7 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);min-h
       <div class="fav-modal-title">❤️ נכסים מועדפים</div>
       <button class="modal-close" onclick="closeFav()">✕</button>
     </div>
-    <div class="fav-modal-body" id="fav-modal-body"></div>
+    <div id="fav-modal-body"></div>
   </div>
 </div>
 
@@ -512,6 +533,17 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);min-h
         </div>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- GUIDE MODAL -->
+<div class="guide-overlay" id="guide-overlay" onclick="if(event.target===this)closeGuide()">
+  <div class="guide-modal">
+    <div class="guide-modal-hdr">
+      <div class="guide-modal-title">💡 מדריך המעבר למשרד חדש</div>
+      <button class="modal-close" onclick="closeGuide()">✕</button>
+    </div>
+    <div class="guide-body" id="guide-body"></div>
   </div>
 </div>
 
@@ -889,129 +921,32 @@ function renderFavModal(){
     el.innerHTML='<div class="fav-empty-state"><div class="empty-icon">🤍</div><div class="empty-title">אין מועדפים עדיין</div><p style="font-size:13px;color:var(--muted)">לחץ על הלב על הכרטיס כדי להוסיף</p></div>';
     return;
   }
-
-  // Mini cards
-  var cardsHtml='<div class="fav-section-title">הנכסים שלי</div>'+
-    '<div class="fav-cards-grid">'+list.map(function(p){
-      var monthly=Math.round(p.size*(p.price+p.mgmt));
-      var imgs=p.imgs||[];
-      return '<div class="prop-card fav" style="cursor:default">'+
-        '<div class="card-gallery" style="height:130px">'+
-          (imgs.length?'<img class="gallery-img active" src="'+imgs[0]+'" style="display:block" onclick="openLB(\''+imgs[0]+'\')">':'<div class="gallery-placeholder">🏢</div>')+
-          (p.avail==='מיידית'?'<div class="card-avail">מיידית</div>':p.avail?'<div class="card-avail" style="background:#f97316">'+p.avail+'</div>':'')+
-          '<button class="card-fav" onclick="toggleFav('+p.id+',event);renderFavModal()">❤️</button>'+
-        '</div>'+
-        '<div class="card-body" style="padding:12px">'+
-          '<div class="card-name" style="font-size:14px">'+p.name+'</div>'+
-          '<div class="card-addr" style="margin-bottom:8px">📍 '+p.addr+(p.floor?' · ק\''+p.floor:'')+'</div>'+
-          '<div style="display:flex;gap:6px;flex-wrap:wrap;font-size:12px;font-weight:700">'+
-            '<span style="background:var(--gl);color:var(--green-d);padding:3px 8px;border-radius:6px">'+p.size+' מ"ר</span>'+
-            '<span style="background:#eff6ff;color:#1d4ed8;padding:3px 8px;border-radius:6px">₪'+p.price+'/מ"ר</span>'+
-          '</div>'+
-          '<div style="margin-top:8px;font-size:12px;color:var(--muted)">חודשי: <strong style="color:var(--text)">₪'+monthly.toLocaleString()+'</strong></div>'+
-        '</div>'+
-      '</div>';
-    }).join('')+'</div>';
-
-  // Cost calculator section
-  var calcHtml=
-    '<div class="fav-section-title" style="margin-top:8px">🧮 השוואת עלות חודשית</div>'+
-
-    // Current office
-    '<div class="curr-office-block">'+
-      '<div class="curr-office-title">📍 המשרד הנוכחי שלי (להשוואה)</div>'+
-      '<div class="curr-office-grid">'+
-        '<div><div class="cost-mini-label">שטח (מ"ר)</div><input class="cost-mini-input" id="fco-size" type="number" min="0" placeholder="0"></div>'+
-        '<div><div class="cost-mini-label">מחיר למ"ר</div><input class="cost-mini-input" id="fco-price" type="number" min="0" placeholder="0"></div>'+
-        '<div><div class="cost-mini-label">ניהול למ"ר</div><input class="cost-mini-input" id="fco-mgmt" type="number" min="0" placeholder="0"></div>'+
-        '<div><div class="cost-mini-label">כתובת</div><input class="cost-mini-input" id="fco-addr" type="text" placeholder="רחוב ועיר"></div>'+
+  el.innerHTML='<div class="fav-grid">'+list.map(function(p){
+    var monthly=Math.round(p.size*(p.price+p.mgmt));
+    var isCmp=compareList.indexOf(p.id)>=0;
+    var imgs=p.imgs||[];
+    return '<div class="prop-card fav" id="fav-card-'+p.id+'">'+
+      '<div class="card-gallery" style="height:150px">'+
+        (imgs.length?'<img class="gallery-img active" src="'+imgs[0]+'" style="display:block" onclick="openLB(\''+imgs[0]+'\')">':'<div class="gallery-placeholder">🏢</div>')+
+        '<button class="card-fav" onclick="toggleFav('+p.id+',event);renderFavModal()">❤️</button>'+
       '</div>'+
-    '</div>'+
-
-    // Market params
-    '<div class="cost-inputs-strip">'+
-      '<div class="cost-mini-field"><div class="cost-mini-label">⚡ חשמל+מים+אינטרנט</div><input class="cost-mini-input" id="fci-util" type="number" value="12" min="0"></div>'+
-      '<div class="cost-mini-field"><div class="cost-mini-label">🧹 ניקיון</div><input class="cost-mini-input" id="fci-clean" type="number" value="12" min="0"></div>'+
-      '<div class="cost-mini-field"><div class="cost-mini-label">🏛️ ארנונה ₪/מ"ר</div><input class="cost-mini-input" id="fci-arnona" type="number" value="15" min="0" step="0.5"></div>'+
-      '<div class="cost-mini-field"><div class="cost-mini-label">🚗 מס׳ חניות</div><input class="cost-mini-input" id="fci-park-n" type="number" value="0" min="0"></div>'+
-      '<div class="cost-mini-field"><div class="cost-mini-label">💰 עלות לחניה (₪)</div><input class="cost-mini-input" id="fci-park-p" type="number" value="0" min="0"></div>'+
-    '</div>'+
-
-    '<div style="display:flex;justify-content:center;margin-bottom:16px">'+
-      '<button class="fav-run-btn" onclick="runFavCalc()">חשב ← </button>'+
-    '</div>'+
-
-    '<div class="fav-compare-table-wrap" id="fav-compare-result"></div>';
-
-  el.innerHTML=cardsHtml+calcHtml;
-}
-
-function runFavCalc(){
-  var util=parseFloat(document.getElementById('fci-util').value)||12;
-  var clean=parseFloat(document.getElementById('fci-clean').value)||12;
-  var arnona=parseFloat(document.getElementById('fci-arnona').value)||0;
-  var parkN=parseFloat(document.getElementById('fci-park-n').value)||0;
-  var parkP=parseFloat(document.getElementById('fci-park-p').value)||0;
-
-  var curSz=parseFloat(document.getElementById('fco-size').value)||0;
-  var curPr=parseFloat(document.getElementById('fco-price').value)||0;
-  var curMg=parseFloat(document.getElementById('fco-mgmt').value)||0;
-  var curAddr=document.getElementById('fco-addr').value||'';
-
-  var list=clientProps.filter(function(p){return favs.indexOf(p.id)>=0});
-
-  function totalFor(sz,pr,mg){
-    return sz*(pr+mg+util+clean+arnona)+parkN*parkP;
-  }
-  function fmt(n){return'₪'+Math.round(n).toLocaleString('he-IL')}
-
-  var rows=list.map(function(p){
-    var sz=p.size||0,pr=p.price||0,mg=p.mgmt||0;
-    return{p:p,sz:sz,pr:pr,mg:mg,total:totalFor(sz,pr,mg)};
-  }).sort(function(a,b){return a.total-b.total});
-
-  var hasCurr=curSz>0;
-  var curTotal=hasCurr?totalFor(curSz,curPr,curMg):0;
-
-  var html='<table class="fav-cmp-table">'+
-    '<thead><tr>'+
-      '<th>נכס</th><th>שטח</th><th>שכירות</th><th>ניהול</th><th>חשמל+ניקיון</th><th>ארנונה</th><th>חניות</th><th>סה"כ חודשי</th>'+
-    '</tr></thead><tbody>';
-
-  if(hasCurr){
-    html+='<tr class="fav-cmp-curr">'+
-      '<td><div class="fav-cmp-name">🏠 המשרד הנוכחי</div>'+(curAddr?'<div class="fav-cmp-addr">'+curAddr+'</div>':'')+' </td>'+
-      '<td>'+curSz+' מ"ר</td>'+
-      '<td>'+fmt(curSz*curPr)+'</td>'+
-      '<td>'+fmt(curSz*curMg)+'</td>'+
-      '<td>'+fmt(curSz*(util+clean))+'</td>'+
-      '<td>'+fmt(curSz*arnona)+'</td>'+
-      '<td>'+fmt(parkN*parkP)+'</td>'+
-      '<td><span class="fav-cmp-total">'+fmt(curTotal)+'</span></td>'+
-    '</tr>';
-  }
-
-  rows.forEach(function(r,i){
-    var isBest=i===0;
-    html+='<tr class="'+(isBest?'fav-cmp-best':'')+'">'+
-      '<td>'+
-        '<div class="fav-cmp-name">'+(isBest?'👑 ':'')+r.p.name+'</div>'+
-        '<div class="fav-cmp-addr">'+r.p.addr+(r.p.floor?' · ק\''+r.p.floor:'')+'</div>'+
-      '</td>'+
-      '<td>'+r.sz+' מ"ר</td>'+
-      '<td>'+fmt(r.sz*r.pr)+'</td>'+
-      '<td>'+fmt(r.sz*r.mg)+'</td>'+
-      '<td>'+fmt(r.sz*(util+clean))+'</td>'+
-      '<td>'+fmt(r.sz*arnona)+'</td>'+
-      '<td>'+fmt(parkN*parkP)+'</td>'+
-      '<td><span class="fav-cmp-total">'+fmt(r.total)+'</span>'+
-        (hasCurr&&curTotal>0?'<div style="font-size:10px;margin-top:2px;color:'+(r.total<curTotal?'var(--green)':'#e53e3e')+'">'+(r.total<curTotal?'▼ חיסכון: '+fmt(curTotal-r.total):'▲ יקר ב: '+fmt(r.total-curTotal))+'</div>':'')+
-      '</td>'+
-    '</tr>';
-  });
-
-  html+='</tbody></table>';
-  document.getElementById('fav-compare-result').innerHTML=html;
+      '<div class="card-body">'+
+        '<div class="card-name">'+p.name+'</div>'+
+        '<div class="card-addr">📍 '+p.addr+(p.floor?' · קומה '+p.floor:'')+'</div>'+
+        '<div class="card-stats">'+
+          '<div class="stat"><div class="stat-label">שטח</div><div class="stat-val">'+p.size+' מ"ר</div></div>'+
+          '<div class="stat"><div class="stat-label">מחיר למ"ר</div><div class="stat-val green">₪'+p.price+'</div></div>'+
+          '<div class="stat"><div class="stat-label">דמי ניהול</div><div class="stat-val">₪'+p.mgmt+'</div></div>'+
+          '<div class="stat"><div class="stat-label">חודשי משוער</div><div class="stat-val">₪'+monthly.toLocaleString()+'</div></div>'+
+        '</div>'+
+        (p.floorPlan?'<a href="'+p.floorPlan+'" target="_blank" class="floor-link">📐 צפה בתשריט</a>':'')+
+        (p.notes?'<div class="card-notes">'+p.notes+'</div>':'')+
+        '<button onclick="toggleFavCompare('+p.id+')" style="background:'+(isCmp?'var(--green)':'var(--bg)')+';color:'+(isCmp?'#fff':'var(--muted)')+';border:1.5px solid '+(isCmp?'var(--green)':'var(--border)')+';border-radius:8px;padding:8px 14px;font-size:12px;font-weight:600;font-family:Heebo,sans-serif;cursor:pointer;transition:all .15s;width:100%;margin-top:8px">'+
+          (isCmp?'✓ בהשוואה':'+ הוסף להשוואה')+
+        '</button>'+
+      '</div>'+
+    '</div>';
+  }).join('')+'</div>';
 }
 
 function toggleFavCompare(id){
@@ -1118,6 +1053,142 @@ function recalc(){
         '<td style="font-weight:700;color:var(--green-d)">'+fmtN(r.perSqm)+'</td></tr>';
     }).join('');
   }
+}
+
+// ── GUIDE ──
+var guideChecks={};
+function openGuide(){
+  renderGuide();
+  document.getElementById('guide-overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeGuide(){
+  document.getElementById('guide-overlay').classList.remove('open');
+  document.body.style.overflow='';
+}
+function toggleCheck(i){
+  guideChecks[i]=!guideChecks[i];
+  renderGuide();
+}
+function renderGuide(){
+  var checklist=[
+    'הגדרתי תקציב, גודל ואזור מועדף',
+    'ביצעתי סיורים בנכסים',
+    'קיבלתי הצעות מחיר',
+    'בדקתי תשתיות: חשמל, סיבים, מיזוג, גנרטור',
+    'חתמתי על חוזה',
+    'תיאמתי עם חברת העברות',
+    'הזמנתי ריהוט וציוד IT',
+    'עדכנתי עובדים על המעבר',
+    'עדכנתי כתובת בבנקים ורשם החברות',
+    'בדקתי זכאות להנחת ארנונה "בית תוכנה"',
+    'גיבוי מלא של שרתים לפני המעבר',
+    'ודאתי שהאינטרנט עולה לפני שאר הציוד',
+  ];
+  var done=checklist.filter(function(_,i){return guideChecks[i]}).length;
+  var pct=Math.round(done/checklist.length*100);
+
+  var html=
+  '<div class="guide-hero">'+
+    '<div class="guide-hero-icon">🏢</div>'+
+    '<div class="guide-hero-title">מדריך המעבר למשרד חדש</div>'+
+    '<div class="guide-hero-sub">כל מה שחברת הייטק צריכה לדעת לפני, במהלך ואחרי המעבר. נבנה מניסיון עם עשרות חברות בתל אביב.</div>'+
+  '</div>'+
+
+  // Timeline
+  '<div class="guide-section">'+
+    '<div class="guide-section-hdr">'+
+      '<div class="guide-section-icon" style="background:#eff6ff">📅</div>'+
+      '<div><div class="guide-section-title">ציר הזמן המומלץ</div><div class="guide-section-sub">6 חודשים לפני המעבר</div></div>'+
+    '</div>'+
+    '<div class="guide-timeline">'+
+    [
+      ['6 חודשים לפני','התחילו לחפש — שוק המשרדים בתל אביב הידוק, הנכסים הטובים נלקחים מהר. הגדירו תקציב, גודל ואזור מועדף.'],
+      ['4 חודשים לפני','בצעו סיורים, קבלו הצעות מחיר, התחילו משא ומתן. אל תמתינו ל"הנכס המושלם" — הוא לרוב לא קיים.'],
+      ['3 חודשים לפני','חתמו על חוזה. בדקו תשתיות: סיבים, גנרטור, מיזוג. תכננו פריסה פנימית.'],
+      ['2 חודשים לפני','הזמינו ריהוט וציוד IT. עדכנו עובדים. תאמו עם ספקים: ניקיון, אבטחה, קנטינה.'],
+      ['חודש לפני','הזמינו חברת העברות. עדכנו כתובת בבנקים, רשם החברות ולקוחות.'],
+      ['שבוע המעבר','גיבוי מלא של שרתים. מעבר שלב-שלב — לא הכל ביום אחד. ודאו אינטרנט עולה לפני שאר הציוד.'],
+    ].map(function(r,i){
+      return '<div class="guide-step">'+
+        '<div class="guide-step-left"><div class="guide-step-num">'+(i+1)+'</div><div class="guide-step-line"></div></div>'+
+        '<div class="guide-step-content"><div class="guide-step-title">'+r[0]+'</div><div class="guide-step-body">'+r[1]+'</div></div>'+
+      '</div>';
+    }).join('')+
+    '</div>'+
+  '</div>'+
+
+  // Warnings
+  '<div class="guide-section">'+
+    '<div class="guide-section-hdr">'+
+      '<div class="guide-section-icon" style="background:#fff8f0">⚠️</div>'+
+      '<div><div class="guide-section-title">הטעויות הנפוצות — אל תעשו אותן</div></div>'+
+    '</div>'+
+    '<div class="guide-warnings">'+
+    [
+      ['לחתום בלי לבדוק תשתיות','בדקו קיבולת חשמל, סיבים, מיזוג וגנרטור — לפני חתימה, לא אחריה.'],
+      ['להתעלם מדמי הניהול','דמי ניהול של ₪25-30 למ"ר יכולים להוסיף 15-20% לעלות החודשית.'],
+      ['להזמין ריהוט מאוחר מדי','ריהוט משרדי אורך 8-14 שבועות אספקה. עיכוב בריהוט = עיכוב בפרודוקטיביות.'],
+      ['לשכוח את הארנונה','הנחת "בית תוכנה" יכולה להגיע ל-50% — בקשו אותה, היא לא מגיעה אוטומטית.'],
+      ['לעבור בתקופת פיק','הימנעו ממעבר ב-Q4 / לפני Fundraising. תכננו בתקופה שקטה.'],
+      ['לא לשמור buffer בשטח','קחו 15-20% יותר שטח. צמיחה מהירה תאלץ מעבר שני — יקר פי כמה.'],
+    ].map(function(r){
+      return '<div class="guide-warning">'+
+        '<div class="guide-warning-icon">⚠️</div>'+
+        '<div><div class="guide-warning-title">'+r[0]+'</div><div class="guide-warning-body">'+r[1]+'</div></div>'+
+      '</div>';
+    }).join('')+
+    '</div>'+
+  '</div>'+
+
+  // Tips
+  '<div class="guide-section">'+
+    '<div class="guide-section-hdr">'+
+      '<div class="guide-section-icon" style="background:#f0fdf4">💡</div>'+
+      '<div><div class="guide-section-title">טיפים שיעזרו לכם להחליט</div></div>'+
+    '</div>'+
+    '<div class="guide-tips">'+
+    [
+      ['📈','תכננו לצמיחה','בחרו משרד שמספיק לפחות 2–3 שנים קדימה. מעבר שני עולה הרבה יותר מלקחת שטח נוסף מההתחלה.'],
+      ['📐','9 מ"ר לעובד','נוסחה בסיסית. עם חדרי ישיבות ומטבח תכננו 12–15 מ"ר לעובד.'],
+      ['💰','עלות כוללת, לא רק שכירות','ניהול, חשמל, ניקיון, ארנונה וחניות יכולים להוסיף כ-40% על גבי מחיר השכירות.'],
+      ['🏢','גובה תקרה חשוב','משרד עם תקרה נמוכה מרגיש צפוף גם אם השטח גדול.'],
+      ['👥','בדקו את השכנים','הדיירים בבניין משפיעים על התדמית שלכם מול לקוחות.'],
+      ['🌐','אינטרנט ותשתיות','בדקו לפני החתימה, לא אחרי.'],
+      ['📋','אופציה להרחבה','בקשו אופציה על שטח סמוך — תוכלו לגדול בלי לעבור.'],
+      ['🤝','גמישות לעומת מחיר','חוזה קצר עם אופציה עדיף על חוזה זול שנועל אתכם.'],
+    ].map(function(r){
+      return '<div class="guide-tip">'+
+        '<div class="guide-tip-head"><div class="guide-tip-icon">'+r[0]+'</div><div class="guide-tip-title">'+r[1]+'</div></div>'+
+        '<div class="guide-tip-body">'+r[2]+'</div>'+
+      '</div>';
+    }).join('')+
+    '</div>'+
+  '</div>'+
+
+  // Checklist
+  '<div class="guide-section">'+
+    '<div class="guide-section-hdr">'+
+      '<div class="guide-section-icon" style="background:#ecfdf5">✅</div>'+
+      '<div><div class="guide-section-title">צ\'קליסט מעבר</div><div class="guide-section-sub">סמנו כשהושלם</div></div>'+
+    '</div>'+
+    '<div class="guide-check-progress">'+
+      '<span>'+done+'/'+checklist.length+' הושלמו</span>'+
+      '<div class="guide-check-bar-bg"><div class="guide-check-bar-fill" style="width:'+pct+'%"></div></div>'+
+      '<span style="color:var(--green);font-weight:700">'+pct+'%</span>'+
+    '</div>'+
+    '<div class="guide-checklist">'+
+    checklist.map(function(item,i){
+      var checked=!!guideChecks[i];
+      return '<div class="guide-check-item'+(checked?' checked':'')+'" onclick="toggleCheck('+i+')">'+
+        '<div class="guide-check-box">'+(checked?'✓':'')+'</div>'+
+        item+
+      '</div>';
+    }).join('')+
+    '</div>'+
+  '</div>';
+
+  document.getElementById('guide-body').innerHTML=html;
 }
 
 // INIT
