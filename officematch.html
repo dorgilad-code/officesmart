@@ -259,6 +259,19 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);min-h
 .guide-check-progress{display:flex;align-items:center;gap:10px;margin-bottom:10px;font-size:12px;color:var(--muted)}
 .guide-check-bar-bg{flex:1;height:5px;background:var(--border);border-radius:3px;overflow:hidden}
 .guide-check-bar-fill{height:100%;background:var(--green);border-radius:3px;transition:width .3s}
+/* ── EDIT MODAL ── */
+.edit-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;padding:20px;overflow-y:auto}
+.edit-overlay.open{display:block}
+.edit-modal{background:var(--white);border-radius:20px;padding:28px;max-width:780px;margin:0 auto;animation:up .2s ease}
+.edit-modal-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.edit-modal-title{font-size:18px;font-weight:800}
+/* ── CLIENT LIST ── */
+.client-row{background:var(--bg);border:1.5px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:8px;display:flex;align-items:center;gap:12px}
+.client-row-info{flex:1}
+.client-row-name{font-size:14px;font-weight:700}
+.client-row-meta{font-size:12px;color:var(--muted);margin-top:2px}
+.client-row-link{font-size:11px;color:var(--green-d);font-family:monospace;word-break:break-all;margin-top:4px;cursor:pointer}
+.btn-copy-small{background:var(--gl);border:1px solid rgba(16,185,129,.3);border-radius:6px;padding:5px 10px;font-size:12px;font-weight:600;font-family:'Heebo',sans-serif;cursor:pointer;color:var(--green-d);white-space:nowrap}
 </style>
 </head>
 <body>
@@ -347,6 +360,12 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);min-h
     </div>
     <div class="link-box" id="link-box"></div>
     <button class="copy-btn" id="copy-btn" onclick="copyLink()">העתק קישור</button>
+  </div>
+
+  <!-- CLIENTS LIST -->
+  <div class="add-card" id="clients-card" style="display:none">
+    <h3><span class="ico">👥</span> לקוחות וקישורים</h3>
+    <div id="clients-list"></div>
   </div>
 </div>
 
@@ -547,6 +566,39 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);min-h
   </div>
 </div>
 
+<!-- EDIT PROP MODAL -->
+<div class="edit-overlay" id="edit-overlay" onclick="if(event.target===this)closeEdit()">
+  <div class="edit-modal">
+    <div class="edit-modal-hdr">
+      <div class="edit-modal-title">✏️ עריכת נכס</div>
+      <button class="modal-close" onclick="closeEdit()">✕</button>
+    </div>
+    <div class="form-grid">
+      <div class="field"><label>שם הנכס</label><input id="e-name"></div>
+      <div class="field"><label>כתובת</label><input id="e-addr"></div>
+      <div class="field"><label>שטח (מ"ר)</label><input id="e-size" type="number"></div>
+      <div class="field"><label>מחיר למ"ר (₪)</label><input id="e-price" type="number"></div>
+      <div class="field"><label>דמי ניהול (₪)</label><input id="e-mgmt" type="number"></div>
+      <div class="field"><label>קומה</label><input id="e-floor"></div>
+      <div class="field"><label>זמינות</label><input id="e-avail"></div>
+      <div class="field"><label>סגנון</label>
+        <select id="e-type"><option>Plug&Play</option><option>גלם</option><option>משופץ</option><option>Open Space</option><option>חדרים</option><option>משולב</option></select>
+      </div>
+      <div class="field"><label>הערות</label><input id="e-notes"></div>
+    </div>
+    <div style="margin-bottom:14px">
+      <div style="font-size:11px;font-weight:700;color:var(--muted);margin-bottom:6px">תשריט URL</div>
+      <input id="e-floor-plan" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:'Heebo',sans-serif;outline:none" placeholder="https://...">
+    </div>
+    <div style="font-size:11px;font-weight:700;color:var(--muted);margin-bottom:6px">תמונות קיימות</div>
+    <div id="e-imgs-preview" style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:14px"></div>
+    <div style="display:flex;gap:10px">
+      <button class="btn-add" onclick="saveEdit()">שמור שינויים</button>
+      <button class="btn-secondary" onclick="closeEdit()">ביטול</button>
+    </div>
+  </div>
+</div>
+
 <script>
 var props=[],favs=[],compareList=[],clientProps=[],generatedLink='';
 
@@ -605,6 +657,7 @@ function renderAdminList(){
         (p.imgs.length?'<span class="tag">📷 '+p.imgs.length+'</span>':'')+
         (p.floorPlan?'<span class="tag">📐 תשריט</span>':'')+
       '</div>'+
+      '<button class="btn-secondary" style="padding:6px 12px;font-size:12px" onclick="openEdit('+p.id+')">✏️ ערוך</button>'+
       '<button class="btn-danger" onclick="deleteProp('+p.id+')">מחק</button>'+
     '</div>';
   }).join('');
@@ -624,6 +677,8 @@ function updateSelCount(){
 }
 function deleteProp(id){props=props.filter(function(p){return p.id!==id});renderAdminList()}
 
+var clients=[]; // {name, company, note, link, date, propNames}
+
 function genLink(){
   var sel=[];
   document.querySelectorAll('.prop-check:checked').forEach(function(cb){
@@ -631,14 +686,42 @@ function genLink(){
     var p=props.find(function(x){return x.id===id});if(p)sel.push(p);
   });
   if(!sel.length){alert('נא לסמן לפחות נכס אחד');return}
-  var payload={name:v('c-name')||'לקוח',company:v('c-company'),note:v('c-note'),props:sel};
+  var name=v('c-name')||'לקוח',company=v('c-company'),note=v('c-note');
+  var payload={name:name,company:company,note:note,props:sel};
   var encoded=btoa(encodeURIComponent(JSON.stringify(payload)));
   generatedLink=window.location.href.split('?')[0]+'?data='+encoded;
+  // save to clients list
+  clients.push({
+    id:Date.now(),name:name,company:company,note:note,
+    link:generatedLink,
+    date:new Date().toLocaleDateString('he-IL'),
+    propNames:sel.map(function(p){return p.name})
+  });
+  renderClientsList();
   var lb=document.getElementById('link-box');
   lb.style.display='block';lb.textContent=generatedLink;
   document.getElementById('copy-btn').style.display='inline-block';
 }
 function copyLink(){navigator.clipboard.writeText(generatedLink).then(function(){alert('הקישור הועתק!')})}
+
+function renderClientsList(){
+  var card=document.getElementById('clients-card');
+  var list=document.getElementById('clients-list');
+  if(!clients.length){card.style.display='none';return}
+  card.style.display='block';
+  list.innerHTML=clients.map(function(c){
+    return '<div class="client-row">'+
+      '<div class="client-row-info">'+
+        '<div class="client-row-name">'+c.name+(c.company?' — '+c.company:'')+'</div>'+
+        '<div class="client-row-meta">'+c.date+' · '+c.propNames.join(', ')+(c.note?' · '+c.note:'')+'</div>'+
+        '<div class="client-row-link" onclick="navigator.clipboard.writeText(\''+c.link+'\').then(function(){alert(\'הועתק!\')})">'+c.link+'</div>'+
+      '</div>'+
+      '<button class="btn-copy-small" onclick="navigator.clipboard.writeText(\''+c.link+'\').then(function(){alert(\'הועתק!\')})">📋 העתק</button>'+
+      '<button class="btn-danger" onclick="deleteClient('+c.id+')">מחק</button>'+
+    '</div>';
+  }).join('');
+}
+function deleteClient(id){clients=clients.filter(function(c){return c.id!==id});renderClientsList()}
 
 function setMode(mode){
   document.getElementById('btn-admin').classList.toggle('active',mode==='admin');
@@ -1189,6 +1272,62 @@ function renderGuide(){
   '</div>';
 
   document.getElementById('guide-body').innerHTML=html;
+}
+
+// ── EDIT PROP ──
+var editingId=null;
+function openEdit(id){
+  var p=props.find(function(x){return x.id===id});
+  if(!p)return;
+  editingId=id;
+  document.getElementById('e-name').value=p.name||'';
+  document.getElementById('e-addr').value=p.addr||'';
+  document.getElementById('e-size').value=p.size||'';
+  document.getElementById('e-price').value=p.price||'';
+  document.getElementById('e-mgmt').value=p.mgmt||'';
+  document.getElementById('e-floor').value=p.floor||'';
+  document.getElementById('e-avail').value=p.avail||'';
+  document.getElementById('e-notes').value=p.notes||'';
+  document.getElementById('e-floor-plan').value=p.floorPlan||'';
+  var sel=document.getElementById('e-type');
+  for(var i=0;i<sel.options.length;i++){if(sel.options[i].value===p.type)sel.selectedIndex=i;}
+  // show existing images
+  var imgs=p.imgs||[];
+  document.getElementById('e-imgs-preview').innerHTML=imgs.map(function(u,i){
+    return '<div style="position:relative;aspect-ratio:1;border-radius:8px;overflow:hidden;border:1.5px solid var(--border)">'+
+      '<img src="'+u+'" style="width:100%;height:100%;object-fit:cover">'+
+      '<button style="position:absolute;top:3px;right:3px;background:rgba(0,0,0,.55);color:#fff;border:none;border-radius:50%;width:20px;height:20px;font-size:11px;cursor:pointer" onclick="removeEditImg('+i+')">✕</button>'+
+    '</div>';
+  }).join('');
+  document.getElementById('edit-overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function removeEditImg(idx){
+  var p=props.find(function(x){return x.id===editingId});
+  if(!p)return;
+  p.imgs.splice(idx,1);
+  openEdit(editingId); // re-render
+}
+function closeEdit(){
+  document.getElementById('edit-overlay').classList.remove('open');
+  document.body.style.overflow='';
+  editingId=null;
+}
+function saveEdit(){
+  var p=props.find(function(x){return x.id===editingId});
+  if(!p)return;
+  p.name=document.getElementById('e-name').value.trim()||p.name;
+  p.addr=document.getElementById('e-addr').value.trim()||p.addr;
+  p.size=parseFloat(document.getElementById('e-size').value)||p.size;
+  p.price=parseFloat(document.getElementById('e-price').value)||p.price;
+  p.mgmt=parseFloat(document.getElementById('e-mgmt').value)||0;
+  p.floor=document.getElementById('e-floor').value.trim();
+  p.avail=document.getElementById('e-avail').value.trim()||'מיידית';
+  p.type=document.getElementById('e-type').value;
+  p.notes=document.getElementById('e-notes').value.trim();
+  p.floorPlan=document.getElementById('e-floor-plan').value.trim();
+  closeEdit();
+  renderAdminList();
 }
 
 // INIT
