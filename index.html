@@ -36,8 +36,8 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);min-h
 .upload-zone-icon{font-size:28px;margin-bottom:6px}
 .upload-zone-text{font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px}
 .upload-zone-sub{font-size:12px;color:var(--muted)}
-.img-preview-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:10px}
-.img-preview-thumb{position:relative;aspect-ratio:1;border-radius:8px;overflow:hidden;border:1.5px solid var(--border)}
+.img-preview-grid{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;direction:ltr}
+.img-preview-thumb{position:relative;width:80px;height:80px;border-radius:8px;overflow:hidden;border:1.5px solid var(--border);flex-shrink:0}
 .img-preview-thumb img{width:100%;height:100%;object-fit:cover}
 .img-preview-thumb .thumb-remove{position:absolute;top:3px;right:3px;background:rgba(0,0,0,.55);color:#fff;border:none;border-radius:50%;width:20px;height:20px;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1}
 .img-preview-thumb .thumb-spinner{position:absolute;inset:0;background:rgba(255,255,255,.7);display:flex;align-items:center;justify-content:center;font-size:18px}
@@ -333,7 +333,6 @@ table.cost-tbl tbody tr:last-child td{border-bottom:none}
     <button class="btn-mode" id="btn-client" onclick="setMode('client')">תצוגת לקוח</button>
   </div>
 </div>
-
 <!-- ADMIN -->
 <div id="admin-panel">
   <div class="panel-title">לוח ניהול</div>
@@ -343,17 +342,19 @@ table.cost-tbl tbody tr:last-child td{border-bottom:none}
   <div class="add-card" style="margin-bottom:24px">
     <h3><span class="ico">⚙️</span> הגדרות</h3>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start">
-      <!-- Logo -->
+      <!-- Logo + Company -->
       <div>
-        <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">לוגו החברה</div>
-        <div style="display:flex;align-items:center;gap:10px">
-          <div id="logo-preview" style="width:60px;height:60px;border:1.5px solid var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;background:var(--bg);overflow:hidden">
-            <span style="font-size:24px">🏢</span>
-          </div>
-          <div>
-            <button class="btn-secondary" style="font-size:12px;padding:7px 12px" onclick="document.getElementById('logo-file').click()">📁 העלה לוגו</button>
-            <input type="file" id="logo-file" accept="image/*" style="display:none" onchange="uploadLogo(this)">
-            <button id="logo-remove-btn" onclick="removeLogo()" style="display:none;margin-top:6px;background:none;border:none;font-size:12px;color:var(--muted);cursor:pointer;font-family:'Heebo',sans-serif">הסר</button>
+        <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">לוגו ושם החברה</div>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+          <label for="logo-file" style="cursor:pointer">
+            <div id="logo-preview" style="width:64px;height:64px;border:2px dashed var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;background:var(--bg);overflow:hidden;transition:border-color .2s" onmouseover="this.style.borderColor='var(--green)'" onmouseout="this.style.borderColor='var(--border)'">
+              <span id="logo-placeholder" style="font-size:24px">🏢</span>
+            </div>
+          </label>
+          <input type="file" id="logo-file" accept="image/*" style="display:none" onchange="uploadLogo(this)">
+          <div style="flex:1">
+            <div class="field" style="margin-bottom:6px"><label>שם החברה</label><input id="company-name" placeholder="OfficeMatch" oninput="saveCompanyName(this.value)"></div>
+            <button id="logo-remove-btn" onclick="removeLogo()" style="display:none;background:none;border:none;font-size:12px;color:#e53e3e;cursor:pointer;font-family:'Heebo',sans-serif">✕ הסר לוגו</button>
           </div>
         </div>
       </div>
@@ -392,6 +393,8 @@ table.cost-tbl tbody tr:last-child td{border-bottom:none}
           <input type="hidden" id="p-avail">
         </div>
       </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
       <div class="field"><label>תצורת ישיבה</label>
         <div class="chip-select" id="p-type-chips">
           <div class="chip" data-val="Open Space" onclick="toggleChip(this,'p-type-chips')">Open Space</div>
@@ -1709,16 +1712,31 @@ function uploadLogo(input){
 function applyLogo(){
   var img=document.getElementById('hdr-logo');
   var prev=document.getElementById('logo-preview');
+  var placeholder=document.getElementById('logo-placeholder');
   var rmBtn=document.getElementById('logo-remove-btn');
   if(logoUrl){
-    img.src=logoUrl;img.style.display='block';
-    prev.innerHTML='<img src="'+logoUrl+'" style="width:100%;height:100%;object-fit:contain">';
+    if(img){img.src=logoUrl;img.style.display='block';}
+    if(prev){prev.style.backgroundImage='url('+logoUrl+')';prev.style.backgroundSize='contain';prev.style.backgroundRepeat='no-repeat';prev.style.backgroundPosition='center';}
+    if(placeholder)placeholder.style.display='none';
     if(rmBtn)rmBtn.style.display='block';
   } else {
-    img.style.display='none';
-    prev.innerHTML='<span style="font-size:24px">🏢</span>';
+    if(img)img.style.display='none';
+    if(prev){prev.style.backgroundImage='none';}
+    if(placeholder)placeholder.style.display='block';
     if(rmBtn)rmBtn.style.display='none';
   }
+  // Apply company name
+  var name=localStorage.getItem('om_company')||'';
+  var cn=document.getElementById('company-name');
+  if(cn&&!cn.value)cn.value=name;
+  var hdrText=document.getElementById('hdr-text');
+  if(hdrText&&name)hdrText.innerHTML=name;
+}
+
+function saveCompanyName(val){
+  localStorage.setItem('om_company',val);
+  var hdrText=document.getElementById('hdr-text');
+  if(hdrText)hdrText.innerHTML=val||'Office<span style="color:var(--green)">Match</span>';
 }
 function removeLogo(){
   logoUrl='';localStorage.removeItem('om_logo');applyLogo();
