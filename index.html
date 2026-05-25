@@ -712,7 +712,13 @@ function genLink(){
     var p=props.find(function(x){return x.id===id});if(p)sel.push(p);
   });
   if(!sel.length){alert('נא לסמן לפחות נכס אחד');return}
-  var name=v('c-name')||'לקוח',company=v('c-company'),note=v('c-note');
+  var name=v('c-name');
+  if(!name){
+    name=prompt('מה שם הלקוח?');
+    if(!name)return;
+    document.getElementById('c-name').value=name;
+  }
+  var company=v('c-company'),note=v('c-note');
   var payload={name:name,company:company,note:note,props:sel};
   var encoded=btoa(encodeURIComponent(JSON.stringify(payload)));
   generatedLink=window.location.href.split('?')[0]+'?data='+encoded;
@@ -772,7 +778,7 @@ function renderClientsList(){
       '<div class="client-row-avatar">'+initials+'</div>'+
       '<div class="client-row-info">'+
         '<div class="client-row-name">'+c.name+(c.company?' <span style="font-weight:400;color:var(--muted)">— '+c.company+'</span>':'')+' </div>'+
-        '<div class="client-row-meta">'+c.date+' · '+c.propNames.length+' נכסים'+(c.note?' · '+c.note:'')+'</div>'+
+        '<div class="client-row-meta">'+c.date+' · '+c.propNames.join(', ')+(c.note?' · '+c.note:'')+'</div>'+
       '</div>'+
       '<div style="font-size:20px;color:var(--muted)">›</div>'+
     '</div>';
