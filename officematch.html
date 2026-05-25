@@ -316,6 +316,10 @@ table.cost-tbl tbody tr:last-child td{border-bottom:none}
 .client-prop-tag{display:inline-block;background:var(--bg);border:1px solid var(--border);border-radius:20px;padding:3px 10px;font-size:12px;font-weight:600;color:var(--muted);margin:3px 3px 0 0}
 .btn-copy-small{background:var(--gl);border:1px solid rgba(16,185,129,.3);border-radius:6px;padding:5px 10px;font-size:12px;font-weight:600;font-family:'Heebo',sans-serif;cursor:pointer;color:var(--green-d);white-space:nowrap}
 .btn-copy-small{background:var(--gl);border:1px solid rgba(16,185,129,.3);border-radius:6px;padding:5px 10px;font-size:12px;font-weight:600;font-family:'Heebo',sans-serif;cursor:pointer;color:var(--green-d);white-space:nowrap;flex-shrink:0}
+.chip-select{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px}
+.chip{padding:5px 12px;border-radius:20px;border:1.5px solid var(--border);font-size:12px;font-weight:600;font-family:"Heebo",sans-serif;cursor:pointer;color:var(--muted);background:var(--white);transition:all .15s;user-select:none}
+.chip:hover{border-color:var(--green);color:var(--green-d)}
+.chip.active{background:var(--green);border-color:var(--green);color:#fff}
 </style>
 </head>
 <body>
@@ -388,17 +392,33 @@ table.cost-tbl tbody tr:last-child td{border-bottom:none}
           <input type="hidden" id="p-avail">
         </div>
       </div>
-      <div class="field"><label>סגנון</label>
-        <select id="p-type"><option>Plug&Play</option><option>גלם</option><option>משופץ</option><option>Open Space</option><option>חדרים</option><option>משולב</option></select>
+      <div class="field"><label>תצורת ישיבה</label>
+        <div class="chip-select" id="p-type-chips">
+          <div class="chip" data-val="Open Space" onclick="toggleChip(this,'p-type-chips')">Open Space</div>
+          <div class="chip" data-val="חדרי ישיבות" onclick="toggleChip(this,'p-type-chips')">חדרי ישיבות</div>
+          <div class="chip" data-val="חדרים סגורים" onclick="toggleChip(this,'p-type-chips')">חדרים סגורים</div>
+          <div class="chip" data-val="היברידי" onclick="toggleChip(this,'p-type-chips')">היברידי</div>
+          <div class="chip" data-val="קומה שלמה" onclick="toggleChip(this,'p-type-chips')">קומה שלמה</div>
+          <div class="chip" data-val="מגדל" onclick="toggleChip(this,'p-type-chips')">מגדל</div>
+        </div>
+        <input type="hidden" id="p-type">
       </div>
-      <div class="field"><label>הערות</label><input id="p-notes" placeholder="מה מיוחד בנכס..."></div>
+      <div class="field"><label>סוג עסקה / מאפיין</label>
+        <div class="chip-select" id="p-notes-chips">
+          <div class="chip" data-val="Plug&Play" onclick="toggleChip(this,'p-notes-chips')">Plug&Play</div>
+          <div class="chip" data-val="מעטפת" onclick="toggleChip(this,'p-notes-chips')">מעטפת</div>
+          <div class="chip" data-val="שטח בגמר" onclick="toggleChip(this,'p-notes-chips')">שטח בגמר</div>
+          <div class="chip" data-val="עסקת סאבליס" onclick="toggleChip(this,'p-notes-chips')">עסקת סאבליס</div>
+        </div>
+        <input type="hidden" id="p-notes">
+      </div>
     </div>
     <div style="font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px">תמונות (עד 5) + תשריט</div>
-    <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-multi').click()" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="handleDrop(event)">
+    <label for="file-multi" class="upload-zone" id="upload-zone" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="handleDrop(event)">
       <div class="upload-zone-icon">📁</div>
       <div class="upload-zone-text">לחץ או גרור תמונות לכאן (עד 5)</div>
       <div class="upload-zone-sub" id="upload-zone-sub">תמונות יעלו ל-Cloudinary אוטומטית</div>
-    </div>
+    </label>
     <input type="file" id="file-multi" accept="image/*" multiple style="display:none" onchange="handleMultiUpload(this.files)">
     <div id="img-preview-grid" class="img-preview-grid"></div>
     <input type="hidden" id="img-1"><input type="hidden" id="img-2"><input type="hidden" id="img-3"><input type="hidden" id="img-4"><input type="hidden" id="img-5">
@@ -406,7 +426,7 @@ table.cost-tbl tbody tr:last-child td{border-bottom:none}
       <label class="img-label">תשריט</label>
       <div class="img-row">
         <input id="img-floor" placeholder="https://... (קישור לתשריט)" class="img-url-input">
-        <button class="btn-upload-img" onclick="triggerUpload('floor')" title="העלה מהמחשב">📁</button>
+        <label for="file-floor" class="btn-upload-img" title="העלה מהמחשב">📁</label>
         <span class="upload-status" id="status-floor"></span>
       </div>
       <input type="file" id="file-floor" accept="image/*,application/pdf" style="display:none" onchange="uploadToCloudinary('floor')">
@@ -478,7 +498,7 @@ table.cost-tbl tbody tr:last-child td{border-bottom:none}
     <div class="fg"><label>מחיר מקסימלי למ"ר</label><input type="number" id="f-price" placeholder="ללא הגבלה" oninput="applyFilters()"></div>
     <div class="fg"><label>סגנון</label>
       <select id="f-type" onchange="applyFilters()">
-        <option value="">הכל</option><option>Plug&Play</option><option>גלם</option><option>משופץ</option><option>Open Space</option><option>חדרים</option><option>משולב</option>
+        <option value="">הכל</option><option>Open Space</option><option>חדרי ישיבות</option><option>חדרים סגורים</option><option>היברידי</option><option>קומה שלמה</option><option>מגדל</option>
       </select>
     </div>
     <div class="fg"><label>זמינות</label>
@@ -561,21 +581,37 @@ table.cost-tbl tbody tr:last-child td{border-bottom:none}
       <div class="field"><label>דמי ניהול (₪)</label><input id="e-mgmt" type="number"></div>
       <div class="field"><label>קומה</label><input id="e-floor"></div>
       <div class="field"><label>זמינות</label><input id="e-avail"></div>
-      <div class="field"><label>סגנון</label>
-        <select id="e-type"><option>Plug&Play</option><option>גלם</option><option>משופץ</option><option>Open Space</option><option>חדרים</option><option>משולב</option></select>
+      <div class="field"><label>תצורת ישיבה</label>
+        <div class="chip-select" id="e-type-chips">
+          <div class="chip" data-val="Open Space" onclick="toggleChip(this,'e-type-chips')">Open Space</div>
+          <div class="chip" data-val="חדרי ישיבות" onclick="toggleChip(this,'e-type-chips')">חדרי ישיבות</div>
+          <div class="chip" data-val="חדרים סגורים" onclick="toggleChip(this,'e-type-chips')">חדרים סגורים</div>
+          <div class="chip" data-val="היברידי" onclick="toggleChip(this,'e-type-chips')">היברידי</div>
+          <div class="chip" data-val="קומה שלמה" onclick="toggleChip(this,'e-type-chips')">קומה שלמה</div>
+          <div class="chip" data-val="מגדל" onclick="toggleChip(this,'e-type-chips')">מגדל</div>
+        </div>
+        <input type="hidden" id="e-type">
       </div>
-      <div class="field"><label>הערות</label><input id="e-notes"></div>
+      <div class="field"><label>סוג עסקה / מאפיין</label>
+        <div class="chip-select" id="e-notes-chips">
+          <div class="chip" data-val="Plug&Play" onclick="toggleChip(this,'e-notes-chips')">Plug&Play</div>
+          <div class="chip" data-val="מעטפת" onclick="toggleChip(this,'e-notes-chips')">מעטפת</div>
+          <div class="chip" data-val="שטח בגמר" onclick="toggleChip(this,'e-notes-chips')">שטח בגמר</div>
+          <div class="chip" data-val="עסקת סאבליס" onclick="toggleChip(this,'e-notes-chips')">עסקת סאבליס</div>
+        </div>
+        <input type="hidden" id="e-notes">
+      </div>
     </div>
     <div style="margin-bottom:14px">
       <div class="field"><label>תשריט URL</label><input id="e-floor-plan" placeholder="https://..."></div>
     </div>
     <div style="font-size:11px;font-weight:700;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px">תמונות קיימות</div>
     <div id="e-imgs-preview" style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:10px"></div>
-    <div class="upload-zone" style="margin-bottom:10px" onclick="document.getElementById('e-file-multi').click()" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="handleEditDrop(event)">
+    <label for="e-file-multi" class="upload-zone" style="margin-bottom:10px;display:block" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="handleEditDrop(event)">
       <div class="upload-zone-icon">📁</div>
       <div class="upload-zone-text" style="font-size:13px">לחץ או גרור להוספת תמונות</div>
       <div class="upload-zone-sub" id="e-upload-status">עד 5 תמונות סה"כ</div>
-    </div>
+    </label>
     <input type="file" id="e-file-multi" accept="image/*" multiple style="display:none" onchange="handleEditUpload(this.files)">
     <div style="display:flex;gap:10px">
       <button class="btn-add" onclick="saveEdit()">שמור שינויים</button>
@@ -619,7 +655,9 @@ function addProp(){
 }
 
 function clearForm(){
-  ['p-name','p-addr','p-size','p-price','p-mgmt','p-floor','p-notes','img-floor'].forEach(function(id){var el=document.getElementById(id);if(el)el.value=''});
+  ['p-name','p-addr','p-size','p-price','p-mgmt','p-floor','p-notes','img-floor','p-type'].forEach(function(id){var el=document.getElementById(id);if(el)el.value=''});
+  resetChips('p-type-chips');
+  resetChips('p-notes-chips');
   var imm=document.getElementById('avail-immediate');if(imm)imm.checked=true;
   var pd=document.getElementById('p-avail-date');if(pd){pd.value='';pd.style.display='none';}
   resetImgUploads();
@@ -949,7 +987,8 @@ function applyFilters(){
     var availOk=true;
     if(avail==='מיידית')availOk=p.avail==='מיידית';
     else if(avail==='future')availOk=p.avail&&p.avail!=='מיידית';
-    return p.size>=minSize&&p.price<=maxPrice&&(!type||p.type===type)&&availOk;
+    var typeOk=!type||(p.type&&p.type.indexOf(type)>=0);
+    return p.size>=minSize&&p.price<=maxPrice&&typeOk&&availOk;
   });
   if(sort==='price-asc')list.sort(function(a,b){return a.price-b.price});
   if(sort==='price-desc')list.sort(function(a,b){return b.price-a.price});
@@ -1075,6 +1114,26 @@ function openCompare(){
   document.getElementById('modal').style.display='block';
 }
 function closeModal(){document.getElementById('modal').style.display='none'}
+
+function toggleChip(el,groupId){
+  el.classList.toggle('active');
+  var hiddenId={'p-type-chips':'p-type','p-notes-chips':'p-notes','e-type-chips':'e-type','e-notes-chips':'e-notes'}[groupId];
+  var vals=Array.from(document.querySelectorAll('#'+groupId+' .chip.active')).map(function(c){return c.getAttribute('data-val')});
+  var hidden=document.getElementById(hiddenId);
+  if(hidden)hidden.value=vals.join(', ');
+}
+
+function setChips(groupId, value){
+  document.querySelectorAll('#'+groupId+' .chip').forEach(function(c){
+    c.classList.toggle('active', value&&value.indexOf(c.getAttribute('data-val'))>=0);
+  });
+}
+
+function resetChips(groupId){
+  document.querySelectorAll('#'+groupId+' .chip').forEach(function(c){c.classList.remove('active')});
+  var hiddenId={'p-type-chips':'p-type','p-notes-chips':'p-notes','e-type-chips':'e-type','e-notes-chips':'e-notes'}[groupId];
+  var el=document.getElementById(hiddenId);if(el)el.value='';
+}
 
 // CLOUDINARY UPLOAD
 var CLOUDINARY_CLOUD = 'duqictgcv';
@@ -1516,8 +1575,10 @@ function openEdit(id){
   document.getElementById('e-avail').value=p.avail||'';
   document.getElementById('e-notes').value=p.notes||'';
   document.getElementById('e-floor-plan').value=p.floorPlan||'';
-  var sel=document.getElementById('e-type');
-  for(var i=0;i<sel.options.length;i++){if(sel.options[i].value===p.type){sel.selectedIndex=i;break;}}
+  document.getElementById('e-type').value=p.type||'';
+  document.getElementById('e-notes').value=p.notes||'';
+  setChips('e-type-chips',p.type||'');
+  setChips('e-notes-chips',p.notes||'\);
   var imgs=p.imgs||[];
   document.getElementById('e-imgs-preview').innerHTML=imgs.length?imgs.map(function(u,i){
     return '<div style="position:relative;aspect-ratio:1;border-radius:8px;overflow:hidden;border:1.5px solid var(--border)">'+
