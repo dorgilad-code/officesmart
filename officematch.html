@@ -715,7 +715,11 @@ function genLink(){
   var name=v('c-name')||'לקוח',company=v('c-company'),note=v('c-note');
   var payload={name:name,company:company,note:note,props:sel};
   var encoded=btoa(encodeURIComponent(JSON.stringify(payload)));
-  generatedLink=window.location.href.split('?')[0]+'?data='+encoded;
+  var baseUrl=window.location.href.split('?')[0];
+  if(!baseUrl.endsWith('index.html') && !baseUrl.endsWith('.html')){
+    baseUrl=baseUrl.replace(/\/$/,'')+'/index.html';
+  }
+  generatedLink=baseUrl+'?data='+encoded;
   clients.push({
     id:Date.now(),name:name,company:company,note:note,
     link:generatedLink,
@@ -898,7 +902,11 @@ function regenerateClientLink(clientId){
   var sel=c.props.map(function(pid){return props.find(function(p){return p.id===pid});}).filter(Boolean);
   var payload={name:c.name,company:c.company,note:c.note,props:sel};
   var encoded=btoa(encodeURIComponent(JSON.stringify(payload)));
-  c.link=window.location.href.split('?')[0]+'?data='+encoded;
+  var baseUrl2=window.location.href.split('?')[0];
+  if(!baseUrl2.endsWith('index.html') && !baseUrl2.endsWith('.html')){
+    baseUrl2=baseUrl2.replace(/\/$/,'')+'/index.html';
+  }
+  c.link=baseUrl2+'?data='+encoded;
   c.shortLink=''; // reset short link
   c.date=new Date().toLocaleDateString('he-IL');
   saveToLS();
