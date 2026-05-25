@@ -1577,12 +1577,11 @@ function openEdit(id){
   document.getElementById('e-mgmt').value=p.mgmt||'';
   document.getElementById('e-floor').value=p.floor||'';
   document.getElementById('e-avail').value=p.avail||'';
-  document.getElementById('e-notes').value=p.notes||'';
   document.getElementById('e-floor-plan').value=p.floorPlan||'';
   document.getElementById('e-type').value=p.type||'';
   document.getElementById('e-notes').value=p.notes||'';
   setChips('e-type-chips',p.type||'');
-  setChips('e-notes-chips',p.notes||'\);
+  setChips('e-notes-chips',p.notes||'');
   var imgs=p.imgs||[];
   document.getElementById('e-imgs-preview').innerHTML=imgs.length?imgs.map(function(u,i){
     return '<div style="position:relative;aspect-ratio:1;border-radius:8px;overflow:hidden;border:1.5px solid var(--border)">'+
