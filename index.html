@@ -397,42 +397,42 @@ table.cost-tbl tbody tr:last-child td{border-bottom:none}
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
       <div class="field"><label>תצורת ישיבה</label>
         <div class="chip-select" id="p-type-chips">
-          <div class="chip" data-val="Open Space" onclick="toggleChip(this,'p-type-chips')">Open Space</div>
-          <div class="chip" data-val="חדרי ישיבות" onclick="toggleChip(this,'p-type-chips')">חדרי ישיבות</div>
-          <div class="chip" data-val="חדרים סגורים" onclick="toggleChip(this,'p-type-chips')">חדרים סגורים</div>
-          <div class="chip" data-val="היברידי" onclick="toggleChip(this,'p-type-chips')">היברידי</div>
-          <div class="chip" data-val="קומה שלמה" onclick="toggleChip(this,'p-type-chips')">קומה שלמה</div>
-          <div class="chip" data-val="מגדל" onclick="toggleChip(this,'p-type-chips')">מגדל</div>
+          <button type="button" class="chip" data-val="Open Space" onclick="toggleChip(this,'p-type-chips')">Open Space</button>
+          <button type="button" class="chip" data-val="חדרי ישיבות" onclick="toggleChip(this,'p-type-chips')">חדרי ישיבות</button>
+          <button type="button" class="chip" data-val="חדרים סגורים" onclick="toggleChip(this,'p-type-chips')">חדרים סגורים</button>
+          <button type="button" class="chip" data-val="היברידי" onclick="toggleChip(this,'p-type-chips')">היברידי</button>
+          <button type="button" class="chip" data-val="קומה שלמה" onclick="toggleChip(this,'p-type-chips')">קומה שלמה</button>
+          <button type="button" class="chip" data-val="מגדל" onclick="toggleChip(this,'p-type-chips')">מגדל</button>
         </div>
         <input type="hidden" id="p-type">
       </div>
       <div class="field"><label>סוג עסקה / מאפיין</label>
         <div class="chip-select" id="p-notes-chips">
-          <div class="chip" data-val="Plug&Play" onclick="toggleChip(this,'p-notes-chips')">Plug&Play</div>
-          <div class="chip" data-val="מעטפת" onclick="toggleChip(this,'p-notes-chips')">מעטפת</div>
-          <div class="chip" data-val="שטח בגמר" onclick="toggleChip(this,'p-notes-chips')">שטח בגמר</div>
-          <div class="chip" data-val="עסקת סאבליס" onclick="toggleChip(this,'p-notes-chips')">עסקת סאבליס</div>
+          <button type="button" class="chip" data-val="Plug&Play" onclick="toggleChip(this,'p-notes-chips')">Plug&Play</button>
+          <button type="button" class="chip" data-val="מעטפת" onclick="toggleChip(this,'p-notes-chips')">מעטפת</button>
+          <button type="button" class="chip" data-val="שטח בגמר" onclick="toggleChip(this,'p-notes-chips')">שטח בגמר</button>
+          <button type="button" class="chip" data-val="עסקת סאבליס" onclick="toggleChip(this,'p-notes-chips')">עסקת סאבליס</button>
         </div>
         <input type="hidden" id="p-notes">
       </div>
     </div>
     <div style="font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px">תמונות (עד 5) + תשריט</div>
-    <label for="file-multi" class="upload-zone" id="upload-zone" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="handleDrop(event)">
+    <label for="file-multi" class="upload-zone" id="upload-zone" onclick="document.getElementById('file-multi').click();return false;" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="handleDrop(event)">
       <div class="upload-zone-icon">📁</div>
       <div class="upload-zone-text">לחץ או גרור תמונות לכאן (עד 5)</div>
       <div class="upload-zone-sub" id="upload-zone-sub">תמונות יעלו ל-Cloudinary אוטומטית</div>
     </label>
-    <input type="file" id="file-multi" accept="image/*" multiple style="display:none" onchange="handleMultiUpload(this.files)">
+    <input type="file" id="file-multi" accept="image/*" multiple style="position:absolute;opacity:0;width:0;height:0" onchange="handleMultiUpload(this.files)">
     <div id="img-preview-grid" class="img-preview-grid"></div>
     <input type="hidden" id="img-1"><input type="hidden" id="img-2"><input type="hidden" id="img-3"><input type="hidden" id="img-4"><input type="hidden" id="img-5">
     <div style="margin-top:10px" class="img-field-wrap" id="wrap-floor">
       <label class="img-label">תשריט</label>
       <div class="img-row">
         <input id="img-floor" placeholder="https://... (קישור לתשריט)" class="img-url-input">
-        <label for="file-floor" class="btn-upload-img" title="העלה מהמחשב">📁</label>
+        <label for="file-floor" class="btn-upload-img" title="העלה מהמחשב" onclick="document.getElementById('file-floor').click();return false;">📁</label>
         <span class="upload-status" id="status-floor"></span>
       </div>
-      <input type="file" id="file-floor" accept="image/*,application/pdf" style="display:none" onchange="uploadToCloudinary('floor')">
+      <input type="file" id="file-floor" accept="image/*,application/pdf" style="position:absolute;opacity:0;width:0;height:0" onchange="uploadToCloudinary('floor')">
       <div class="img-preview-wrap" id="preview-floor"></div>
     </div>
     <button class="btn-add" onclick="addProp()">+ הוסף נכס</button>
@@ -586,21 +586,21 @@ table.cost-tbl tbody tr:last-child td{border-bottom:none}
       <div class="field"><label>זמינות</label><input id="e-avail"></div>
       <div class="field"><label>תצורת ישיבה</label>
         <div class="chip-select" id="e-type-chips">
-          <div class="chip" data-val="Open Space" onclick="toggleChip(this,'e-type-chips')">Open Space</div>
-          <div class="chip" data-val="חדרי ישיבות" onclick="toggleChip(this,'e-type-chips')">חדרי ישיבות</div>
-          <div class="chip" data-val="חדרים סגורים" onclick="toggleChip(this,'e-type-chips')">חדרים סגורים</div>
-          <div class="chip" data-val="היברידי" onclick="toggleChip(this,'e-type-chips')">היברידי</div>
-          <div class="chip" data-val="קומה שלמה" onclick="toggleChip(this,'e-type-chips')">קומה שלמה</div>
-          <div class="chip" data-val="מגדל" onclick="toggleChip(this,'e-type-chips')">מגדל</div>
+          <button type="button" class="chip" data-val="Open Space" onclick="toggleChip(this,'e-type-chips')">Open Space</button>
+          <button type="button" class="chip" data-val="חדרי ישיבות" onclick="toggleChip(this,'e-type-chips')">חדרי ישיבות</button>
+          <button type="button" class="chip" data-val="חדרים סגורים" onclick="toggleChip(this,'e-type-chips')">חדרים סגורים</button>
+          <button type="button" class="chip" data-val="היברידי" onclick="toggleChip(this,'e-type-chips')">היברידי</button>
+          <button type="button" class="chip" data-val="קומה שלמה" onclick="toggleChip(this,'e-type-chips')">קומה שלמה</button>
+          <button type="button" class="chip" data-val="מגדל" onclick="toggleChip(this,'e-type-chips')">מגדל</button>
         </div>
         <input type="hidden" id="e-type">
       </div>
       <div class="field"><label>סוג עסקה / מאפיין</label>
         <div class="chip-select" id="e-notes-chips">
-          <div class="chip" data-val="Plug&Play" onclick="toggleChip(this,'e-notes-chips')">Plug&Play</div>
-          <div class="chip" data-val="מעטפת" onclick="toggleChip(this,'e-notes-chips')">מעטפת</div>
-          <div class="chip" data-val="שטח בגמר" onclick="toggleChip(this,'e-notes-chips')">שטח בגמר</div>
-          <div class="chip" data-val="עסקת סאבליס" onclick="toggleChip(this,'e-notes-chips')">עסקת סאבליס</div>
+          <button type="button" class="chip" data-val="Plug&Play" onclick="toggleChip(this,'e-notes-chips')">Plug&Play</button>
+          <button type="button" class="chip" data-val="מעטפת" onclick="toggleChip(this,'e-notes-chips')">מעטפת</button>
+          <button type="button" class="chip" data-val="שטח בגמר" onclick="toggleChip(this,'e-notes-chips')">שטח בגמר</button>
+          <button type="button" class="chip" data-val="עסקת סאבליס" onclick="toggleChip(this,'e-notes-chips')">עסקת סאבליס</button>
         </div>
         <input type="hidden" id="e-notes">
       </div>
@@ -610,12 +610,12 @@ table.cost-tbl tbody tr:last-child td{border-bottom:none}
     </div>
     <div style="font-size:11px;font-weight:700;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px">תמונות קיימות</div>
     <div id="e-imgs-preview" style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:10px"></div>
-    <label for="e-file-multi" class="upload-zone" style="margin-bottom:10px;display:block" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="handleEditDrop(event)">
+    <label for="e-file-multi" class="upload-zone" style="margin-bottom:10px;display:block" onclick="document.getElementById('e-file-multi').click();return false;" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="handleEditDrop(event)">
       <div class="upload-zone-icon">📁</div>
       <div class="upload-zone-text" style="font-size:13px">לחץ או גרור להוספת תמונות</div>
       <div class="upload-zone-sub" id="e-upload-status">עד 5 תמונות סה"כ</div>
     </label>
-    <input type="file" id="e-file-multi" accept="image/*" multiple style="display:none" onchange="handleEditUpload(this.files)">
+    <input type="file" id="e-file-multi" accept="image/*" multiple style="position:absolute;opacity:0;width:0;height:0" onchange="handleEditUpload(this.files)">
     <div style="display:flex;gap:10px">
       <button class="btn-add" onclick="saveEdit()">שמור שינויים</button>
       <button class="btn-secondary" onclick="closeEdit()">ביטול</button>
