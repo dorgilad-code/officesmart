@@ -1362,18 +1362,19 @@ function renderFavModal(){
     '<div class="cost-table-wrap">'+
       '<div class="cost-table-header"><div><div class="cost-table-title">\ud83e\uddee \u05d4\u05e9\u05d5\u05d5\u05d0\u05ea \u05e2\u05dc\u05d5\u05ea \u05d7\u05d5\u05d3\u05e9\u05d9\u05ea</div><div class="cost-table-sub">\u05db\u05d5\u05dc\u05dc \u05e9\u05db\u05d9\u05e8\u05d5\u05ea, \u05e0\u05d9\u05d4\u05d5\u05dc, \u05d7\u05e9\u05de\u05dc, \u05e0\u05d9\u05e7\u05d9\u05d5\u05df, \u05d0\u05e8\u05e0\u05d5\u05e0\u05d4 \u05d5\u05d7\u05e0\u05d9\u05d5\u05ea</div></div></div>'+
       '<div class="cost-table-inputs">'+
-        '<div class="cost-mini-field"><div class="cost-mini-label">\u26a1 \u05d7\u05e9\u05de\u05dc+\u05de\u05d9\u05dd+\u05d0\u05d9\u05e0\u05d8\u05e8\u05e0\u05d8</div><input class="cost-mini-input" id="fci-util" type="number" min="0" oninput="saveFavCurrOffice();runFavCalc();rebuildCmpTable()"></div>'+
-        '<div class="cost-mini-field"><div class="cost-mini-label">\ud83e\uddf9 \u05e0\u05d9\u05e7\u05d9\u05d5\u05df</div><input class="cost-mini-input" id="fci-clean" type="number" min="0" oninput="saveFavCurrOffice();runFavCalc();rebuildCmpTable()"></div>'+
-        '<div class="cost-mini-field"><div class="cost-mini-label">\ud83c\udfdb\ufe0f \u05d0\u05e8\u05e0\u05d5\u05e0\u05d4 \u20aa/\u05de"\u05e8</div><input class="cost-mini-input" id="fci-arnona" type="number" min="0" step="0.5" oninput="saveFavCurrOffice();runFavCalc();rebuildCmpTable()"></div>'+
+        '<div class="cost-mini-field"><div class="cost-mini-label">\u26a1 \u05d7\u05e9\u05de\u05dc+\u05de\u05d9\u05dd+\u05d0\u05d9\u05e0\u05d8\u05e8\u05e0\u05d8</div><input class="cost-mini-input" id="fci-util" type="number" min="0" oninput="saveFavCurrOffice();runFavCalc()"></div>'+
+        '<div class="cost-mini-field"><div class="cost-mini-label">\ud83e\uddf9 \u05e0\u05d9\u05e7\u05d9\u05d5\u05df</div><input class="cost-mini-input" id="fci-clean" type="number" min="0" oninput="saveFavCurrOffice();runFavCalc()"></div>'+
+        '<div class="cost-mini-field"><div class="cost-mini-label">\ud83c\udfdb\ufe0f \u05d0\u05e8\u05e0\u05d5\u05e0\u05d4 \u20aa/\u05de"\u05e8</div><input class="cost-mini-input" id="fci-arnona" type="number" min="0" step="0.5" oninput="saveFavCurrOffice();runFavCalc()"></div>'+
 
       '</div>'+
       '<div style="padding:14px 20px;border-bottom:1px solid var(--border);background:var(--gl)">'+
         '<div style="font-size:13px;font-weight:800;color:var(--green-d);margin-bottom:10px">\ud83d\udccd \u05d4\u05e9\u05d5\u05d5\u05d0\u05d4 \u05dc\u05de\u05e9\u05e8\u05d3 \u05d4\u05e0\u05d5\u05db\u05d7\u05d9 \u05e9\u05dc\u05d9 (\u05d0\u05d5\u05e4\u05e6\u05d9\u05d5\u05e0\u05dc\u05d9)</div>'+
         '<div class="coco-inputs">'+
-          '<div class="coco-field"><label>\u05e9\u05d8\u05d7 \u05e0\u05d5\u05db\u05d7\u05d9 (\u05de"\u05e8)</label><input id="fco-size" type="number" min="0" placeholder="0" oninput="saveFavCurrOffice();runFavCalc();rebuildCmpTable()"></div>'+
-          '<div class="coco-field"><label>\u05de\u05d7\u05d9\u05e8 \u05dc\u05de"\u05e8 (\u20aa)</label><input id="fco-price" type="number" min="0" placeholder="0" oninput="saveFavCurrOffice();runFavCalc();rebuildCmpTable()"></div>'+
-          '<div class="coco-field"><label>\u05d3\u05de\u05d9 \u05e0\u05d9\u05d4\u05d5\u05dc \u05dc\u05de"\u05e8 (\u20aa)</label><input id="fco-mgmt" type="number" min="0" placeholder="0" oninput="saveFavCurrOffice();runFavCalc();rebuildCmpTable()"></div>'+
-          '<div class="coco-field" style="grid-column:span 2"><label>\u05db\u05ea\u05d5\u05d1\u05ea \u05e0\u05d5\u05db\u05d7\u05d9\u05ea</label><input id="fco-addr" type="text" placeholder="\u05e8\u05d7\u05d5\u05d1 \u05d5\u05e2\u05d9\u05e8" oninput="saveFavCurrOffice();runFavCalc();rebuildCmpTable()"></div>'+
+          '<div class="coco-field"><label>\u05e9\u05d8\u05d7 \u05e0\u05d5\u05db\u05d7\u05d9 (\u05de"\u05e8)</label><input id="fco-size" type="number" min="0" placeholder="0" oninput="saveFavCurrOffice();runFavCalc()"></div>'+
+          '<div class="coco-field"><label>\u05de\u05d7\u05d9\u05e8 \u05dc\u05de"\u05e8 (\u20aa)</label><input id="fco-price" type="number" min="0" placeholder="0" oninput="saveFavCurrOffice();runFavCalc()"></div>'+
+          '<div class="coco-field"><label>\u05d3\u05de\u05d9 \u05e0\u05d9\u05d4\u05d5\u05dc \u05dc\u05de"\u05e8 (\u20aa)</label><input id="fco-mgmt" type="number" min="0" placeholder="0" oninput="saveFavCurrOffice();runFavCalc()"></div>'+
+          '<div class="coco-field" style="grid-column:span 2"><label>\u05db\u05ea\u05d5\u05d1\u05ea \u05e0\u05d5\u05db\u05d7\u05d9\u05ea</label><input id="fco-addr" type="text" placeholder="\u05e8\u05d7\u05d5\u05d1 \u05d5\u05e2\u05d9\u05e8" oninput="saveFavCurrOffice();runFavCalc()"></div>'+
+          '<div style="grid-column:span 3;margin-top:4px"><button onclick="saveFavCurrOffice();rebuildCmpTable()" style="width:100%;padding:11px;background:var(--green);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;font-family:Heebo,sans-serif;cursor:pointer">✅ החל — עדכן טבלת השוואה</button></div>'+
         '</div>'+
       '</div>'+
       '<div style="padding:10px 20px 4px;font-size:11px;color:var(--muted);text-align:center">'+
