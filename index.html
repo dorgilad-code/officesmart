@@ -1959,6 +1959,9 @@ function checkLogin(){
   if(data){
     // Always client mode when link has data - ignore session/auth completely
     document.getElementById('login-overlay').style.display='none';
+    // Clear previous client's current office data
+    try{localStorage.removeItem('om_curr_office');}catch(e){}
+    _favCurrOffice={size:'',price:'',mgmt:'',addr:''};
     try{
       var payload=JSON.parse(decodeURIComponent(atob(data)));
       props=payload.props||[];clientProps=payload.props||[];
