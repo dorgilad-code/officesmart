@@ -320,9 +320,29 @@ table.cost-tbl tbody tr:last-child td{border-bottom:none}
 .chip{padding:5px 12px;border-radius:20px;border:1.5px solid var(--border);font-size:12px;font-weight:600;font-family:"Heebo",sans-serif;cursor:pointer;color:var(--muted);background:var(--white);transition:all .15s;user-select:none}
 .chip:hover{border-color:var(--green);color:var(--green-d)}
 .chip.active{background:var(--green);border-color:var(--green);color:#fff}
+
+/* LOGIN OVERLAY */
+#login-overlay{position:fixed;inset:0;background:#f8fafc;z-index:9999;display:flex;align-items:center;justify-content:center}
+.login-box{background:#fff;border-radius:20px;padding:40px 36px;box-shadow:0 8px 40px rgba(0,0,0,.12);width:100%;max-width:360px;text-align:center}
+.login-logo{font-size:28px;font-weight:900;color:#0f172a;margin-bottom:6px}.login-logo span{color:#10b981}
+.login-sub{font-size:13px;color:#64748b;margin-bottom:28px}
+.login-input{width:100%;padding:12px 16px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:15px;font-family:'Heebo',sans-serif;outline:none;text-align:center;letter-spacing:2px;box-sizing:border-box;transition:border-color .2s}
+.login-input:focus{border-color:#10b981}
+.login-btn{width:100%;margin-top:14px;padding:13px;background:#10b981;color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:700;font-family:'Heebo',sans-serif;cursor:pointer;transition:background .2s}
+.login-btn:hover{background:#059669}
+.login-err{color:#e53e3e;font-size:13px;margin-top:10px;min-height:18px}
 </style>
 </head>
 <body>
+<div id="login-overlay">
+  <div class="login-box">
+    <div class="login-logo">Office<span>Match</span></div>
+    <div class="login-sub">כניסה למערכת ניהול</div>
+    <input class="login-input" id="login-pw" type="password" placeholder="סיסמה" onkeydown="if(event.key==='Enter')checkLogin()">
+    <button class="login-btn" onclick="checkLogin()">כניסה</button>
+    <div class="login-err" id="login-err"></div>
+  </div>
+</div>
 <div class="hdr">
   <div style="display:flex;align-items:center;gap:12px">
     <img id="hdr-logo" src="" alt="" style="display:none;height:36px;object-fit:contain;border-radius:6px">
@@ -1921,6 +1941,20 @@ function loadGSUrl(){
   if(url){var el=document.getElementById('gs-url');if(el)el.value=url;}
 }
 
+
+var ADMIN_PW = 'Dor2026';
+function checkLogin(){
+  var pw=document.getElementById('login-pw').value;
+  if(pw===ADMIN_PW){
+    document.getElementById('login-overlay').style.display='none';
+    sessionStorage.setItem('om_auth','1');
+  } else {
+    document.getElementById('login-err').textContent='סיסמה שגויה, נסה שוב';
+    document.getElementById('login-pw').value='';
+    document.getElementById('login-pw').focus();
+  }
+}
+
 // INIT
 (function(){
   var params=new URLSearchParams(location.search),data=params.get('data');
@@ -1938,10 +1972,17 @@ function loadGSUrl(){
       sub.push(clientProps.length+' נכסים');
       s.textContent=sub.join(' · ');
       s._customSet=true;
+      document.getElementById('login-overlay').style.display='none';
       setMode('client');
       document.getElementById('btn-admin').style.display='none';
     }catch(e){console.error(e)}
   } else {
+    // Admin mode — check password
+    if(sessionStorage.getItem('om_auth')==='1'){
+      document.getElementById('login-overlay').style.display='none';
+    } else {
+      document.getElementById('login-pw').focus();
+    }
     // Admin mode — load from localStorage
     loadFromLS();
     loadClientNotes();
