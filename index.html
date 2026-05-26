@@ -1358,25 +1358,47 @@ function renderFavModal(){
       '<div id="fav-compare-result" style="padding:0 4px 20px"></div>'+
     '</div>';
   // Compare table from favs
+  // Build current office object if filled
+  var co=_favCurrOffice;
+  var hasCurr=co&&parseFloat(co.size)>0&&parseFloat(co.price)>0;
+  var currObj=hasCurr?{
+    name:T('fav-curr-label')||'משרד נוכחי',
+    addr:co.addr||'',
+    size:parseFloat(co.size)||0,
+    price:parseFloat(co.price)||0,
+    mgmt:parseFloat(co.mgmt)||0,
+    floor:'—',avail:'—',type:'—',floorPlan:null,
+    _isCurrent:true
+  }:null;
+
+  // Full list for compare = favs + current office
+  var cmpList=list.concat(currObj?[currObj]:[]);
+
   var cmpRows=[
-    [T('fav-cmp-size')||'שטח מ"ר',function(p){var maxS=Math.max.apply(null,list.map(function(x){return x.size}));return '<span class="'+(p.size===maxS?'best':'')+'">'+p.size+' מ"ר</span>'}],
-    [T('fav-cmp-price')||'מחיר למ"ר',function(p){var minP=Math.min.apply(null,list.map(function(x){return x.price}));return '<span class="'+(p.price===minP?'best':'')+'">₪'+p.price+'</span>'}],
+    [T('fav-cmp-size')||'שטח מ"ר',function(p){var maxS=Math.max.apply(null,cmpList.map(function(x){return x.size}));return '<span class="'+(p.size===maxS&&!p._isCurrent?'best':'')+'">'+p.size+' מ"ר</span>'}],
+    [T('fav-cmp-price')||'מחיר למ"ר',function(p){var minP=Math.min.apply(null,cmpList.map(function(x){return x.price}));return '<span class="'+(p.price===minP?'best':'')+'">₪'+p.price+'</span>'}],
     [T('fav-cmp-mgmt')||'דמי ניהול',function(p){return '₪'+p.mgmt}],
-    [T('fav-cmp-monthly')||'עלות חודשית',function(p){var m=Math.round(p.size*(p.price+p.mgmt));var best=Math.min.apply(null,list.map(function(x){return x.size*(x.price+x.mgmt)}));return '<span class="'+(p.size*(p.price+p.mgmt)===best?'best':'')+'">₪'+m.toLocaleString()+'</span>'}],
+    [T('fav-cmp-monthly')||'עלות חודשית',function(p){var m=Math.round(p.size*(p.price+p.mgmt));var best=Math.min.apply(null,cmpList.map(function(x){return x.size*(x.price+x.mgmt)}));return '<span class="'+(p.size*(p.price+p.mgmt)===best?'best':'')+'">₪'+m.toLocaleString()+'</span>'}],
     [T('fav-cmp-floor')||'קומה',function(p){return p.floor||'—'}],
     [T('fav-cmp-avail')||'זמינות',function(p){return p.avail||'—'}],
     [T('fav-cmp-type')||'סגנון',function(p){return p.type||'—'}],
     [T('fav-cmp-plan')||'תשריט',function(p){return p.floorPlan?'<a href="'+p.floorPlan+'" target="_blank" style="color:var(--green);font-weight:600">📐</a>':'—'}],
   ];
   var cmpHtml='';
-  if(list.length>1){
+  if(cmpList.length>1){
     cmpHtml='<div style="margin-top:24px">'+
       '<div class="fav-section-title" style="margin-bottom:12px">'+( T('fav-cmp-title')||'📊 השוואת נכסים מועדפים')+'</div>'+
       '<div style="overflow-x:auto">'+
       '<table class="cmp-table"><thead><tr><th></th>'+
-        list.map(function(p){return '<th><div class="cmp-name">'+p.name+'</div><div class="cmp-addr">'+p.addr+'</div></th>'}).join('')+
+        cmpList.map(function(p){
+          var style=p._isCurrent?'background:#fef9c3;':'';
+          return '<th style="'+style+'"><div class="cmp-name">'+(p._isCurrent?'🏢 ':'')+p.name+'</div><div class="cmp-addr">'+p.addr+'</div></th>';
+        }).join('')+
       '</tr></thead><tbody>'+
-      cmpRows.map(function(r){return '<tr><td>'+r[0]+'</td>'+list.map(function(p){return '<td>'+r[1](p)+'</td>'}).join('')+'</tr>'}).join('')+
+      cmpRows.map(function(r){return '<tr><td>'+r[0]+'</td>'+cmpList.map(function(p){
+        var style=p._isCurrent?'background:#fefce8;':'';
+        return '<td style="'+style+'">'+r[1](p)+'</td>';
+      }).join('')+'</tr>'}).join('')+
       '</tbody></table></div></div>';
   }
   el.innerHTML=statsHtml+listHtml+cmpHtml+calcHtml;
@@ -1965,6 +1987,7 @@ var translations = {
     'fav-cmp-avail': 'זמינות',
     'fav-cmp-type': 'סגנון',
     'fav-cmp-plan': 'תשריט',
+    'fav-curr-label': 'משרד נוכחי',
   },
   en: {
     'cv-title': 'Properties Selected for You',
@@ -2037,6 +2060,7 @@ var translations = {
     'fav-cmp-avail': 'Availability',
     'fav-cmp-type': 'Style',
     'fav-cmp-plan': 'Floor Plan',
+    'fav-curr-label': 'Current Office',
   }
 };
 
