@@ -524,14 +524,7 @@ table.cost-tbl tbody tr:last-child td{border-bottom:none}
   <div class="cards-grid" id="cards-grid"></div>
 </div>
 
-<!-- COMPARE BAR -->
-<div class="compare-bar" id="compare-bar">
-  <div><div style="font-size:13px;font-weight:700;margin-bottom:6px" id="t-compare-bar-title">השוואה</div><div class="compare-items" id="compare-items"></div></div>
-  <div style="display:flex;gap:10px;align-items:center">
-    <button class="btn-clear-cmp" id="t-compare-clear-btn" onclick="clearCompare()">נקה</button>
-    <button class="btn-compare" id="t-compare-now-btn" onclick="openCompare()">השווה עכשיו →</button>
-  </div>
-</div>
+
 
 <!-- COMPARE MODAL -->
 <div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
@@ -1022,7 +1015,7 @@ function renderCards(list){
   var el=document.getElementById('cards-grid');
   if(!list.length){el.innerHTML='<div class="empty" style="grid-column:1/-1"><div class="empty-icon">🔍</div><div class="empty-title">'+T('empty-title-txt')+'</div><p>'+T('empty-sub-txt')+'</p></div>';return}
   el.innerHTML=list.map(function(p){
-    var isFav=favs.indexOf(p.id)>=0,isCmp=compareList.indexOf(p.id)>=0;
+    var isFav=favs.indexOf(p.id)>=0;
     var monthly=Math.round(p.size*(p.price+p.mgmt));
     var imgs=p.imgs||[];
     var gallery='';
@@ -1057,9 +1050,7 @@ function renderCards(list){
         (p.floorPlan?'<a href="'+p.floorPlan+'" target="_blank" class="floor-link">📐 '+T('card-showroom')+'</a>':'') +
         (p.notes?'<div class="card-notes">'+p.notes+'</div>':'')+
         '<button onclick="openClientNote('+p.id+')" style="background:none;border:none;font-size:12px;color:var(--muted);cursor:pointer;font-family:Heebo,sans-serif;padding:4px 0;display:flex;align-items:center;gap:4px;margin-bottom:6px">'+(p._clientNote?'📝 '+p._clientNote.substring(0,40)+(p._clientNote.length>40?'...':''):'✏️ '+T('card-note-add'))+'</button>'+
-        '<button onclick="toggleCompare('+p.id+')" style="background:'+(isCmp?'var(--green)':'var(--bg)')+';color:'+(isCmp?'#fff':'var(--muted)')+';border:1.5px solid '+(isCmp?'var(--green)':'var(--border)')+';border-radius:8px;padding:8px 14px;font-size:12px;font-weight:600;font-family:Heebo,sans-serif;cursor:pointer;transition:all .15s;width:100%">'+
-          (isCmp?T('card-compare-in'):T('card-compare-add'))+
-        '</button>'+
+
       '</div>'+
     '</div>';
   }).join('');
@@ -1105,8 +1096,8 @@ function updateCompareBar(){
   items.innerHTML=compareList.map(function(id){var p=clientProps.find(function(x){return x.id===id});return p?'<span class="compare-chip">'+p.name+'</span>':''}).join('');
 }
 function clearCompare(){compareList=[];updateCompareBar();applyFilters()}
-function openCompare(){
-  var list=compareList.map(function(id){return clientProps.find(function(x){return x.id===id})}).filter(Boolean);
+function openCompare(list){
+  if(!list)list=compareList.map(function(id){return clientProps.find(function(x){return x.id===id})}).filter(Boolean);
   if(!list.length)return;
   var minP=Math.min.apply(null,list.map(function(p){return p.price}));
   var maxS=Math.max.apply(null,list.map(function(p){return p.size}));
@@ -1366,7 +1357,29 @@ function renderFavModal(){
       '</div>'+
       '<div id="fav-compare-result" style="padding:0 4px 20px"></div>'+
     '</div>';
-  el.innerHTML=statsHtml+listHtml+calcHtml;
+  // Compare table from favs
+  var cmpRows=[
+    [T('fav-cmp-size')||'שטח מ"ר',function(p){var maxS=Math.max.apply(null,list.map(function(x){return x.size}));return '<span class="'+(p.size===maxS?'best':'')+'">'+p.size+' מ"ר</span>'}],
+    [T('fav-cmp-price')||'מחיר למ"ר',function(p){var minP=Math.min.apply(null,list.map(function(x){return x.price}));return '<span class="'+(p.price===minP?'best':'')+'">₪'+p.price+'</span>'}],
+    [T('fav-cmp-mgmt')||'דמי ניהול',function(p){return '₪'+p.mgmt}],
+    [T('fav-cmp-monthly')||'עלות חודשית',function(p){var m=Math.round(p.size*(p.price+p.mgmt));var best=Math.min.apply(null,list.map(function(x){return x.size*(x.price+x.mgmt)}));return '<span class="'+(p.size*(p.price+p.mgmt)===best?'best':'')+'">₪'+m.toLocaleString()+'</span>'}],
+    [T('fav-cmp-floor')||'קומה',function(p){return p.floor||'—'}],
+    [T('fav-cmp-avail')||'זמינות',function(p){return p.avail||'—'}],
+    [T('fav-cmp-type')||'סגנון',function(p){return p.type||'—'}],
+    [T('fav-cmp-plan')||'תשריט',function(p){return p.floorPlan?'<a href="'+p.floorPlan+'" target="_blank" style="color:var(--green);font-weight:600">📐</a>':'—'}],
+  ];
+  var cmpHtml='';
+  if(list.length>1){
+    cmpHtml='<div style="margin-top:24px">'+
+      '<div class="fav-section-title" style="margin-bottom:12px">'+( T('fav-cmp-title')||'📊 השוואת נכסים מועדפים')+'</div>'+
+      '<div style="overflow-x:auto">'+
+      '<table class="cmp-table"><thead><tr><th></th>'+
+        list.map(function(p){return '<th><div class="cmp-name">'+p.name+'</div><div class="cmp-addr">'+p.addr+'</div></th>'}).join('')+
+      '</tr></thead><tbody>'+
+      cmpRows.map(function(r){return '<tr><td>'+r[0]+'</td>'+list.map(function(p){return '<td>'+r[1](p)+'</td>'}).join('')+'</tr>'}).join('')+
+      '</tbody></table></div></div>';
+  }
+  el.innerHTML=statsHtml+listHtml+cmpHtml+calcHtml;
   // Fill saved values
   var co=_favCurrOffice;
   var fields={
@@ -1943,6 +1956,15 @@ var translations = {
     'cost-formula': 'עלות חודשית = שכירות + ניהול + חשמל/מים + ניקיון + ארנונה + חניות — הטבלה מתעדכנת אוטומטית',
     'floor-label': 'קומה',
     'avail-immed': 'מיידית',
+    'fav-cmp-title': '📊 השוואת נכסים מועדפים',
+    'fav-cmp-size': 'שטח מ"ר',
+    'fav-cmp-price': 'מחיר למ"ר',
+    'fav-cmp-mgmt': 'דמי ניהול',
+    'fav-cmp-monthly': 'עלות חודשית',
+    'fav-cmp-floor': 'קומה',
+    'fav-cmp-avail': 'זמינות',
+    'fav-cmp-type': 'סגנון',
+    'fav-cmp-plan': 'תשריט',
   },
   en: {
     'cv-title': 'Properties Selected for You',
@@ -2006,6 +2028,15 @@ var translations = {
     'cost-formula': 'Monthly cost = Rent + Mgmt + Utilities + Cleaning + Tax + Parking — auto-updated',
     'floor-label': 'Floor',
     'avail-immed': 'Immediate',
+    'fav-cmp-title': '📊 Favorites Comparison',
+    'fav-cmp-size': 'Size sqm',
+    'fav-cmp-price': 'Price/sqm',
+    'fav-cmp-mgmt': 'Mgmt Fee',
+    'fav-cmp-monthly': 'Monthly Cost',
+    'fav-cmp-floor': 'Floor',
+    'fav-cmp-avail': 'Availability',
+    'fav-cmp-type': 'Style',
+    'fav-cmp-plan': 'Floor Plan',
   }
 };
 
