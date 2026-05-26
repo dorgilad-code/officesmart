@@ -779,13 +779,16 @@ function renderClientsList(){
   card.style.display='block';
   list.innerHTML=clients.map(function(c){
     var initials=(c.name||'?').charAt(0).toUpperCase();
-    return '<div class="client-row" onclick="openClientDetail('+c.id+')">'+
-      '<div class="client-row-avatar">'+initials+'</div>'+
-      '<div class="client-row-info">'+
-        '<div class="client-row-name">'+c.name+(c.company?' <span style="font-weight:400;color:var(--muted)">— '+c.company+'</span>':'')+' </div>'+
-        '<div class="client-row-meta">'+c.date+' · '+c.propNames.join(', ')+(c.note?' · '+c.note:'')+'</div>'+
+    return '<div class="client-row" style="position:relative">'+
+      '<div style="display:flex;align-items:center;gap:12px;flex:1;cursor:pointer" onclick="openClientDetail('+c.id+')">'+
+        '<div class="client-row-avatar">'+initials+'</div>'+
+        '<div class="client-row-info">'+
+          '<div class="client-row-name">'+c.name+(c.company?' <span style="font-weight:400;color:var(--muted)">— '+c.company+'</span>':'')+' </div>'+
+          '<div class="client-row-meta">'+c.date+' · '+c.propNames.join(', ')+(c.note?' · '+c.note:'')+'</div>'+
+        '</div>'+
+        '<div style="font-size:20px;color:var(--muted);padding-left:8px">›</div>'+
       '</div>'+
-      '<div style="font-size:20px;color:var(--muted)">›</div>'+
+      '<button onclick="event.stopPropagation();if(confirm(\'למחוק את '+c.name+'?\'))deleteClient('+c.id+')" style="background:#fee2e2;border:none;border-radius:8px;padding:6px 10px;font-size:13px;color:#e53e3e;cursor:pointer;font-family:Heebo,sans-serif;flex-shrink:0;margin-right:6px" title="מחק לקוח">🗑️</button>'+
     '</div>';
   }).join('');
 }
