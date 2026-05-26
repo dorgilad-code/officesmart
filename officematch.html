@@ -1390,22 +1390,57 @@ function renderFavModal(){
     [T('fav-cmp-type')||'סגנון',function(p){return p.type||'—'}],
     [T('fav-cmp-plan')||'תשריט',function(p){return p.floorPlan?'<a href="'+p.floorPlan+'" target="_blank" style="color:var(--green);font-weight:600">📐</a>':'—'}],
   ];
+  // Get utility values from inputs (filled by user)
+  var util=parseFloat((document.getElementById('fci-util')||{}).value)||12;
+  var clean=parseFloat((document.getElementById('fci-clean')||{}).value)||12;
+  var arnona=parseFloat((document.getElementById('fci-arnona')||{}).value)||15;
+  var addUtils=false; // default off, toggled by checkbox
+
+  function calcMonthly(p,withUtils){
+    var extras=withUtils?(util+clean+arnona)*p.size:0;
+    return Math.round(p.size*(p.price+p.mgmt)+extras);
+  }
+  function buildCmpTable(withUtils){
+    var monthlyRow=[T('fav-cmp-monthly')||'עלות חודשית'+(withUtils?' (כולל שירותים)':''),function(p){
+      var m=calcMonthly(p,withUtils);
+      var best=Math.min.apply(null,cmpList.map(function(x){return calcMonthly(x,withUtils)}));
+      return '<span class="'+(m===best?'best':'')+'">₪'+m.toLocaleString()+'</span>';
+    }];
+    var rows=[
+      cmpRows[0],cmpRows[1],cmpRows[2],
+      monthlyRow,
+      cmpRows[4],cmpRows[5],cmpRows[6],cmpRows[7]
+    ];
+    return '<table class="cmp-table"><thead><tr><th></th>'+
+      cmpList.map(function(p){
+        var style=p._isCurrent?'background:#fef9c3;':'';
+        return '<th style="'+style+'"><div class="cmp-name">'+(p._isCurrent?'🏢 ':'')+p.name+'</div><div class="cmp-addr">'+p.addr+'</div></th>';
+      }).join('')+
+    '</tr></thead><tbody>'+
+    rows.map(function(r){return '<tr><td>'+r[0]+'</td>'+cmpList.map(function(p){
+      var style=p._isCurrent?'background:#fefce8;':'';
+      return '<td style="'+style+'">'+r[1](p)+'</td>';
+    }).join('')+'</tr>'}).join('')+
+    '</tbody></table>';
+  }
+
   var cmpHtml='';
   if(cmpList.length>1){
     cmpHtml='<div style="margin-top:24px">'+
-      '<div class="fav-section-title" style="margin-bottom:12px">'+( T('fav-cmp-title')||'📊 השוואת נכסים מועדפים')+'</div>'+
-      '<div style="overflow-x:auto">'+
-      '<table class="cmp-table"><thead><tr><th></th>'+
-        cmpList.map(function(p){
-          var style=p._isCurrent?'background:#fef9c3;':'';
-          return '<th style="'+style+'"><div class="cmp-name">'+(p._isCurrent?'🏢 ':'')+p.name+'</div><div class="cmp-addr">'+p.addr+'</div></th>';
-        }).join('')+
-      '</tr></thead><tbody>'+
-      cmpRows.map(function(r){return '<tr><td>'+r[0]+'</td>'+cmpList.map(function(p){
-        var style=p._isCurrent?'background:#fefce8;':'';
-        return '<td style="'+style+'">'+r[1](p)+'</td>';
-      }).join('')+'</tr>'}).join('')+
-      '</tbody></table></div></div>';
+      '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px">'+
+        '<div class="fav-section-title" style="margin:0">'+( T('fav-cmp-title')||'📊 השוואת נכסים מועדפים')+'</div>'+
+        '<label style="display:flex;align-items:center;gap:7px;font-size:13px;font-weight:600;cursor:pointer;background:#f0fdf4;border:1.5px solid #86efac;border-radius:8px;padding:6px 12px;color:#166534">'+
+          '<input type="checkbox" id="cmp-utils-toggle" onchange="toggleCmpUtils()" style="width:15px;height:15px;accent-color:#16a34a;cursor:pointer">'+
+          '⚡ הוסף ממוצע שירותים (חשמל+מים+ניקיון+ארנונה)'+
+        '</label>'+
+      '</div>'+
+      '<div style="font-size:11px;color:var(--muted);margin-bottom:10px;padding:6px 10px;background:#f8fafc;border-radius:6px">'+
+        '* ממוצע שירותים מחושב לפי: חשמל+מים+אינטרנט ₪'+util+'/מ"ר · ניקיון ₪'+clean+'/מ"ר · ארנונה ₪'+arnona+'/מ"ר'+
+      '</div>'+
+      '<div style="overflow-x:auto" id="cmp-table-wrap">'+
+        buildCmpTable(false)+
+      '</div>'+
+    '</div>';
   }
   el.innerHTML=statsHtml+listHtml+cmpHtml+calcHtml;
   // Fill saved values
@@ -1918,6 +1953,46 @@ function loadGSUrl(){
     renderClientsList();
   }
 })();
+
+
+function toggleCmpUtils(){
+  var cb=document.getElementById('cmp-utils-toggle');
+  if(!cb)return;
+  var util=parseFloat((document.getElementById('fci-util')||{}).value)||12;
+  var clean=parseFloat((document.getElementById('fci-clean')||{}).value)||12;
+  var arnona=parseFloat((document.getElementById('fci-arnona')||{}).value)||15;
+  var withUtils=cb.checked;
+  // Get current fav list + current office
+  var list=clientProps.filter(function(p){return favs.indexOf(p.id)>=0});
+  var co=_favCurrOffice;
+  var hasCurr=co&&parseFloat(co.size)>0&&parseFloat(co.price)>0;
+  var currObj=hasCurr?{name:T('fav-curr-label')||'משרד נוכחי',addr:co.addr||'',size:parseFloat(co.size)||0,price:parseFloat(co.price)||0,mgmt:parseFloat(co.mgmt)||0,floor:'—',avail:'—',type:'—',floorPlan:null,_isCurrent:true}:null;
+  var cmpList=list.concat(currObj?[currObj]:[]);
+  function calcMonthly(p){
+    var extras=withUtils?(util+clean+arnona)*p.size:0;
+    return Math.round(p.size*(p.price+p.mgmt)+extras);
+  }
+  var minP=Math.min.apply(null,cmpList.map(function(x){return x.price}));
+  var maxS=Math.max.apply(null,cmpList.map(function(x){return x.size}));
+  var label=(T('fav-cmp-monthly')||'עלות חודשית')+(withUtils?' (כולל שירותים)':'');
+  var rows=[
+    ['שטח מ"ר',function(p){return '<span class="'+(p.size===maxS&&!p._isCurrent?'best':'')+'">'+p.size+' מ"ר</span>'}],
+    ['מחיר למ"ר',function(p){return '<span class="'+(p.price===minP?'best':'')+'">₪'+p.price+'</span>'}],
+    ['דמי ניהול',function(p){return '₪'+p.mgmt}],
+    [label,function(p){var m=calcMonthly(p);var best=Math.min.apply(null,cmpList.map(function(x){return calcMonthly(x)}));return '<span class="'+(m===best?'best':'')+'">₪'+m.toLocaleString()+'</span>'}],
+    ['קומה',function(p){return p.floor||'—'}],
+    ['זמינות',function(p){return p.avail||'—'}],
+    ['סגנון',function(p){return p.type||'—'}],
+    ['תשריט',function(p){return p.floorPlan?'<a href="'+p.floorPlan+'" target="_blank" style="color:var(--green);font-weight:600">📐</a>':'—'}],
+  ];
+  var html='<table class="cmp-table"><thead><tr><th></th>'+
+    cmpList.map(function(p){var s=p._isCurrent?'background:#fef9c3;':'';return '<th style="'+s+'"><div class="cmp-name">'+(p._isCurrent?'🏢 ':'')+p.name+'</div><div class="cmp-addr">'+p.addr+'</div></th>';}).join('')+
+  '</tr></thead><tbody>'+
+  rows.map(function(r){return '<tr><td>'+r[0]+'</td>'+cmpList.map(function(p){var s=p._isCurrent?'background:#fefce8;':'';return '<td style="'+s+'">'+r[1](p)+'</td>';}).join('')+'</tr>';}).join('')+
+  '</tbody></table>';
+  var wrap=document.getElementById('cmp-table-wrap');
+  if(wrap)wrap.innerHTML=html;
+}
 
 // ── LANGUAGE TOGGLE ──
 var currentLang = 'he';
