@@ -878,6 +878,7 @@ function renderClientDetailBody(id){
       '<button class="btn-danger" onclick="deleteClient('+c.id+');closeClientDetail()" style="margin-right:auto">מחק לקוח</button>'+
     '</div>';
 
+  document.getElementById('client-detail-body').innerHTML=body;
 }
 
 function addClientProp(clientId, propId){
