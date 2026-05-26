@@ -1362,18 +1362,18 @@ function renderFavModal(){
     '<div class="cost-table-wrap">'+
       '<div class="cost-table-header"><div><div class="cost-table-title">\ud83e\uddee \u05d4\u05e9\u05d5\u05d5\u05d0\u05ea \u05e2\u05dc\u05d5\u05ea \u05d7\u05d5\u05d3\u05e9\u05d9\u05ea</div><div class="cost-table-sub">\u05db\u05d5\u05dc\u05dc \u05e9\u05db\u05d9\u05e8\u05d5\u05ea, \u05e0\u05d9\u05d4\u05d5\u05dc, \u05d7\u05e9\u05de\u05dc, \u05e0\u05d9\u05e7\u05d9\u05d5\u05df, \u05d0\u05e8\u05e0\u05d5\u05e0\u05d4 \u05d5\u05d7\u05e0\u05d9\u05d5\u05ea</div></div></div>'+
       '<div class="cost-table-inputs">'+
-        '<div class="cost-mini-field"><div class="cost-mini-label">\u26a1 \u05d7\u05e9\u05de\u05dc+\u05de\u05d9\u05dd+\u05d0\u05d9\u05e0\u05d8\u05e8\u05e0\u05d8</div><input class="cost-mini-input" id="fci-util" type="number" min="0" oninput="saveFavCurrOffice();runFavCalc()"></div>'+
-        '<div class="cost-mini-field"><div class="cost-mini-label">\ud83e\uddf9 \u05e0\u05d9\u05e7\u05d9\u05d5\u05df</div><input class="cost-mini-input" id="fci-clean" type="number" min="0" oninput="saveFavCurrOffice();runFavCalc()"></div>'+
-        '<div class="cost-mini-field"><div class="cost-mini-label">\ud83c\udfdb\ufe0f \u05d0\u05e8\u05e0\u05d5\u05e0\u05d4 \u20aa/\u05de"\u05e8</div><input class="cost-mini-input" id="fci-arnona" type="number" min="0" step="0.5" oninput="saveFavCurrOffice();runFavCalc()"></div>'+
+        '<div class="cost-mini-field"><div class="cost-mini-label">\u26a1 \u05d7\u05e9\u05de\u05dc+\u05de\u05d9\u05dd+\u05d0\u05d9\u05e0\u05d8\u05e8\u05e0\u05d8</div><input class="cost-mini-input" id="fci-util" type="number" min="0" oninput="saveFavCurrOffice();runFavCalc();rebuildCmpTable()"></div>'+
+        '<div class="cost-mini-field"><div class="cost-mini-label">\ud83e\uddf9 \u05e0\u05d9\u05e7\u05d9\u05d5\u05df</div><input class="cost-mini-input" id="fci-clean" type="number" min="0" oninput="saveFavCurrOffice();runFavCalc();rebuildCmpTable()"></div>'+
+        '<div class="cost-mini-field"><div class="cost-mini-label">\ud83c\udfdb\ufe0f \u05d0\u05e8\u05e0\u05d5\u05e0\u05d4 \u20aa/\u05de"\u05e8</div><input class="cost-mini-input" id="fci-arnona" type="number" min="0" step="0.5" oninput="saveFavCurrOffice();runFavCalc();rebuildCmpTable()"></div>'+
 
       '</div>'+
       '<div style="padding:14px 20px;border-bottom:1px solid var(--border);background:var(--gl)">'+
         '<div style="font-size:13px;font-weight:800;color:var(--green-d);margin-bottom:10px">\ud83d\udccd \u05d4\u05e9\u05d5\u05d5\u05d0\u05d4 \u05dc\u05de\u05e9\u05e8\u05d3 \u05d4\u05e0\u05d5\u05db\u05d7\u05d9 \u05e9\u05dc\u05d9 (\u05d0\u05d5\u05e4\u05e6\u05d9\u05d5\u05e0\u05dc\u05d9)</div>'+
         '<div class="coco-inputs">'+
-          '<div class="coco-field"><label>\u05e9\u05d8\u05d7 \u05e0\u05d5\u05db\u05d7\u05d9 (\u05de"\u05e8)</label><input id="fco-size" type="number" min="0" placeholder="0" oninput="saveFavCurrOffice();runFavCalc()"></div>'+
-          '<div class="coco-field"><label>\u05de\u05d7\u05d9\u05e8 \u05dc\u05de"\u05e8 (\u20aa)</label><input id="fco-price" type="number" min="0" placeholder="0" oninput="saveFavCurrOffice();runFavCalc()"></div>'+
-          '<div class="coco-field"><label>\u05d3\u05de\u05d9 \u05e0\u05d9\u05d4\u05d5\u05dc \u05dc\u05de"\u05e8 (\u20aa)</label><input id="fco-mgmt" type="number" min="0" placeholder="0" oninput="saveFavCurrOffice();runFavCalc()"></div>'+
-          '<div class="coco-field" style="grid-column:span 2"><label>\u05db\u05ea\u05d5\u05d1\u05ea \u05e0\u05d5\u05db\u05d7\u05d9\u05ea</label><input id="fco-addr" type="text" placeholder="\u05e8\u05d7\u05d5\u05d1 \u05d5\u05e2\u05d9\u05e8" oninput="saveFavCurrOffice();runFavCalc()"></div>'+
+          '<div class="coco-field"><label>\u05e9\u05d8\u05d7 \u05e0\u05d5\u05db\u05d7\u05d9 (\u05de"\u05e8)</label><input id="fco-size" type="number" min="0" placeholder="0" oninput="saveFavCurrOffice();runFavCalc();rebuildCmpTable()"></div>'+
+          '<div class="coco-field"><label>\u05de\u05d7\u05d9\u05e8 \u05dc\u05de"\u05e8 (\u20aa)</label><input id="fco-price" type="number" min="0" placeholder="0" oninput="saveFavCurrOffice();runFavCalc();rebuildCmpTable()"></div>'+
+          '<div class="coco-field"><label>\u05d3\u05de\u05d9 \u05e0\u05d9\u05d4\u05d5\u05dc \u05dc\u05de"\u05e8 (\u20aa)</label><input id="fco-mgmt" type="number" min="0" placeholder="0" oninput="saveFavCurrOffice();runFavCalc();rebuildCmpTable()"></div>'+
+          '<div class="coco-field" style="grid-column:span 2"><label>\u05db\u05ea\u05d5\u05d1\u05ea \u05e0\u05d5\u05db\u05d7\u05d9\u05ea</label><input id="fco-addr" type="text" placeholder="\u05e8\u05d7\u05d5\u05d1 \u05d5\u05e2\u05d9\u05e8" oninput="saveFavCurrOffice();runFavCalc();rebuildCmpTable()"></div>'+
         '</div>'+
       '</div>'+
       '<div style="padding:10px 20px 4px;font-size:11px;color:var(--muted);text-align:center">'+
@@ -1994,6 +1994,40 @@ function checkLogin(){
   }
 })();
 
+
+
+function rebuildCmpTable(){
+  var list=clientProps.filter(function(p){return favs.indexOf(p.id)>=0});
+  if(list.length<1)return;
+  var wrap=document.getElementById('cmp-table-wrap');
+  if(!wrap)return;
+  var cb=document.getElementById('cmp-utils-toggle');
+  if(cb)toggleCmpUtils();
+  else{
+    // rebuild without utils
+    var co=_favCurrOffice;
+    var hasCurr=co&&parseFloat(co.size)>0&&parseFloat(co.price)>0;
+    var currObj=hasCurr?{name:T('fav-curr-label')||'משרד נוכחי',addr:co.addr||'',size:parseFloat(co.size)||0,price:parseFloat(co.price)||0,mgmt:parseFloat(co.mgmt)||0,floor:'—',avail:'—',type:'—',floorPlan:null,_isCurrent:true}:null;
+    var cmpList=list.concat(currObj?[currObj]:[]);
+    var minP=Math.min.apply(null,cmpList.map(function(x){return x.price}));
+    var maxS=Math.max.apply(null,cmpList.map(function(x){return x.size}));
+    var rows=[
+      ['שטח מ"ר',function(p){return '<span class="'+(p.size===maxS&&!p._isCurrent?'best':'')+'">'+p.size+' מ"ר</span>'}],
+      ['מחיר למ"ר',function(p){return '<span class="'+(p.price===minP?'best':'')+'">₪'+p.price+'</span>'}],
+      ['דמי ניהול',function(p){return '₪'+p.mgmt}],
+      ['עלות חודשית',function(p){var m=Math.round(p.size*(p.price+p.mgmt));var best=Math.min.apply(null,cmpList.map(function(x){return x.size*(x.price+x.mgmt)}));return '<span class="'+(m===best?'best':'')+'">₪'+m.toLocaleString()+'</span>'}],
+      ['קומה',function(p){return p.floor||'—'}],
+      ['זמינות',function(p){return p.avail||'—'}],
+      ['סגנון',function(p){return p.type||'—'}],
+      ['תשריט',function(p){return p.floorPlan?'<a href="'+p.floorPlan+'" target="_blank" style="color:var(--green);font-weight:600">📐</a>':'—'}],
+    ];
+    wrap.innerHTML='<table class="cmp-table"><thead><tr><th></th>'+
+      cmpList.map(function(p){var s=p._isCurrent?'background:#fef9c3;':'';return '<th style="'+s+'"><div class="cmp-name">'+(p._isCurrent?'🏢 ':'')+p.name+'</div><div class="cmp-addr">'+p.addr+'</div></th>';}).join('')+
+    '</tr></thead><tbody>'+
+    rows.map(function(r){return '<tr><td>'+r[0]+'</td>'+cmpList.map(function(p){var s=p._isCurrent?'background:#fefce8;':'';return '<td style="'+s+'">'+r[1](p)+'</td>';}).join('')+'</tr>';}).join('')+
+    '</tbody></table>';
+  }
+}
 
 function toggleCmpUtils(){
   var cb=document.getElementById('cmp-utils-toggle');
