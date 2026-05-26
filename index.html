@@ -993,13 +993,12 @@ function loadFromLS(){
 }
 
 function setMode(mode){
-  document.getElementById('btn-admin').classList.toggle('active',mode==='admin');
-  document.getElementById('btn-client').classList.toggle('active',mode==='client');
+  var ba=document.getElementById('btn-admin');if(ba)ba.classList.toggle('active',mode==='admin');
+  var bc=document.getElementById('btn-client');if(bc)bc.classList.toggle('active',mode==='client');
   document.getElementById('admin-panel').style.display=mode==='admin'?'block':'none';
   var cv=document.getElementById('client-view');
   cv.style.display=mode==='client'?'block':'none';
   if(mode==='client'){
-    // Show client-view first so filter elements are accessible in DOM
     setTimeout(function(){renderClientView(clientProps.length?clientProps:props);},0);
   }
 }
