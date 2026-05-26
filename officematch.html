@@ -1957,6 +1957,8 @@ function checkLogin(){
 (function(){
   var params=new URLSearchParams(location.search),data=params.get('data');
   if(data){
+    // Always client mode when link has data - ignore session/auth completely
+    document.getElementById('login-overlay').style.display='none';
     try{
       var payload=JSON.parse(decodeURIComponent(atob(data)));
       props=payload.props||[];clientProps=payload.props||[];
@@ -1970,9 +1972,8 @@ function checkLogin(){
       sub.push(clientProps.length+' נכסים');
       s.textContent=sub.join(' · ');
       s._customSet=true;
-      document.getElementById('login-overlay').style.display='none';
       setMode('client');
-      document.getElementById('btn-admin').style.display='none';
+      var ba=document.getElementById('btn-admin');if(ba)ba.style.display='none';
     }catch(e){console.error(e)}
   } else {
     // Admin mode — check password
