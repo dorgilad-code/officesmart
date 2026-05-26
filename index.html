@@ -494,41 +494,42 @@ table.cost-tbl tbody tr:last-child td{border-bottom:none}
       <div class="cv-sub" id="cv-sub"></div>
     </div>
     <div class="cv-header-actions">
-      <button class="fav-btn" onclick="openFav()">❤️ מועדפים <span class="fav-count-badge" id="fav-badge">0</span></button>
-      <button class="fav-btn" onclick="openGuide()" style="border-color:#6366f1;color:#6366f1">💡 מדריך מעבר</button>
+      <button class="fav-btn" id="lang-toggle-btn" onclick="toggleLang()" style="border-color:#3b82f6;color:#3b82f6;font-weight:800;min-width:52px">EN</button>
+      <button class="fav-btn" onclick="openFav()">❤️ <span id="t-favs">מועדפים</span> <span class="fav-count-badge" id="fav-badge">0</span></button>
+      <button class="fav-btn" id="guide-btn" onclick="openGuide()" style="border-color:#6366f1;color:#6366f1">💡 <span id="t-guide">מדריך מעבר</span></button>
     </div>
   </div>
   <div class="filters">
-    <div class="fg"><label>שטח מינימלי (מ"ר)</label><input type="number" id="f-size" placeholder="0" oninput="applyFilters()"></div>
-    <div class="fg"><label>מחיר מקסימלי למ"ר</label><input type="number" id="f-price" placeholder="ללא הגבלה" oninput="applyFilters()"></div>
-    <div class="fg"><label>סגנון</label>
+    <div class="fg"><label id="t-size-lbl">שטח מינימלי (מ"ר)</label><input type="number" id="f-size" placeholder="0" oninput="applyFilters()"></div>
+    <div class="fg"><label id="t-price-lbl">מחיר מקסימלי למ"ר</label><input type="number" id="f-price" id="f-price-ph" placeholder="ללא הגבלה" oninput="applyFilters()"></div>
+    <div class="fg"><label id="t-style-lbl">סגנון</label>
       <select id="f-type" onchange="applyFilters()">
-        <option value="">הכל</option><option>Open Space</option><option>חדרי ישיבות</option><option>חדרים סגורים</option><option>היברידי</option><option>קומה שלמה</option><option>מגדל</option>
+        <option value="" id="t-all1">הכל</option><option>Open Space</option><option id="t-meeting">חדרי ישיבות</option><option id="t-closed">חדרים סגורים</option><option id="t-hybrid">היברידי</option><option id="t-floor">קומה שלמה</option><option id="t-tower">מגדל</option>
       </select>
     </div>
-    <div class="fg"><label>זמינות</label>
-      <select id="f-avail" onchange="applyFilters()"><option value="">הכל</option><option value="מיידית">מיידית</option><option value="future">תאריך עתידי</option></select>
+    <div class="fg"><label id="t-avail-lbl">זמינות</label>
+      <select id="f-avail" onchange="applyFilters()"><option value="" id="t-all2">הכל</option><option value="מיידית" id="t-immed">מיידית</option><option value="future" id="t-future">תאריך עתידי</option></select>
     </div>
-    <div class="fg"><label>מיון</label>
+    <div class="fg"><label id="t-sort-lbl">מיון</label>
       <select id="f-sort" onchange="applyFilters()">
-        <option value="">ברירת מחדל</option>
-        <option value="price-asc">מחיר: נמוך לגבוה</option>
-        <option value="price-desc">מחיר: גבוה לנמוך</option>
-        <option value="size-desc">שטח: גדול לקטן</option>
-        <option value="size-asc">שטח: קטן לגדול</option>
+        <option value="" id="t-default">ברירת מחדל</option>
+        <option value="price-asc" id="t-price-asc">מחיר: נמוך לגבוה</option>
+        <option value="price-desc" id="t-price-desc">מחיר: גבוה לנמוך</option>
+        <option value="size-desc" id="t-size-desc">שטח: גדול לקטן</option>
+        <option value="size-asc" id="t-size-asc">שטח: קטן לגדול</option>
       </select>
     </div>
-    <button class="btn-reset" onclick="resetFilters()">איפוס</button>
+    <button class="btn-reset" id="t-reset-btn" onclick="resetFilters()">איפוס</button>
   </div>
   <div class="cards-grid" id="cards-grid"></div>
 </div>
 
 <!-- COMPARE BAR -->
 <div class="compare-bar" id="compare-bar">
-  <div><div style="font-size:13px;font-weight:700;margin-bottom:6px">השוואה</div><div class="compare-items" id="compare-items"></div></div>
+  <div><div style="font-size:13px;font-weight:700;margin-bottom:6px" id="t-compare-bar-title">השוואה</div><div class="compare-items" id="compare-items"></div></div>
   <div style="display:flex;gap:10px;align-items:center">
-    <button class="btn-clear-cmp" onclick="clearCompare()">נקה</button>
-    <button class="btn-compare" onclick="openCompare()">השווה עכשיו →</button>
+    <button class="btn-clear-cmp" id="t-compare-clear-btn" onclick="clearCompare()">נקה</button>
+    <button class="btn-compare" id="t-compare-now-btn" onclick="openCompare()">השווה עכשיו →</button>
   </div>
 </div>
 
@@ -1019,7 +1020,7 @@ function resetFilters(){
 
 function renderCards(list){
   var el=document.getElementById('cards-grid');
-  if(!list.length){el.innerHTML='<div class="empty" style="grid-column:1/-1"><div class="empty-icon">🔍</div><div class="empty-title">אין תוצאות</div><p>נסה לאפס את הסינון</p></div>';return}
+  if(!list.length){el.innerHTML='<div class="empty" style="grid-column:1/-1"><div class="empty-icon">🔍</div><div class="empty-title">'+T('empty-title-txt')+'</div><p>'+T('empty-sub-txt')+'</p></div>';return}
   el.innerHTML=list.map(function(p){
     var isFav=favs.indexOf(p.id)>=0,isCmp=compareList.indexOf(p.id)>=0;
     var monthly=Math.round(p.size*(p.price+p.mgmt));
@@ -1037,12 +1038,12 @@ function renderCards(list){
     }
     return '<div class="prop-card'+(isFav?' fav':'')+'" id="card-'+p.id+'">'+
       '<div class="card-gallery" id="gal-'+p.id+'">'+gallery+
-        (p.avail==='מיידית'?'<div class="card-avail">מיידית</div>':'')+
+        (p.avail==='מיידית'?'<div class="card-avail">'+T('avail-immed')+'</div>':'')+
         '<button class="card-fav" onclick="toggleFav('+p.id+',event)">'+(isFav?'❤️':'🤍')+'</button>'+
       '</div>'+
       '<div class="card-body">'+
         '<div class="card-name">'+p.name+'</div>'+
-        '<div class="card-addr">📍 '+p.addr+(p.floor?' · קומה '+p.floor:'')+'</div>'+
+        '<div class="card-addr">📍 '+p.addr+(p.floor?' · '+T('floor-label')+' '+p.floor:'')+'</div>'+
         '<div class="card-stats">'+
           '<div class="stat"><div class="stat-label">שטח</div><div class="stat-val">'+p.size+' מ"ר</div></div>'+
           '<div class="stat"><div class="stat-label">מחיר למ"ר</div><div class="stat-val green">₪'+p.price+'</div></div>'+
@@ -1053,11 +1054,11 @@ function renderCards(list){
           '<span class="tag">'+p.type+'</span>'+
           '<span class="tag '+(p.avail==='מיידית'?'green':'')+'">'+p.avail+'</span>'+
         '</div>'+
-        (p.floorPlan?'<a href="'+p.floorPlan+'" target="_blank" class="floor-link">📐 צפה בתשריט</a>':'') +
+        (p.floorPlan?'<a href="'+p.floorPlan+'" target="_blank" class="floor-link">📐 '+T('card-showroom')+'</a>':'') +
         (p.notes?'<div class="card-notes">'+p.notes+'</div>':'')+
-        '<button onclick="openClientNote('+p.id+')" style="background:none;border:none;font-size:12px;color:var(--muted);cursor:pointer;font-family:Heebo,sans-serif;padding:4px 0;display:flex;align-items:center;gap:4px;margin-bottom:6px">'+(p._clientNote?'📝 '+p._clientNote.substring(0,40)+(p._clientNote.length>40?'...':''):'✏️ הוסף הערה אישית')+'</button>'+
+        '<button onclick="openClientNote('+p.id+')" style="background:none;border:none;font-size:12px;color:var(--muted);cursor:pointer;font-family:Heebo,sans-serif;padding:4px 0;display:flex;align-items:center;gap:4px;margin-bottom:6px">'+(p._clientNote?'📝 '+p._clientNote.substring(0,40)+(p._clientNote.length>40?'...':''):'✏️ '+T('card-note-add'))+'</button>'+
         '<button onclick="toggleCompare('+p.id+')" style="background:'+(isCmp?'var(--green)':'var(--bg)')+';color:'+(isCmp?'#fff':'var(--muted)')+';border:1.5px solid '+(isCmp?'var(--green)':'var(--border)')+';border-radius:8px;padding:8px 14px;font-size:12px;font-weight:600;font-family:Heebo,sans-serif;cursor:pointer;transition:all .15s;width:100%">'+
-          (isCmp?'✓ בהשוואה':'+ הוסף להשוואה')+
+          (isCmp?T('card-compare-in'):T('card-compare-add'))+
         '</button>'+
       '</div>'+
     '</div>';
@@ -1875,6 +1876,184 @@ function loadGSUrl(){
     renderClientsList();
   }
 })();
+
+// ── LANGUAGE TOGGLE ──
+var currentLang = 'he';
+
+var translations = {
+  he: {
+    'cv-title': 'הנכסים שנבחרו עבורך',
+    'lang-toggle-btn': 'EN',
+    't-favs': 'מועדפים',
+    't-guide': 'מדריך מעבר',
+    't-size-lbl': 'שטח מינימלי (מ"ר)',
+    't-price-lbl': 'מחיר מקסימלי למ"ר',
+    't-style-lbl': 'סגנון',
+    't-avail-lbl': 'זמינות',
+    't-sort-lbl': 'מיון',
+    't-all1': 'הכל',
+    't-all2': 'הכל',
+    't-meeting': 'חדרי ישיבות',
+    't-closed': 'חדרים סגורים',
+    't-hybrid': 'היברידי',
+    't-floor': 'קומה שלמה',
+    't-tower': 'מגדל',
+    't-immed': 'מיידית',
+    't-future': 'תאריך עתידי',
+    't-default': 'ברירת מחדל',
+    't-price-asc': 'מחיר: נמוך לגבוה',
+    't-price-desc': 'מחיר: גבוה לנמוך',
+    't-size-desc': 'שטח: גדול לקטן',
+    't-size-asc': 'שטח: קטן לגדול',
+    't-reset-btn': 'איפוס',
+    't-compare-clear-btn': 'נקה',
+    't-compare-now-btn': 'השווה עכשיו →',
+    't-compare-bar-title': 'השוואה',
+    'f-price': 'ללא הגבלה',
+    'fav-modal-title-txt': '❤️ נכסים מועדפים',
+    'guide-modal-title-txt': '💡 מדריך המעבר למשרד חדש',
+    'compare-modal-title-txt': 'השוואת נכסים',
+    'empty-title-txt': 'אין תוצאות',
+    'empty-sub-txt': 'נסה לאפס את הסינון',
+    'compare-btn-txt': 'השווה עכשיו →',
+    'compare-clear-txt': 'נקה',
+    'compare-bar-title': 'השוואה',
+    'card-compare-add': '+ הוסף להשוואה',
+    'card-compare-in': '✓ בהשוואה',
+    'card-compare-btn-label': 'השוואה',
+    'pdf-btn-txt': '📄 ייצא PDF',
+    'card-showroom': 'צפה בתשריט',
+    'card-note-add': '✏️ הוסף הערה אישית',
+    'fav-stat-props': 'נכסים',
+    'fav-stat-avgprice': 'מחיר ממוצע למ"ר',
+    'fav-stat-avgsize': 'שטח ממוצע מ"ר',
+    'fav-section-title': 'הנכסים שלי',
+    'fav-empty-title': 'אין מועדפים עדיין',
+    'fav-empty-sub': 'לחץ על הלב על הכרטיס כדי להוסיף',
+    'cost-table-title': '🧮 השוואת עלות חודשית',
+    'cost-table-sub': 'כולל שכירות, ניהול, חשמל, ניקיון, ארנונה וחניות',
+    'cost-curr-title': '📍 השוואה למשרד הנוכחי שלי (אופציונלי)',
+    'cost-curr-size': 'שטח נוכחי (מ"ר)',
+    'cost-curr-price': 'מחיר למ"ר (₪)',
+    'cost-curr-mgmt': 'דמי ניהול למ"ר (₪)',
+    'cost-curr-addr': 'כתובת נוכחית',
+    'cost-util-lbl': '⚡ חשמל+מים+אינטרנט',
+    'cost-clean-lbl': '🧹 ניקיון',
+    'cost-arnona-lbl': '🏛️ ארנונה ₪/מ"ר',
+    'cost-formula': 'עלות חודשית = שכירות + ניהול + חשמל/מים + ניקיון + ארנונה + חניות — הטבלה מתעדכנת אוטומטית',
+    'floor-label': 'קומה',
+    'avail-immed': 'מיידית',
+  },
+  en: {
+    'cv-title': 'Properties Selected for You',
+    'lang-toggle-btn': 'עב',
+    't-favs': 'Favorites',
+    't-guide': 'Moving Guide',
+    't-size-lbl': 'Min Size (sqm)',
+    't-price-lbl': 'Max Price per sqm',
+    't-style-lbl': 'Style',
+    't-avail-lbl': 'Availability',
+    't-sort-lbl': 'Sort',
+    't-all1': 'All',
+    't-all2': 'All',
+    't-meeting': 'Meeting Rooms',
+    't-closed': 'Private Offices',
+    't-hybrid': 'Hybrid',
+    't-floor': 'Full Floor',
+    't-tower': 'Tower',
+    't-immed': 'Immediate',
+    't-future': 'Future Date',
+    't-default': 'Default',
+    't-price-asc': 'Price: Low to High',
+    't-price-desc': 'Price: High to Low',
+    't-size-desc': 'Size: Large to Small',
+    't-size-asc': 'Size: Small to Large',
+    't-reset-btn': 'Reset',
+    't-compare-clear-btn': 'Clear',
+    't-compare-now-btn': 'Compare Now →',
+    't-compare-bar-title': 'Compare',
+    'f-price': 'No limit',
+    'fav-modal-title-txt': '❤️ Favorite Properties',
+    'guide-modal-title-txt': '💡 Office Relocation Guide',
+    'compare-modal-title-txt': 'Compare Properties',
+    'empty-title-txt': 'No Results',
+    'empty-sub-txt': 'Try resetting the filters',
+    'compare-btn-txt': 'Compare Now →',
+    'compare-clear-txt': 'Clear',
+    'compare-bar-title': 'Compare',
+    'card-compare-add': '+ Add to Compare',
+    'card-compare-in': '✓ In Compare',
+    'card-compare-btn-label': 'Compare',
+    'pdf-btn-txt': '📄 Export PDF',
+    'card-showroom': 'View Floor Plan',
+    'card-note-add': '✏️ Add Personal Note',
+    'fav-stat-props': 'Properties',
+    'fav-stat-avgprice': 'Avg Price / sqm',
+    'fav-stat-avgsize': 'Avg Size sqm',
+    'fav-section-title': 'My Properties',
+    'fav-empty-title': 'No Favorites Yet',
+    'fav-empty-sub': 'Click the heart on a card to add',
+    'cost-table-title': '🧮 Monthly Cost Comparison',
+    'cost-table-sub': 'Includes rent, management, utilities, cleaning, taxes & parking',
+    'cost-curr-title': '📍 Compare to My Current Office (Optional)',
+    'cost-curr-size': 'Current Size (sqm)',
+    'cost-curr-price': 'Price per sqm (₪)',
+    'cost-curr-mgmt': 'Mgmt Fee per sqm (₪)',
+    'cost-curr-addr': 'Current Address',
+    'cost-util-lbl': '⚡ Electricity+Water+Internet',
+    'cost-clean-lbl': '🧹 Cleaning',
+    'cost-arnona-lbl': '🏛️ Municipal Tax ₪/sqm',
+    'cost-formula': 'Monthly cost = Rent + Mgmt + Utilities + Cleaning + Tax + Parking — auto-updated',
+    'floor-label': 'Floor',
+    'avail-immed': 'Immediate',
+  }
+};
+
+function toggleLang(){
+  currentLang = currentLang === 'he' ? 'en' : 'he';
+  applyLang();
+  applyFilters();
+}
+
+function applyLang(){
+  var t = translations[currentLang];
+  var isEn = currentLang === 'en';
+
+  // Set page direction
+  var cv = document.getElementById('client-view');
+  if(cv) cv.setAttribute('dir', isEn ? 'ltr' : 'rtl');
+
+  // Update all translated elements
+  Object.keys(t).forEach(function(id){
+    var el = document.getElementById(id);
+    if(!el) return;
+    if(el.tagName === 'INPUT' && el.type !== 'button') {
+      el.placeholder = t[id];
+    } else if(el.tagName === 'OPTION') {
+      el.textContent = t[id];
+    } else {
+      el.textContent = t[id];
+    }
+  });
+
+  // Update fav modal title if open
+  var favTitle = document.querySelector('.fav-modal-title');
+  if(favTitle) favTitle.textContent = t['fav-modal-title-txt'];
+
+  // Update guide modal title if open
+  var guideTitle = document.querySelector('.guide-modal-title');
+  if(guideTitle) guideTitle.textContent = t['guide-modal-title-txt'];
+
+  // Re-render cards with translated text
+  renderCards(clientProps);
+
+  // Re-render fav modal if open
+  var favOverlay = document.getElementById('fav-overlay');
+  if(favOverlay && favOverlay.classList.contains('open')) renderFavModal();
+}
+
+function T(key){ return (translations[currentLang] && translations[currentLang][key]) || translations['he'][key] || key; }
+
 </script>
 </body>
 </html>
