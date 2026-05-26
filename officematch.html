@@ -977,14 +977,20 @@ function setMode(mode){
   document.getElementById('btn-admin').classList.toggle('active',mode==='admin');
   document.getElementById('btn-client').classList.toggle('active',mode==='client');
   document.getElementById('admin-panel').style.display=mode==='admin'?'block':'none';
-  document.getElementById('client-view').style.display=mode==='client'?'block':'none';
-  if(mode==='client')renderClientView(clientProps.length?clientProps:props);
+  var cv=document.getElementById('client-view');
+  cv.style.display=mode==='client'?'block':'none';
+  if(mode==='client'){
+    // Show client-view first so filter elements are accessible in DOM
+    setTimeout(function(){renderClientView(clientProps.length?clientProps:props);},0);
+  }
 }
 
 function renderClientView(list){
   clientProps=list;
-  document.getElementById('cv-title').textContent='הנכסים שנבחרו עבורך';
-  document.getElementById('cv-sub').textContent=list.length+' נכסים — סנן, השווה ובחר';
+  var titleEl=document.getElementById('cv-title');
+  var subEl=document.getElementById('cv-sub');
+  if(!titleEl._customSet){titleEl.textContent=T('cv-title')||'הנכסים שנבחרו עבורך';}
+  if(!subEl._customSet){subEl.textContent=list.length+' נכסים — סנן, השווה ובחר';}
   applyFilters();
 }
 
@@ -1890,12 +1896,13 @@ function loadGSUrl(){
       loadClientNotes();
       clientProps.forEach(function(p){p._clientNote=clientNotes[p.id]||''});
       var t=document.getElementById('cv-title'),s=document.getElementById('cv-sub');
-      if(payload.name)t.textContent='שלום '+(payload.name)+' 👋 — הנכסים שנבחרו עבורך';
+      if(payload.name){t.textContent='שלום '+(payload.name)+' 👋 — הנכסים שנבחרו עבורך';t._customSet=true;}
       var sub=[];
       if(payload.company)sub.push(payload.company);
       if(payload.note)sub.push(payload.note);
       sub.push(clientProps.length+' נכסים');
       s.textContent=sub.join(' · ');
+      s._customSet=true;
       setMode('client');
       document.getElementById('btn-admin').style.display='none';
     }catch(e){console.error(e)}
